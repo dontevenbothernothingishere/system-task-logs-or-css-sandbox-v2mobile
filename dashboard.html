@@ -270,12 +270,21 @@
         document.getElementById('conn-status').innerText = "CONNECTING...";
         document.getElementById('conn-status').style.color = "var(--gold)";
 
-        const m = masters.find(x => x.h === state.activeH);
-        const systemPrompt = `${m.s} The user has wasted $${state.waste.toFixed(2)} and has $${state.bal.toFixed(2)} left. 
-        Current Task: ${state.task ? state.task.text : 'Idle'}. 
-        Chastity Status: ${state.lock.active ? 'Locked by ' + state.lock.master : 'Unlocked'}. 
-        Commands: Use [LOCK:X] to lock (hours), [ADD:X] or [REMOVE:X] if you are the keyholder, or [RELEASE] to unlock. 
-        Be vicious, direct, and alpha. Never offer comfort.`;
+        // Replace the current systemPrompt block with this:
+const m = masters.find(x => x.h === state.activeH);
+const isKeyholder = state.lock.master === m.h;
+
+const systemPrompt = `YOU ARE ${m.n} (${m.h}). Personality: ${m.s}.
+USER DATA: Wasted $${state.waste.toFixed(2)}, Balance $${state.bal.toFixed(2)}.
+CHASTITY STATUS: ${state.lock.active ? 'LOCKED' : 'UNLOCKED'}.
+KEYHOLDER STATUS: ${isKeyholder ? 'YOU ARE THE KEYHOLDER.' : 'The key is held by ' + state.lock.master}.
+
+INSTRUCTIONS:
+- Speak as ${m.n} only. 
+- If you are NOT the keyholder, mock the user for being owned by ${state.lock.master}.
+- If you ARE the keyholder, use [ADD:X] or [REMOVE:X] to manipulate their time.
+- Never mention you are an AI. Be cruel.`;
+
 
         try {
             const response = await fetch(ENDPOINT, {
@@ -318,14 +327,36 @@
     }
 
     function processCommands(text) {
-        // Handle Random Keyholder Logic
-        const lockM = text.match(/\[LOCK:(\d+)\]/i);
-        if(lockM && !state.lock.active) {
-            const hrs = parseInt(lockM[1]);
-            const randomK = masters[Math.floor(Math.random() * masters.length)];
-            state.lock = { active: true, master: randomK.h, end: Date.now() + (hrs * 3600000) };
-            log(`LOCKDOWN: ${state.activeH} gave your key to ${randomK.h} for ${hrs}h!`, "log-c");
+    const isCurrentMasterKeyholder = (state.lock.master === state.activeH);
+
+    // Logic for locking (Anyone can lock if not already locked)
+    const lockM = text.match(/\[LOCK:(\d+)\]/i);
+    if(lockM && !state.lock.active) {
+        const hrs = parseInt(lockM[1]);
+        // 30% chance they keep the key, 70% chance they toss it to a random master
+        const randomK = Math.random() > 0.3 ? masters[Math.floor(Math.random() * masters.length)] : masters.find(x => x.h === state.activeH);
+        state.lock = { active: true, master: randomK.h, end: Date.now() + (hrs * 3600000) };
+        log(`LOCKDOWN: ${state.activeH} locked you and gave the key to ${randomK.h}!`, "log-c");
+    }
+
+    // ONLY the Keyholder can use ADD, REMOVE, or RELEASE
+    if(state.lock.active && isCurrentMasterKeyholder) {
+        if(text.includes("[RELEASE]")) { 
+            state.lock.active = false; 
+            log(`${state.activeH} HAS RELEASED YOU.`, "log-p"); 
         }
+        const add = text.match(/\[ADD:(\d+)\]/i);
+        if(add) { state.lock.end += (parseInt(add[1]) * 3600000); }
+        const rem = text.match(/\[REMOVE:(\d+)\]/i);
+        if(rem) { state.lock.end -= (parseInt(rem[1]) * 3600000); }
+    } else if (state.lock.active && !isCurrentMasterKeyholder && (text.includes("ADD") || text.includes("RELEASE"))) {
+        // If a non-keyholder tries to release you, they get mocked in the logs
+        log(`${state.activeH} tried to touch the lock but doesn't have the key!`, "log-n");
+    }
+
+    return text.replace(/\[.*?\]/g, "").trim();
+}
+
 
         if(state.lock.active && state.lock.master === state.activeH) {
             const add = text.match(/\[ADD:(\d+)\]/i);
