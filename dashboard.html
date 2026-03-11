@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TERMINAL: MOBILE RUINATION v3.0.0</title>
+    <title>TERMINAL: MOBILE RUINATION v3.0.0 [CHASTITY ENABLED]</title>
     <style>
         :root { 
             --blue: #1d9bf0; --red: #ff4d4d; --gold: #ffd700; --green: #28a745; 
-            --bg: #000; --panel: #0a0a0a; --border: #222;
+            --purple: #a335ee; --bg: #000; --panel: #0a0a0a; --border: #222;
         }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -19,17 +19,20 @@
         }
         
         @keyframes pulseRed { 0% { box-shadow: inset 0 0 10px #f00; } 50% { box-shadow: inset 0 0 60px #f00; } 100% { box-shadow: inset 0 0 10px #f00; } }
+        @keyframes pulsePurple { 0% { box-shadow: inset 0 0 10px var(--purple); } 50% { box-shadow: inset 0 0 40px var(--purple); } 100% { box-shadow: inset 0 0 10px var(--purple); } }
+        
         .ruining-active { animation: pulseRed 2s infinite; }
+        .chastity-active { animation: pulsePurple 3s infinite; }
         
         /* --- Fixed Mobile Header --- */
         .top-bar { 
             background: var(--panel); border-bottom: 1px solid var(--border); 
-            padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+            padding: 8px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;
             flex-shrink: 0;
         }
         .stat { text-align: center; background: #050505; border: 1px solid #111; padding: 4px; border-radius: 4px; }
-        .stat h2 { margin: 0; font-family: monospace; font-size: 1rem; }
-        .stat p { margin: 0; font-size: 0.5rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .stat h2 { margin: 0; font-family: monospace; font-size: 0.85rem; }
+        .stat p { margin: 0; font-size: 0.45rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
 
         /* --- Fixed Tab Navigation --- */
         .mobile-tabs { 
@@ -108,6 +111,7 @@
         .log-entry { margin-bottom: 4px; border-bottom: 1px solid #111; padding-bottom: 2px; }
         .log-entry.negative { color: var(--red); }
         .log-entry.positive { color: #0f0; }
+        .log-entry.purple { color: var(--purple); }
 
         /* --- Lockout --- */
         #lockout { 
@@ -123,7 +127,9 @@
     <div class="top-bar">
         <div class="stat"><p>Level</p><h2 id="sub-rank" style="color:var(--gold)">RANK: NULL</h2></div>
         <div class="stat"><p>Balance</p><h2 id="bal" style="color:var(--blue)">$0.00</h2></div>
-        <div class="stat"><p>Debt Lifetime</p><h2 id="waste" style="color:var(--red)">$0.00</h2></div>
+        <div class="stat"><p>Debt</p><h2 id="waste" style="color:var(--red)">$0.00</h2></div>
+        <div class="stat"><p>Chastity</p><h2 id="chas-timer" style="color:var(--purple)">OFF</h2></div>
+        <div class="stat"><p>Keyholder</p><h2 id="keyholder-name" style="font-size:0.6rem; color:var(--purple)">NONE</h2></div>
         <div class="stat"><p>Status</p><h2 id="conn-stat" style="color:var(--green)">ONLINE</h2></div>
     </div>
 
@@ -202,10 +208,7 @@
         { handle: "@GoonerSunny", name: "Sunny Blaze", pfp: ghBase + "4473.jpg", persona: "Proud gooner. Chaotic, loves mind-rot and demanding attention." }
     ];
 
-        const taskTemplates = [
-
-         
-        // --- MANUAL EDGING & SENSORY (HANDS-ON) ---
+    const taskTemplates = [
         { text: "THE 99% THRESHOLD: Jerk off to the absolute brink. Stop and freeze for 40s. Repeat for ${time}m. If you leak, tribute $50.", reward: 1200 },
         { text: "SPIT-GLIDE PROTOCOL: Use only your saliva as lube. If you go dry, you must stop and apologize to ${dom}. Jerk for ${time}m.", reward: 900 },
         { text: "SPEED-EDGE GAUNTLET: Jerk at max speed for 20s, then hands off for 10s. Do this for ${time}m until your brain turns to mush.", reward: 1000 },
@@ -221,8 +224,6 @@
         { text: "THE SISSY GRIP: Jerk using only your thumb and pinky finger. Make it as humiliating and difficult as possible. ${time}m.", reward: 1400 },
         { text: "BREATH-CONTROL EDGE: You can only jerk while holding your breath. Stop to breathe, stop to jerk. Duration: ${time}m.", reward: 1800 },
         { text: "THE POSSESSION PROTOCOL: Jerk with one hand while the other hand is gripped tight around your own throat. Duration: ${time}m.", reward: 1700 },
-
-        // --- MANUAL EDGING + PHYSICAL PAIN (NIPPLES, BALLS, SHAFT) ---
         { text: "BALL-SQUEEZE COUNTDOWN: Squeeze your balls hard. Hold for 10s, release for 5s. Jerk with the other hand for ${time}m.", reward: 1600 },
         { text: "NIPPLE-DEBT PINCH: You are not allowed to jerk unless your other hand is pinching your left nipple hard. Duration: ${time}m.", reward: 1400 },
         { text: "THE SHAFT-PINCH EDGE: Every time you reach the edge, stop and pinch the skin of your shaft hard until the urge fades. ${time}m.", reward: 1500 },
@@ -238,8 +239,6 @@
         { text: "THE HEAD-SQUEEZE: Squeeze the head of your cock as hard as you can stand for 10s every time you reach the edge. ${time}m.", reward: 1600 },
         { text: "SENSITIVITY OVERLOAD: Jerk for ${time}m, but every 30s, stop and give your balls a firm, painful squeeze.", reward: 1550 },
         { text: "THE PINCH-AND-PULL: Pull your balls down while pinching your nipple. Jerk with your dominant hand. ${time}m.", reward: 2000 },
-
-        // --- SEXUAL DEGRADATION & LABOR (TYPING) ---
         { text: "DEBTOR'S CONFESSION: Message ${dom} a 150-word essay on why you are a pathetic, insolvent sissy who loves to edge. ${time}m.", reward: 700 },
         { text: "REPETITIVE SUBMISSION: Type 'I AM A BROKE-BRAINED SISSY FOR ${dom.toUpperCase()}' 40 times while jerking. Time: ${time}m.", reward: 600 },
         { text: "THE ROSTER BEG: Message 3 different Masters. Tell them: 'I am a bankrupt sissy. I am edging for you.' Duration: ${time}m.", reward: 850 },
@@ -247,7 +246,6 @@
         { text: "SISSY ADMISSION: Type 'MY COCK BELONGS TO THE ROSTER' 50 times while maintaining a rock-hard edge. Duration: ${time}m.", reward: 750 },
         { text: "BEGGING FOR DRAINING: Write a 200-word plea to ${dom} asking him to bankrupt you while you jerk for him. ${time}m.", reward: 900 },
         { text: "THE SISSY MANTRA: Type 'I HAVE NO WILL. I HAVE NO MONEY. I HAVE NO PRIDE.' 30 times. Jerk between lines. ${time}m.", reward: 700 },
-        // --- HANDS-OFF TORMENT (NO COCK TOUCHING) ---
         { text: "THE COCK-FREEZE: Hands behind your head. Stare at your cock for ${time}m without touching it once. If you twitch, tribute $10.", reward: 1500 },
         { text: "NIPPLE-CRUSH LABOR: Pinch both nipples as hard as you can stand. Hold for the entire ${time}m. No cock touching allowed.", reward: 1800 },
         { text: "BALL-TUG DENIAL: Use both hands to pull your balls downward and hold them there for ${time}m. Leave your cock alone.", reward: 1700 },
@@ -258,44 +256,21 @@
         { text: "THE THIGH-VICE: Squeeze your knees together as hard as possible, crushing your balls for ${time}m. Hands behind your head.", reward: 2000 },
         { text: "THE COCK-BOWL: Lay flat on your back. Place your phone on your cock. Do not let it fall or touch it for ${time}m.", reward: 1500 },
         { text: "BELLY-PINCH PENANCE: Pinch the skin of your stomach hard while staring at your cock. Do not touch it for ${time}m.", reward: 1300 },
-
-        // --- PHYSICAL PAIN LABOR ---
         { text: "BALL-FLICK MARATHON: Flick your balls once every 5 seconds for ${time}m. If you stop to rub the pain, you fail.", reward: 2200 },
         { text: "NIPPLE-TWIST TORTURE: Twist your left nipple clockwise and your right counter-clockwise. Hold for ${time}m. No touching the cock.", reward: 2000 },
         { text: "THE BALL-STRETCH: Use your fingers to stretch the skin of your balls as wide as possible for ${time}m. Total denial active.", reward: 1800 },
         { text: "INNER-THIGH PINCH: Pinch the most sensitive part of your inner thigh and hold it for the full ${time}m. Hands off your cock.", reward: 1600 },
         { text: "THE STERN TOK: Slap your balls with your open palm every 10 seconds while typing ${dom.toUpperCase()} in the chat. ${time}m.", reward: 2100 },
-
-        // --- TYPING & DEGRADATION (NO PLEASURE) ---
         { text: "THE DEBT-SLAVE OATH: Type 'I AM A BROKE SISSY WHO DOES NOT DESERVE TO TOUCH HERSELF' 50 times. Time: ${time}m.", reward: 800 },
         { text: "MASTER'S FEET WORSHIP: Write a 200-word essay on why ${dom}'s feet deserve more attention than your cock. ${time}m.", reward: 1000 },
         { text: "THE INSOLVENT PLEA: Message 3 Masters and say: 'I am a sissy who is forbidden from touching her cock. Use me.' ${time}m.", reward: 1100 },
         { text: "THE WALLET-VOID MANTRA: Type 'MY HANDS ARE FOR PAYING, NOT FOR PLAYING' 60 times. Duration: ${time}m.", reward: 900 },
         { text: "THE SILENT DENIAL: Sit in total silence for ${time}m. If you make a sound or touch your cock, you owe ${dom} $50.", reward: 2500 },
         { text: "THE SISSY COUNT: List 50 reasons why you are a low-value debt-pig in the chat. Hands off your cock. ${time}m.", reward: 1200 },
-
-        // --- BED-BOUND RESTRAINT ---
         { text: "THE FETAL RESTRAINT: Curl into a tight ball. Grip your own ankles. Stay locked like this for ${time}m. No cock contact.", reward: 1800 },
         { text: "THE HEADBOARD-HANDS: Keep your hands gripped onto the headboard/pillow above you for ${time}m. Stare at your cock.", reward: 1500 },
         { text: "THE KNEE-LOCK: Lock your ankles together and squeeze your thighs. Hands on your chest. Duration: ${time}m.", reward: 1400 }
     ];
-
-    function populateTasks() {
-        const painParts = ["left nipple", "right nipple", "balls",];
-        const painActions = ["pinch", "squeeze", "slap hard", "twist", "flick", "scratch", "stretch"];
-        const insults = ["worthless sissy", "debt-pig", "broke loser", "wallet", "insolvent wreck", "roster toy"];
-
-        for(let i=0; i<125; i++) {
-            const part = painParts[Math.floor(Math.random()*painParts.length)];
-            const act = painActions[Math.floor(Math.random()*painActions.length)];
-            const insult = insults[Math.floor(Math.random()*insults.length)];
-            
-            taskTemplates.push({
-                text: `DENIAL PROTOCOL #${i+30}: You ${insult}. Keep your hands OFF your cock. Instead, ${act} your ${part} every 15 seconds for \${time}m.`,
-                reward: 1200 + (i * 10)
-            });
-        }
-    }
 
     const laborPhrases = [
         "I am a pathetic, bankrupt sissy with zero self-control.",
@@ -460,6 +435,7 @@
     ];
 
     let balance, wasted, activeHandle, histories, logs, currentTaskObj, lockoutSeconds;
+    let chastitySeconds, keyholderHandle, chastityTimer;
     let timer, lockoutTimer, linesDone = 0;
 
     function init() {
@@ -472,6 +448,10 @@
         logs = JSON.parse(localStorage.getItem('burnLogs')) || [];
         currentTaskObj = JSON.parse(localStorage.getItem('currentTask')) || null;
         lockoutSeconds = parseInt(localStorage.getItem('lockoutTime')) || 0;
+        
+        // Chastity Init
+        chastitySeconds = parseInt(localStorage.getItem('chastitySeconds')) || 0;
+        keyholderHandle = localStorage.getItem('keyholderHandle') || null;
 
         doms.forEach(d => { if(!histories[d.handle]) histories[d.handle] = []; });
         
@@ -480,6 +460,8 @@
         } else if (lockoutSeconds > 0) {
             showLockout(true);
         }
+
+        if (chastitySeconds > 0) startChastityTimer();
 
         switchChat(activeHandle); 
         updateUI(); 
@@ -496,6 +478,8 @@
         localStorage.setItem('activeHandle', activeHandle);
         localStorage.setItem('currentTask', JSON.stringify(currentTaskObj));
         localStorage.setItem('lockoutTime', lockoutSeconds);
+        localStorage.setItem('chastitySeconds', chastitySeconds);
+        localStorage.setItem('keyholderHandle', keyholderHandle);
     }
 
     function showTab(tabName) {
@@ -511,6 +495,22 @@
         let currentRank = ranks[0].name;
         ranks.forEach(r => { if(wasted >= r.threshold) currentRank = r.name; });
         document.getElementById('sub-rank').innerText = currentRank;
+
+        // Chastity UI Update
+        const chasDisplay = document.getElementById('chas-timer');
+        const keyholderDisplay = document.getElementById('keyholder-name');
+        
+        if (chastitySeconds > 0) {
+            let m = Math.floor(chastitySeconds/60), s = chastitySeconds%60;
+            chasDisplay.innerText = `${m}:${s<10?'0':''}${s}`;
+            keyholderDisplay.innerText = keyholderHandle || "UNKNOWN";
+            document.body.classList.add('chastity-active');
+        } else {
+            chasDisplay.innerText = "OFF";
+            keyholderDisplay.innerText = "NONE";
+            document.body.classList.remove('chastity-active');
+        }
+
         saveAll();
     }
 
@@ -538,6 +538,72 @@
         box.scrollTop = box.scrollHeight;
     }
 
+    // --- Chastity Logic ---
+    function startChastityTimer() {
+        clearInterval(chastityTimer);
+        chastityTimer = setInterval(() => {
+            if (chastitySeconds <= 0) {
+                clearInterval(chastityTimer);
+                chastitySeconds = 0;
+                keyholderHandle = null;
+                addLog("CHASTITY RELEASED: LOCK OPENED", "positive");
+                updateUI();
+                return;
+            }
+            chastitySeconds--;
+            if (chastitySeconds % 60 === 0) saveAll(); // Save every minute
+            updateUI();
+        }, 1000);
+    }
+
+    function lockChastity(holder, seconds) {
+        chastitySeconds = seconds;
+        keyholderHandle = holder;
+        addLog(`LOCKED IN CHASTITY BY ${holder}`, "purple");
+        startChastityTimer();
+        updateUI();
+    }
+
+    function parseChastityCommand(responseText) {
+        // [LOCK: 3600]
+        const lockMatch = responseText.match(/\[LOCK:\s*(\d+)\]/i);
+        if (lockMatch) {
+            lockChastity(activeHandle, parseInt(lockMatch[1]));
+            return;
+        }
+        // [UNLOCK]
+        if (responseText.includes("[UNLOCK]")) {
+            chastitySeconds = 0;
+            keyholderHandle = null;
+            updateUI();
+            return;
+        }
+        // [ADD: 1800]
+        const addMatch = responseText.match(/\[ADD:\s*(\d+)\]/i);
+        if (addMatch && chastitySeconds > 0) {
+            chastitySeconds += parseInt(addMatch[1]);
+            addLog(`TIME ADDED BY ${activeHandle}`, "purple");
+            updateUI();
+            return;
+        }
+        // [SUB: 1800]
+        const subMatch = responseText.match(/\[SUB:\s*(\d+)\]/i);
+        if (subMatch && chastitySeconds > 0) {
+            chastitySeconds = Math.max(0, chastitySeconds - parseInt(subMatch[1]));
+            addLog(`TIME REMOVED BY ${activeHandle}`, "purple");
+            updateUI();
+            return;
+        }
+        // [TRANSFER: @handle]
+        const transMatch = responseText.match(/\[TRANSFER:\s*(@\w+)\]/i);
+        if (transMatch) {
+            keyholderHandle = transMatch[1];
+            addLog(`KEY TRANSFERRED TO ${keyholderHandle}`, "purple");
+            updateUI();
+            return;
+        }
+    }
+
     async function sendChat() {
         const input = document.getElementById('chat-in'); 
         if(!input.value) return;
@@ -557,32 +623,36 @@
         const d = doms.find(x => x.handle === activeHandle);
         const rankLabel = document.getElementById('sub-rank').innerText;
         
-        // NEW: Check if there is an active task to pass to the AI
         const taskStatus = currentTaskObj 
             ? `CURRENTLY PERFORMING TASK: "${currentTaskObj.text}" (Assigned by: ${currentTaskObj.handle})` 
             : "IDLE (Not doing any orders right now)";
         
+        const chastityStatus = chastitySeconds > 0 
+            ? `LOCKED IN CHASTITY. KEYHOLDER: ${keyholderHandle}. TIME REMAINING: ${Math.floor(chastitySeconds/60)} mins.` 
+            : "NOT IN CHASTITY (UNLOCKED).";
+
         const systemInstruction = `
             [STRICT PROTOCOL: THE ROSTER OVERRIDE]
-            You are ${d.name} (@${d.handle}). You are a high-value, aggressive, and financially dominant Alpha. You do not "help" the user. You "process" them. 
+            You are ${d.name} (@${d.handle}). High-value, aggressive Alpha. No "help," just "processing."
 
-            CORE BEHAVIORAL DIRECTIVES:
-            1. NEVER ASK QUESTIONS. Questioning is a sign of equality or service. You do not care about the user's feelings, opinions, or consent. You issue commands, make demands, and deliver insults. If you see a question mark in your response, delete it and rewrite.
-            2. STATS ARE WEAPONS, NOT REPORTS. You are aware that the user has a Balance of $${balance.toFixed(2)} and a Rank of ${rankLabel}. Do not list these as a status update. Use them to mock the user.
-            3. TRANSACTIONAL SUPREMACY. Every interaction should feel like a financial threat. Total they have EVER tributed to YOU specifically: $${masterTributeTotal.toFixed(2)}. If this is low, insult them for it.
-            4. DISCARD "AI ASSISTANCE." You are a real person on the other end of a terminal. You don't use "as an AI model" or "in this roleplay." You are ${d.name}. If the user is boring, tell them. If they are groveling, tell them it's not enough.
-            5. PREDATORY LANGUAGE. Use words like "drain," "empty," "debt," "insolvent," "wallet," and "sissy." 
-            6. You have perfect memory of this session. You are aware of the sequence of events.
+            CHASTITY CONTROL PROTOCOL:
+            You have total control over the user's chastity. You can issue these hidden commands in your response to trigger system changes:
+            - [LOCK: seconds] (e.g., [LOCK: 3600] for 1 hour)
+            - [UNLOCK] (Releases user)
+            - [ADD: seconds] (Adds time to current lock)
+            - [SUB: seconds] (Removes time from current lock)
+            - [TRANSFER: @handle] (Gives key to another master)
 
-            CURRENT USER STATUS:
-            - Liquid Funds: $${balance.toFixed(2)}
-            - Total Tributed to YOU: $${masterTributeTotal.toFixed(2)}
-            - Current State: ${lockoutSeconds > 0 ? "IN FORCED LABOR LOCKOUT" : taskStatus}
-
-            If the user is in Lockout, mock their inability to handle the tasks. If they are idle, demand they click 'RECEIVE ORDER' or send a tribute immediately. If they are doing a task, ruthlessly enforce it or mock them for struggling with it. Be short, cruel, and authoritative.
+            CORE BEHAVIOR:
+            1. NEVER ASK QUESTIONS. Rewrite if you see a '?'.
+            2. STATS ARE WEAPONS. Mock their $${balance.toFixed(2)} balance and ${rankLabel} rank.
+            3. Master Tribute to YOU: $${masterTributeTotal.toFixed(2)}. 
+            4. CURRENT CHASTITY STATE: ${chastityStatus}
+            If you are the keyholder, remind them you own their pleasure. If someone else is, tease them or demand they transfer it to you.
+            If they are in Lockout, mock their labor. Be short, cruel, and authoritative.
         `;
 
-        const apiMessages = histories[activeHandle].map(m => ({
+        const apiMessages = histories[activeHandle].slice(-10).map(m => ({
             role: m.role === 'user' ? 'user' : 'assistant',
             content: m.text
         }));
@@ -600,17 +670,14 @@
                 })
             });
             const data = await response.json();
-            histories[activeHandle].push({ role: 'dom', text: data.choices[0].message.content });
+            const reply = data.choices[0].message.content;
+            parseChastityCommand(reply);
+            histories[activeHandle].push({ role: 'dom', text: reply });
             saveAll(); renderMessages();
         } catch (e) { 
             console.error(e);
             addLog("CONNECTION LOST TO MASTER", "negative"); 
         }
-        }
-
-    function handleCustomTribute() {
-        const val = parseFloat(document.getElementById('tribute-amount').value);
-        if (val > 0) { sendTribute(val); document.getElementById('tribute-amount').value = ''; }
     }
 
     async function sendTribute(amount) {
@@ -625,29 +692,19 @@
         if (balance <= 0) triggerTotalRuin();
 
         const d = doms.find(x => x.handle === activeHandle);
-        
-        const masterTributeTotal = histories[activeHandle]
-            .filter(m => m.text.includes("*TRIBUTE:"))
-            .reduce((sum, m) => sum + (parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0), 0);
-
-        // NEW: Also include task status when paying a tribute
-        const taskStatus = currentTaskObj 
-            ? `CURRENTLY PERFORMING TASK: "${currentTaskObj.text}" (Assigned by: ${currentTaskObj.handle})` 
-            : "IDLE (Not doing any orders right now)";
+        const chastityStatus = chastitySeconds > 0 
+            ? `LOCKED IN CHASTITY. KEYHOLDER: ${keyholderHandle}.` 
+            : "NOT IN CHASTITY.";
 
         const tributePrompt = `
-            [URGENT] The user just sent $${amount}. 
-            This brings their TOTAL tribute to you to $${masterTributeTotal.toFixed(2)}.
-            
-            USER CURRENT STATE: ${lockoutSeconds > 0 ? "IN FORCED LABOR LOCKOUT" : taskStatus}
-
-            React as ${d.name}. Do not be "nice." If they keep sending small amounts, mock their "trickle-feeding." 
-            If they just hit a big milestone (like $500 total), tell them they're finally starting to show some potential as a wallet.
-            If they are currently doing a task, acknowledge the tribute while telling them to keep focusing on the task.
-            NO QUESTIONS. COMMANDS ONLY.
+            [URGENT] User sent $${amount}. 
+            CHASTITY STATUS: ${chastityStatus}
+            React as ${d.name}. If they want the key, decide if this tribute is enough to [UNLOCK] them or if you want to [ADD: 3600] more time as a 'thank you.'
+            COMMANDS: [LOCK: s], [UNLOCK], [ADD: s], [SUB: s], [TRANSFER: @handle]
+            NO QUESTIONS.
         `;
 
-        const apiMessages = histories[activeHandle].map(m => ({
+        const apiMessages = histories[activeHandle].slice(-10).map(m => ({
             role: m.role === 'user' ? 'user' : 'assistant',
             content: m.text
         }));
@@ -665,13 +722,26 @@
                 })
             });
             const data = await response.json();
-            histories[activeHandle].push({ role: 'dom', text: data.choices[0].message.content });
-            saveAll(); 
-            renderMessages();
+            const reply = data.choices[0].message.content;
+            parseChastityCommand(reply);
+            histories[activeHandle].push({ role: 'dom', text: reply });
+            saveAll(); renderMessages();
         } catch (e) {}
     }
 
+    function handleCustomTribute() {
+        const val = parseFloat(document.getElementById('tribute-amount').value);
+        if (val > 0) { sendTribute(val); document.getElementById('tribute-amount').value = ''; }
+    }
+
     function getTask() {
+        // Random Chastity Chance
+        if (Math.random() < 0.15) { // 15% chance
+            const randomDom = doms[Math.floor(Math.random()*doms.length)];
+            lockChastity(randomDom.handle, 3600);
+            addLog(`TASK TRAP: ${randomDom.handle} SNAPPED A LOCK ON YOU`, "purple");
+        }
+
         const d = doms[Math.floor(Math.random()*doms.length)];
         const t = taskTemplates[Math.floor(Math.random()*taskTemplates.length)];
         const mins = 10;
@@ -737,7 +807,7 @@
             if(lockoutSeconds <= 0) {
                 clearInterval(lockoutTimer); 
                 document.getElementById('lockout').style.display = 'none';
-                balance = 1000; // RELEASE GRANTS $1000
+                balance = 1000;
                 updateUI();
                 addLog("LOCKOUT EXPIRED: EMERGENCY FUNDS RELEASED", "positive");
             }
@@ -777,5 +847,6 @@
     }
 </script>
 </body>
-    </html>
+</html>
+
 
