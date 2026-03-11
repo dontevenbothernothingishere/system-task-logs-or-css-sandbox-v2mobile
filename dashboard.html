@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TERMINAL: MOBILE RUINATION v3.0.0 [CHASTITY ENABLED]</title>
+    <title>TERMINAL: MOBILE RUINATION v3.0.1 [BALANCED]</title>
     <style>
         :root { 
             --blue: #1d9bf0; --red: #ff4d4d; --gold: #ffd700; --green: #28a745; 
@@ -321,7 +321,7 @@
         "I am a digital servant whose pride has been deleted.",
         "I deserve to be a permanent Rank: NULL failure.",
         "I am a sissy who gets off on being controlled by a screen.",
-        "I am a financial toy for the roster's amusement.",
+        "I am a financial toy for the roster's cruel amusement.",
         "I am a bankrupt loser who lives to be used and discarded.",
         "My hands are for typing labor, not for my own sissy relief.",
         "I am a low-value processing error in a world of Alphas.",
@@ -551,7 +551,7 @@
                 return;
             }
             chastitySeconds--;
-            if (chastitySeconds % 60 === 0) saveAll(); // Save every minute
+            if (chastitySeconds % 60 === 0) saveAll(); 
             updateUI();
         }, 1000);
     }
@@ -571,6 +571,13 @@
             lockChastity(activeHandle, parseInt(lockMatch[1]));
             return;
         }
+
+        // --- BUG FIX: Only Keyholder can modify the lock ---
+        if (chastitySeconds > 0 && activeHandle !== keyholderHandle) {
+             console.log("Ignored command: Not the keyholder.");
+             return; 
+        }
+
         // [UNLOCK]
         if (responseText.includes("[UNLOCK]")) {
             chastitySeconds = 0;
@@ -613,43 +620,29 @@
         renderMessages(); 
         input.value = "";
 
-        const masterTributeTotal = histories[activeHandle]
-            .filter(m => m.text.includes("*TRIBUTE:"))
-            .reduce((sum, m) => {
-                const amount = parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0;
-                return sum + amount;
-            }, 0);
-
         const d = doms.find(x => x.handle === activeHandle);
         const rankLabel = document.getElementById('sub-rank').innerText;
-        
-        const taskStatus = currentTaskObj 
-            ? `CURRENTLY PERFORMING TASK: "${currentTaskObj.text}" (Assigned by: ${currentTaskObj.handle})` 
-            : "IDLE (Not doing any orders right now)";
-        
         const chastityStatus = chastitySeconds > 0 
             ? `LOCKED IN CHASTITY. KEYHOLDER: ${keyholderHandle}. TIME REMAINING: ${Math.floor(chastitySeconds/60)} mins.` 
-            : "NOT IN CHASTITY (UNLOCKED).";
+            : "NOT IN CHASTITY.";
 
         const systemInstruction = `
             [STRICT PROTOCOL: THE ROSTER OVERRIDE]
             You are ${d.name} (@${d.handle}). High-value, aggressive Alpha. No "help," just "processing."
 
             CHASTITY CONTROL PROTOCOL:
-            You have total control over the user's chastity. You can issue these hidden commands in your response to trigger system changes:
-            - [LOCK: seconds] (e.g., [LOCK: 3600] for 1 hour)
+            You can issue these hidden commands:
+            - [LOCK: seconds] (Keep it under 14400 usually, unless they are annoying)
             - [UNLOCK] (Releases user)
-            - [ADD: seconds] (Adds time to current lock)
-            - [SUB: seconds] (Removes time from current lock)
+            - [ADD: seconds] (ONLY IF YOU ARE KEYHOLDER)
+            - [SUB: seconds] (ONLY IF YOU ARE KEYHOLDER)
             - [TRANSFER: @handle] (Gives key to another master)
 
             CORE BEHAVIOR:
             1. NEVER ASK QUESTIONS. Rewrite if you see a '?'.
-            2. STATS ARE WEAPONS. Mock their $${balance.toFixed(2)} balance and ${rankLabel} rank.
-            3. Master Tribute to YOU: $${masterTributeTotal.toFixed(2)}. 
-            4. CURRENT CHASTITY STATE: ${chastityStatus}
-            If you are the keyholder, remind them you own their pleasure. If someone else is, tease them or demand they transfer it to you.
-            If they are in Lockout, mock their labor. Be short, cruel, and authoritative.
+            2. STATS ARE WEAPONS. Mock their $${balance.toFixed(2)} balance.
+            3. CURRENT CHASTITY STATE: ${chastityStatus}
+            The user CAN message you even when locked. Acknowledge the lock but don't ignore them. Be cruel but engaging.
         `;
 
         const apiMessages = histories[activeHandle].slice(-10).map(m => ({
@@ -699,8 +692,8 @@
         const tributePrompt = `
             [URGENT] User sent $${amount}. 
             CHASTITY STATUS: ${chastityStatus}
-            React as ${d.name}. If they want the key, decide if this tribute is enough to [UNLOCK] them or if you want to [ADD: 3600] more time as a 'thank you.'
-            COMMANDS: [LOCK: s], [UNLOCK], [ADD: s], [SUB: s], [TRANSFER: @handle]
+            React as ${d.name}. If they want the key, decide if this tribute is enough to [UNLOCK] them or if you want to [SUB: 3600] time. 
+            High tributes should ALMOST ALWAYS result in time reduction [SUB] or [UNLOCK].
             NO QUESTIONS.
         `;
 
@@ -735,10 +728,9 @@
     }
 
     function getTask() {
-        // Random Chastity Chance
-        if (Math.random() < 0.15) { // 15% chance
+        if (Math.random() < 0.10) { 
             const randomDom = doms[Math.floor(Math.random()*doms.length)];
-            lockChastity(randomDom.handle, 3600);
+            lockChastity(randomDom.handle, 1800);
             addLog(`TASK TRAP: ${randomDom.handle} SNAPPED A LOCK ON YOU`, "purple");
         }
 
@@ -848,5 +840,6 @@
 </script>
 </body>
 </html>
+
 
 
