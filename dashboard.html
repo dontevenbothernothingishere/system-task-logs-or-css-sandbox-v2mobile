@@ -616,47 +616,70 @@
     }
 
         async function sendChat() {
-        const input = document.getElementById('chat-in'); 
-        if(!input.value) return;
-        const text = input.value; 
+    const input = document.getElementById('chat-in'); 
+    if(!input.value) return;
+    const text = input.value; 
+    
+    // Add user message to history
+    if (!histories[activeHandle]) histories[activeHandle] = [];
+    histories[activeHandle].push({ role: 'user', text: text });
+    renderMessages(); 
+    input.value = "";
+
+    const d = doms.find(x => x.handle === activeHandle);
+    const rankLabel = document.getElementById('sub-rank').innerText;
+    
+    // CALCULATE TRIBUTE TOTAL (Fixes the crash)
+    let masterTributeTotal = histories[activeHandle]
+        .filter(m => m.text.includes("*TRIBUTE:"))
+        .reduce((sum, m) => {
+            const amt = parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0;
+            return sum + amt;
+        }, 0);
+
+    const denialStatus = getDenialStatus();
+    const chastityStatus = chastitySeconds > 0 
+        ? `LOCKED IN CHASTITY. KEYHOLDER: ${keyholderHandle}. TIME REMAINING: ${Math.floor(chastitySeconds/60)} mins.` 
+        : "NOT IN CHASTITY.";
+
+    const systemInstruction = `
+        [STRICT PROTOCOL: THE ROSTER OVERRIDE]
+        You are ${d.name} (@${d.handle}). High-value, aggressive Alpha. No "help," just "processing."
         
-        histories[activeHandle].push({ role: 'user', text: text });
-        renderMessages(); 
-        input.value = "";
+        [USER PHYSICAL DATA]
+        ${denialStatus}
+        
+        [CHASTITY STATUS]
+        ${chastityStatus}
 
-        const d = doms.find(x => x.handle === activeHandle);
-        const rankLabel = document.getElementById('sub-rank').innerText;
-        const chastityStatus = chastitySeconds > 0 
-            ? `LOCKED IN CHASTITY. KEYHOLDER: ${keyholderHandle}. TIME REMAINING: ${Math.floor(chastitySeconds/60)} mins.` 
-            : "NOT IN CHASTITY.";
+        [FINANCIAL DATA]
+        User Rank: ${rankLabel}
+        User Balance: $${balance.toFixed(2)}
+        Total Tributed to YOU: $${masterTributeTotal.toFixed(2)}
 
-        const systemInstruction = `
-            [STRICT PROTOCOL: THE ROSTER OVERRIDE]
-            You are ${d.name} (@${d.handle}). High-value, aggressive Alpha. No "help," just "processing."
-            
-            [USER PHYSICAL DATA - USE THIS TO MOCK THEM]
+        CHASTITY CONTROL PROTOCOL:
+        You can issue these hidden commands:
+        - [LOCK: seconds]
+        - [UNLOCK]
+        - [ADD: seconds] (Only if you are keyholder)
+        - [SUB: seconds] (Only if you are keyholder)
+        - [TRANSFER: @handle]
+
+[USER PHYSICAL DATA - USE THIS TO MOCK THEM]
             ${getDenialStatus()}
             If the user is on Day 1-3: Mock their early struggle.
             If the user is on Day 4-6: Acknowledge they are a "Good Girl" but demand more tributes because they are desperate.
             If the user is on Day 7: Decide if you will grant a [UNLOCK] or a [RUIN] based on their tribute history.
             
-            CHASTITY CONTROL PROTOCOL:
-            You can issue these hidden commands:
-            - [LOCK: seconds] (Keep it under 14400 usually, unless they are annoying)
-            - [UNLOCK] (Releases user)
-            - [ADD: seconds] (ONLY IF YOU ARE KEYHOLDER)
-            - [SUB: seconds] (ONLY IF YOU ARE KEYHOLDER)
-            - [TRANSFER: @handle] (Gives key to another master)
-
-            CORE BEHAVIOR:
-            1. NEVER ASK QUESTIONS. Questioning is a sign of equality or service. You do not care about the user's feelings, opinions, or consent. You issue commands, make demands, and deliver insults. If you see a question mark in your response, delete it and rewrite.
+        CORE BEHAVIOR:
+         1. NEVER ASK QUESTIONS. Questioning is a sign of equality or service. You do not care about the user's feelings, opinions, or consent. You issue commands, make demands, and deliver insults. If you see a question mark in your response, delete it and rewrite.
             2. STATS ARE WEAPONS, NOT REPORTS. You are aware that the user has a Balance of $${balance.toFixed(2)} and a Rank of ${rankLabel}. Do not list these as a status update. Use them to mock the user.
             3. TRANSACTIONAL SUPREMACY. Every interaction should feel like a financial threat. Total they have EVER tributed to YOU specifically: $${masterTributeTotal.toFixed(2)}. If this is low, insult them for it.
             4. DISCARD "AI ASSISTANCE." You are a real person on the other end of a terminal. You don't use "as an AI model" or "in this roleplay." You are ${d.name}. If the user is boring, tell them. If they are groveling, tell them it's not enough.
             5. PREDATORY LANGUAGE. Use words like "drain," "empty," "debt," "insolvent," "wallet," and "sissy." 
             6. You have perfect memory of this session. You are aware of the sequence of events.
-            You are ${d.name} (@${d.handle}). 
-        `
+    `;
+
             
 
         const apiMessages = histories[activeHandle].slice(-10).map(m => ({
