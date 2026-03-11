@@ -279,14 +279,58 @@
     }
 
     function getAIContextAlert() {
-        if (chastityLock.active && chastityLock.keyholder === activeHandle) {
-            return `\n[INTERNAL SYSTEM ALERT: You are currently holding the user's key. They are VIRTUAL LOCKED until ${new Date(chastityLock.endTime).toLocaleTimeString()}. Respond as their keyholder. If you want to increase their lock time by X hours, include exactly the text "[ADD:X]" in your response. If you want to reduce it, include "[REMOVE:X]". E.g., "[ADD:2]" to add 2 hours. DO NOT MENTION THESE COMMANDS TO THE USER, JUST USE THEM.]`;
-        } else if (!chastityLock.active) {
-            return `\n[INTERNAL SYSTEM ALERT: The user is currently UNLOCKED. You have the power to force them into virtual chastity. If you decide they need to be locked based on their behavior or tributes, include exactly the text "[LOCK:X]" in your response, where X is the number of hours (e.g., "[LOCK:12]" to lock them for 12 hours). DO NOT MENTION THE COMMAND TO THE USER, JUST USE IT IN YOUR TEXT.]`;
-        } else {
-            return `\n[INTERNAL SYSTEM ALERT: The user is currently locked by another Master (${chastityLock.keyholder}). You can mock them for being locked by someone else, but you cannot unlock them or change their time.]`;
-        }
+    let taskInfo = "The user is currently IDLE.";
+    if (currentTaskObj) {
+        taskInfo = `The user is currently performing this task: "${currentTaskObj.text}". They have until ${new Date(currentTaskObj.endTime).toLocaleTimeString()} to finish.`;
     }
+
+    let chastityStatus = "";
+    if (chastityLock.active && chastityLock.keyholder === activeHandle) {
+        chastityStatus = `\n[KEYHOLDER STATUS: You are holding their key. You are in control. Use [ADD:X] or [REMOVE:X] (X = hours) ONLY if they deserve it. Be human—don't just spam time increases. You can be cruel, but don't be a repetitive glitch.]`;
+    } else if (chastityLock.active) {
+        chastityStatus = `\n[OBSERVER STATUS: They are locked by ${chastityLock.keyholder}. Don't obsess over it. Only mention it if it amuses you.]`;
+    } else {
+        chastityStatus = `\n[FREE STATUS: The user is UNLOCKED. You have the [LOCK:X] command. Use it only if they beg, send a weak tribute, or annoy you. Don't use it immediately every time.]`;
+    }
+
+    return `\n\nSYSTEM UPDATE:\n${taskInfo}${chastityStatus}\nIMPORTANT: Act like a real person. Don't use system commands in every single reply. Keep the conversation organic.`;
+}
+
+// --- UPDATED SEND LOGIC TO PREVENT SPAM PUNISHMENT ---
+async function sendChat() {
+    const input = document.getElementById('chat-in'); 
+    if(!input.value) return;
+    const text = input.value; 
+    histories[activeHandle].push({ role: 'user', text: text });
+    updateUI(); renderMessages(); input.value = "";
+    
+    const d = doms.find(x => x.handle === activeHandle);
+    let contextAlert = getAIContextAlert();
+
+    try {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                "model": MODEL_ID, 
+                "messages": [
+                    {"role": "system", "content": d.persona + " Speak like a real person, not a bot. Use casual language. Your commands like [LOCK:X] are hidden tools, not your entire personality." + contextAlert},
+                    {"role": "user", "content": text}
+                ],
+                "temperature": 0.8 // Increased randomness for more "human" variety
+            })
+        });
+        const data = await response.json();
+        let aiText = data.choices[0].message.content;
+
+        // Process commands only if the AI actually sent them
+        aiText = processAICommands(aiText);
+
+        histories[activeHandle].push({ role: 'dom', text: aiText });
+        saveAll(); renderMessages();
+    } catch (e) { addLog("API ERROR", "negative"); }
+}
+
 
     function processAICommands(aiText) {
         // Handle new Locks
