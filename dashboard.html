@@ -572,17 +572,16 @@ let chastity = JSON.parse(localStorage.getItem('chastity')) || { locked: false, 
     if(!input.value) return;
     const text = input.value; 
     
-    histories[activeHandle].push({ role: 'user', text: text });
-    renderMessages(); 
-    input.value = "";
+    // Add a safety check for the history array
+const historyArray = histories[activeHandle] || [];
 
-    // Calculate total tributed to this specific Master
-    const masterTributeTotal = histories[activeHandle]
-        .filter(m => m.text.includes("*TRIBUTE:"))
-        .reduce((sum, m) => {
-            const amount = parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0;
-            return sum + amount;
-        }, 0);
+const masterTributeTotal = historyArray
+    .filter(m => m && m.text && m.text.includes("*TRIBUTE:"))
+    .reduce((sum, m) => {
+        const amount = parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0;
+        return sum + amount;
+    }, 0);
+
 
     const d = doms.find(x => x.handle === activeHandle);
     const rankLabel = document.getElementById('sub-rank').innerText;
