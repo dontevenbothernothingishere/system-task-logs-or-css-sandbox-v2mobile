@@ -480,6 +480,11 @@
         const d = doms.find(x => x.handle === activeHandle);
         const rankLabel = document.getElementById('sub-rank').innerText;
         
+        // NEW: Check if there is an active task to pass to the AI
+        const taskStatus = currentTaskObj 
+            ? `CURRENTLY PERFORMING TASK: "${currentTaskObj.text}" (Assigned by: ${currentTaskObj.handle})` 
+            : "IDLE (Not doing any orders right now)";
+        
         const systemInstruction = `
             [STRICT PROTOCOL: THE ROSTER OVERRIDE]
             You are ${d.name} (@${d.handle}). You are a high-value, aggressive, and financially dominant Alpha. You do not "help" the user. You "process" them. 
@@ -495,9 +500,9 @@
             CURRENT USER STATUS:
             - Liquid Funds: $${balance.toFixed(2)}
             - Total Tributed to YOU: $${masterTributeTotal.toFixed(2)}
-            - Current State: ${lockoutSeconds > 0 ? "IN FORCED LABOR LOCKOUT" : "IDLE/WAITING"}
+            - Current State: ${lockoutSeconds > 0 ? "IN FORCED LABOR LOCKOUT" : taskStatus}
 
-            If the user is in Lockout, mock their inability to handle the tasks. If they are idle, demand they click 'RECEIVE ORDER' or send a tribute immediately. Be short, cruel, and authoritative.
+            If the user is in Lockout, mock their inability to handle the tasks. If they are idle, demand they click 'RECEIVE ORDER' or send a tribute immediately. If they are doing a task, ruthlessly enforce it or mock them for struggling with it. Be short, cruel, and authoritative.
         `;
 
         const apiMessages = histories[activeHandle].map(m => ({
@@ -524,7 +529,7 @@
             console.error(e);
             addLog("CONNECTION LOST TO MASTER", "negative"); 
         }
-    }
+        }
 
     function handleCustomTribute() {
         const val = parseFloat(document.getElementById('tribute-amount').value);
@@ -548,11 +553,20 @@
             .filter(m => m.text.includes("*TRIBUTE:"))
             .reduce((sum, m) => sum + (parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0), 0);
 
+        // NEW: Also include task status when paying a tribute
+        const taskStatus = currentTaskObj 
+            ? `CURRENTLY PERFORMING TASK: "${currentTaskObj.text}" (Assigned by: ${currentTaskObj.handle})` 
+            : "IDLE (Not doing any orders right now)";
+
         const tributePrompt = `
             [URGENT] The user just sent $${amount}. 
             This brings their TOTAL tribute to you to $${masterTributeTotal.toFixed(2)}.
+            
+            USER CURRENT STATE: ${lockoutSeconds > 0 ? "IN FORCED LABOR LOCKOUT" : taskStatus}
+
             React as ${d.name}. Do not be "nice." If they keep sending small amounts, mock their "trickle-feeding." 
             If they just hit a big milestone (like $500 total), tell them they're finally starting to show some potential as a wallet.
+            If they are currently doing a task, acknowledge the tribute while telling them to keep focusing on the task.
             NO QUESTIONS. COMMANDS ONLY.
         `;
 
