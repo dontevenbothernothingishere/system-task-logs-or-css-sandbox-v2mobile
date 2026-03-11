@@ -194,7 +194,7 @@
     ];
 
     function init() {
-        balance = parseFloat(localStorage.getItem('fakeBalance')) || 1000;
+        balance = parseFloat(localStorage.getItem('fakeBalance')) || 1000000;
         wasted = parseFloat(localStorage.getItem('totalWasted')) || 0;
         activeHandle = localStorage.getItem('activeHandle') || doms[0].handle;
         histories = JSON.parse(localStorage.getItem('chats')) || {};
