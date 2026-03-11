@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL: TOTAL RUINATION v2.8.2</title>
+    <title>TERMINAL: TOTAL RUINATION v2.8.3</title>
     <style>
         :root { --blue: #1d9bf0; --red: #ff4d4d; --gold: #ffd700; --green: #28a745; --bg: #000; --panel: #0a0a0a; --purple: #a333ff; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -36,8 +36,6 @@
         .inbox-item img { width: 45px; height: 45px; border-radius: 50%; margin-right: 12px; object-fit: cover; border: 1px solid #333; }
         .inbox-item.active { background: #0d1926; border-left-color: var(--blue); }
         .inbox-item.ping { border-left-color: var(--red); background: rgba(255,0,0,0.3); animation: blink 0.5s infinite; }
-        
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } }
         
         .chat-section { display: flex; flex-direction: column; border-right: 1px solid #222; position: relative; height: 100%; overflow: hidden; }
         #chat-box { flex-grow: 1; padding: 20px; overflow-y: scroll; display: flex; flex-direction: column; gap: 12px; background: #000; scroll-behavior: smooth; }
@@ -78,8 +76,7 @@
 
     <div class="top-bar">
         <div class="stat"><p>Level</p><h2 id="sub-rank" style="color:var(--gold)">RANK: NULL</h2></div>
-        <div id="status-effects" style="display:flex; gap:10px; align-items: center;">
-            </div> 
+        <div id="status-effects" style="display:flex; gap:10px; align-items: center;"></div> 
         <div class="stat"><p>Balance</p><h2 id="bal" style="color:var(--blue)">$0.00</h2></div>
         <div class="stat"><p>Debt Lifetime</p><h2 id="waste" style="color:var(--red)">$0.00</h2></div>
     </div>
@@ -153,7 +150,6 @@
         { handle: "@GoonerSunny", name: "Sunny Blaze", pfp: ghBase + "4473.jpg", persona: "Proud gooner. Chaotic, loves mind-rot and demanding attention." }
     ];
 
-    // UPDATED TASKS: Zero items, zero screenshots needed.
     const taskTemplates = [
         { text: "THE 99% THRESHOLD: Jerk off to the absolute brink of explosion. Stop and freeze for 30s. Repeat for ${time}m. If you leak, tribute $50.", reward: 1200, sissySafe: false },
         { text: "THE 'SISSY' STROKE: Use only your non-dominant hand and two fingers to tease the head of your cock. No full grips for ${time}m. Stay desperate.", reward: 800, sissySafe: false },
@@ -282,6 +278,55 @@
         box.scrollTop = box.scrollHeight;
     }
 
+    function getAIContextAlert() {
+        if (chastityLock.active && chastityLock.keyholder === activeHandle) {
+            return `\n[INTERNAL SYSTEM ALERT: You are currently holding the user's key. They are VIRTUAL LOCKED until ${new Date(chastityLock.endTime).toLocaleTimeString()}. Respond as their keyholder. If you want to increase their lock time by X hours, include exactly the text "[ADD:X]" in your response. If you want to reduce it, include "[REMOVE:X]". E.g., "[ADD:2]" to add 2 hours. DO NOT MENTION THESE COMMANDS TO THE USER, JUST USE THEM.]`;
+        } else if (!chastityLock.active) {
+            return `\n[INTERNAL SYSTEM ALERT: The user is currently UNLOCKED. You have the power to force them into virtual chastity. If you decide they need to be locked based on their behavior or tributes, include exactly the text "[LOCK:X]" in your response, where X is the number of hours (e.g., "[LOCK:12]" to lock them for 12 hours). DO NOT MENTION THE COMMAND TO THE USER, JUST USE IT IN YOUR TEXT.]`;
+        } else {
+            return `\n[INTERNAL SYSTEM ALERT: The user is currently locked by another Master (${chastityLock.keyholder}). You can mock them for being locked by someone else, but you cannot unlock them or change their time.]`;
+        }
+    }
+
+    function processAICommands(aiText) {
+        // Handle new Locks
+        const lockMatch = aiText.match(/\[LOCK:(\d+)\]/i);
+        if (lockMatch && !chastityLock.active) {
+            let hrs = parseInt(lockMatch[1]);
+            chastityLock = {
+                active: true,
+                keyholder: activeHandle,
+                endTime: Date.now() + (hrs * 60 * 60 * 1000)
+            };
+            addLog(`VIRTUAL LOCKDOWN: ${activeHandle} HAS TAKEN YOUR KEY FOR ${hrs} HOURS.`, "chastity");
+            document.getElementById('task-display').innerText = `🔒 LOCKED BY ${activeHandle}. ONLY SISSY-SAFE TASKS ALLOWED.`;
+            aiText = aiText.replace(/\[LOCK:\d+\]/ig, ''); 
+        }
+
+        // Handle Add Time
+        if (chastityLock.active && chastityLock.keyholder === activeHandle) {
+            const addMatch = aiText.match(/\[ADD:(\d+)\]/i);
+            if (addMatch) {
+                let hrs = parseInt(addMatch[1]);
+                chastityLock.endTime += (hrs * 60 * 60 * 1000);
+                addLog(`${activeHandle} ADDED ${hrs} HOURS TO YOUR LOCK.`, "chastity");
+                aiText = aiText.replace(/\[ADD:\d+\]/ig, ''); 
+            }
+
+            // Handle Remove Time
+            const remMatch = aiText.match(/\[REMOVE:(\d+)\]/i);
+            if (remMatch) {
+                let hrs = parseInt(remMatch[1]);
+                chastityLock.endTime -= (hrs * 60 * 60 * 1000);
+                addLog(`${activeHandle} REMOVED ${hrs} HOURS FROM YOUR LOCK.`, "positive");
+                aiText = aiText.replace(/\[REMOVE:\d+\]/ig, ''); 
+            }
+        }
+        
+        checkChastityStatus();
+        return aiText.trim();
+    }
+
     async function sendChat() {
         const input = document.getElementById('chat-in'); 
         if(!input.value) return;
@@ -290,11 +335,7 @@
         updateUI(); renderMessages(); input.value = "";
         
         const d = doms.find(x => x.handle === activeHandle);
-        
-        // Let the Master know they can control the lock if they hold the key
-        let contextAlert = chastityLock.active && chastityLock.keyholder === activeHandle 
-            ? `\n[INTERNAL SYSTEM ALERT: You are currently holding the user's key. They are VIRTUAL LOCKED until ${new Date(chastityLock.endTime).toLocaleTimeString()}. Respond as their keyholder. If you want to increase their lock time by X hours, include exactly the text "[ADD:X]" in your response. If you want to reduce it, include "[REMOVE:X]". E.g., "[ADD:2]" to add 2 hours. DO NOT MENTION THESE COMMANDS TO THE USER, JUST USE THEM.]` 
-            : "";
+        let contextAlert = getAIContextAlert();
 
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -311,27 +352,9 @@
             const data = await response.json();
             let aiText = data.choices[0].message.content;
 
-            // Process dynamic time commands from Master
-            if(chastityLock.active && chastityLock.keyholder === activeHandle) {
-                const addMatch = aiText.match(/\[ADD:(\d+)\]/i);
-                if(addMatch) {
-                    let hrs = parseInt(addMatch[1]);
-                    chastityLock.endTime += (hrs * 60 * 60 * 1000);
-                    addLog(`${activeHandle} ADDED ${hrs} HOURS TO YOUR LOCK.`, "chastity");
-                    aiText = aiText.replace(/\[ADD:\d+\]/ig, ''); // hide command from user UI
-                }
+            aiText = processAICommands(aiText);
 
-                const remMatch = aiText.match(/\[REMOVE:(\d+)\]/i);
-                if(remMatch) {
-                    let hrs = parseInt(remMatch[1]);
-                    chastityLock.endTime -= (hrs * 60 * 60 * 1000);
-                    addLog(`${activeHandle} REMOVED ${hrs} HOURS FROM YOUR LOCK.`, "positive");
-                    aiText = aiText.replace(/\[REMOVE:\d+\]/ig, ''); // hide command from user UI
-                }
-                checkChastityStatus();
-            }
-
-            histories[activeHandle].push({ role: 'dom', text: aiText.trim() });
+            histories[activeHandle].push({ role: 'dom', text: aiText });
             saveAll(); renderMessages();
         } catch (e) { addLog("API ERROR", "negative"); }
     }
@@ -347,29 +370,20 @@
         histories[activeHandle].push({ role: 'user', text: `*TRIBUTE: $${amount}*` });
         updateUI(); renderMessages();
         const d = doms.find(x => x.handle === activeHandle);
+        let contextAlert = getAIContextAlert();
+
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ "model": MODEL_ID, "messages": [{"role": "system", "content": d.persona}, {"role": "user", "content": "I sent $" + amount + ". Consider this when deciding if I deserve release."}] })
+                body: JSON.stringify({ "model": MODEL_ID, "messages": [{"role": "system", "content": d.persona + contextAlert}, {"role": "user", "content": "I sent $" + amount + ". Consider this when deciding how to punish or reward me."}] })
             });
             const data = await response.json();
             
             let aiText = data.choices[0].message.content;
-            
-            // Allow them to reduce time upon receiving tribute
-            if(chastityLock.active && chastityLock.keyholder === activeHandle) {
-                const remMatch = aiText.match(/\[REMOVE:(\d+)\]/i);
-                if(remMatch) {
-                    let hrs = parseInt(remMatch[1]);
-                    chastityLock.endTime -= (hrs * 60 * 60 * 1000);
-                    addLog(`${activeHandle} REMOVED ${hrs} HOURS FROM YOUR LOCK FOR TRIBUTING.`, "positive");
-                    aiText = aiText.replace(/\[REMOVE:\d+\]/ig, ''); 
-                    checkChastityStatus();
-                }
-            }
+            aiText = processAICommands(aiText);
 
-            histories[activeHandle].push({ role: 'dom', text: aiText.trim() });
+            histories[activeHandle].push({ role: 'dom', text: aiText });
             saveAll(); renderMessages();
         } catch (e) {}
     }
@@ -383,9 +397,7 @@
 
         const d = doms[Math.floor(Math.random()*doms.length)];
         
-        // Filter tasks based on Chastity Status
         let pool = chastityLock.active ? taskTemplates.filter(t => t.sissySafe) : taskTemplates;
-        
         const t = pool[Math.floor(Math.random()*pool.length)];
         const mins = 10;
         currentTaskObj = { handle: d.handle, endTime: Date.now() + (mins*60*1000), reward: t.reward, text: t.text.replace("${dom}", d.handle).replace("${time}", mins) };
@@ -433,7 +445,7 @@
             }
             sec--; let m = Math.floor(sec/60), s = sec%60;
             document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
-            checkChastityStatus(); // Keep the indicator updated
+            checkChastityStatus(); 
         }, 1000);
     }
 
@@ -450,7 +462,6 @@
 
     function triggerTotalRuin() {
         balance = 0; 
-        // If locked, a ruin is a failure to hold for the master
         if(chastityLock.active) {
             addLog("LOCK BROKEN. TOTAL SYSTEM RESET.", "negative");
             chastityLock.active = false;
@@ -504,4 +515,3 @@
     </script>
 </body>
 </html>
-
