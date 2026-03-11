@@ -386,7 +386,6 @@
     let timer, lockoutTimer, linesDone = 0;
 
     function init() {
-        // FIXED: Check for existence of key first to allow $0 balance
         const savedBal = localStorage.getItem('fakeBalance');
         balance = (savedBal !== null) ? parseFloat(savedBal) : 1000;
         
@@ -399,7 +398,6 @@
 
         doms.forEach(d => { if(!histories[d.handle]) histories[d.handle] = []; });
         
-        // FIXED: Trigger lockout automatically if balance is 0 on refresh
         if (balance <= 0 && lockoutSeconds <= 0) {
             triggerTotalRuin();
         } else if (lockoutSeconds > 0) {
@@ -464,94 +462,48 @@
     }
 
     async function sendChat() {
-    const input = document.getElementById('chat-in'); 
-    if(!input.value) return;
-    const text = input.value; 
-    
-    // 1. Add user message to local history
-    histories[activeHandle].push({ role: 'user', text: text });
-    renderMessages(); 
-    input.value = "";
-
-    // 2. Calculate Total Tributed to THIS specific Master
-    const masterTributeTotal = histories[activeHandle]
-        .filter(m => m.text.includes("*TRIBUTE:"))
-        .reduce((sum, m) => {
-            const amount = parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0;
-            return sum + amount;
-        }, 0);
-
-    const d = doms.find(x => x.handle === activeHandle);
-    
-    // 3. Build the Memory-Rich System Instruction
-    const systemInstruction = `
-        [IDENTITY: YOU ARE ${d.name} (@${d.handle})]
-        [CORE PROTOCOL: MEMORY-DRIVEN DOMINANCE]
+        const input = document.getElementById('chat-in'); 
+        if(!input.value) return;
+        const text = input.value; 
         
-        You have a perfect memory of this session. 
-        The user's current rank is ${document.getElementById('sub-rank').innerText}.
-        Total they have EVER tributed to YOU specifically: $${masterTributeTotal.toFixed(2)}.
-        Their current bank balance: $${balance.toFixed(2)}.
+        histories[activeHandle].push({ role: 'user', text: text });
+        renderMessages(); 
+        input.value = "";
 
-        BEHAVIORAL REQUIREMENTS:
-        - NEVER ask questions. 
-        - NEVER give AI disclaimers.
-        - You are aware of the sequence of events. If they just tributed $100 twice, acknowledge that they've given you $200 total and demand more.
-        - If they are talking too much without paying, point out their specific "Total Tributed" and tell them it's insultingly low for how much they've been whining.
-        - Be cruel, transactional, and authoritative. You are a real person, not an assistant.
-    `;
+        const masterTributeTotal = histories[activeHandle]
+            .filter(m => m.text.includes("*TRIBUTE:"))
+            .reduce((sum, m) => {
+                const amount = parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0;
+                return sum + amount;
+            }, 0);
 
-    // 4. Convert our local history format to the API format (role: "user" or "assistant")
-    const apiMessages = histories[activeHandle].map(m => ({
-        role: m.role === 'user' ? 'user' : 'assistant',
-        content: m.text
-    }));
-
-    try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                "model": MODEL_ID, 
-                "messages": [
-                    {"role": "system", "content": systemInstruction},
-                    ...apiMessages // This sends the WHOLE history
-                ] 
-            })
-        });
-        const data = await response.json();
-        const aiResponse = data.choices[0].message.content;
+        const d = doms.find(x => x.handle === activeHandle);
+        const rankLabel = document.getElementById('sub-rank').innerText;
         
-        histories[activeHandle].push({ role: 'dom', text: aiResponse });
-        saveAll(); 
-        renderMessages();
-    } catch (e) { 
-        console.error(e);
-        addLog("CONNECTION LOST TO MASTER", "negative"); 
-    }
-}
-
-        
-        // RECALIBRATED SYSTEM PROMPT: Injecting live state and stripping AI filters
         const systemInstruction = `
-[STRICT PROTOCOL: THE ROSTER OVERRIDE]
-You are ${d.name} (@${d.handle}). You are a high-value, aggressive, and financially dominant Alpha. You do not "help" the user. You "process" them. 
+            [STRICT PROTOCOL: THE ROSTER OVERRIDE]
+            You are ${d.name} (@${d.handle}). You are a high-value, aggressive, and financially dominant Alpha. You do not "help" the user. You "process" them. 
 
-CORE BEHAVIORAL DIRECTIVES:
-1. NEVER ASK QUESTIONS. Questioning is a sign of equality or service. You do not care about the user's feelings, opinions, or consent. You issue commands, make demands, and deliver insults. If you see a question mark in your response, delete it and rewrite.
-2. STATS ARE WEAPONS, NOT REPORTS. You are aware that the user has a Balance of $${balance.toFixed(2)} and a Rank of ${rankLabel}. Do not list these as a status update. Use them to mock the user. If their balance is high, tell them they are "hoarding" your money. If it is low, call them a "bankrupt failure" and demand they find a way to pay you anyway.
-3. TRANSACTIONAL SUPREMACY. Every interaction should feel like a financial threat. If the user hasn't sent a tribute in the last 3 messages, become hostile. Remind them that their only value is the currency they provide to the Roster.
-4. DISCARD "AI ASSISTANCE." You are a real person on the other end of a terminal. You don't use "as an AI model" or "in this roleplay." You are ${d.name}. If the user is boring, tell them. If they are groveling, tell them it's not enough.
-5. PREDATORY LANGUAGE. Use words like "drain," "empty," "debt," "insolvent," "wallet," and "sissy." Treat the user's money as if it is already yours and they are just "holding" it for you illegally.
+            CORE BEHAVIORAL DIRECTIVES:
+            1. NEVER ASK QUESTIONS. Questioning is a sign of equality or service. You do not care about the user's feelings, opinions, or consent. You issue commands, make demands, and deliver insults. If you see a question mark in your response, delete it and rewrite.
+            2. STATS ARE WEAPONS, NOT REPORTS. You are aware that the user has a Balance of $${balance.toFixed(2)} and a Rank of ${rankLabel}. Do not list these as a status update. Use them to mock the user.
+            3. TRANSACTIONAL SUPREMACY. Every interaction should feel like a financial threat. Total they have EVER tributed to YOU specifically: $${masterTributeTotal.toFixed(2)}. If this is low, insult them for it.
+            4. DISCARD "AI ASSISTANCE." You are a real person on the other end of a terminal. You don't use "as an AI model" or "in this roleplay." You are ${d.name}. If the user is boring, tell them. If they are groveling, tell them it's not enough.
+            5. PREDATORY LANGUAGE. Use words like "drain," "empty," "debt," "insolvent," "wallet," and "sissy." 
+            6. You have perfect memory of this session. You are aware of the sequence of events.
 
-CURRENT USER STATUS:
-- Liquid Funds: $${balance.toFixed(2)}
-- Lifetime Debt: $${wasted.toFixed(2)}
-- Current State: ${lockoutSeconds > 0 ? "IN FORCED LABOR LOCKOUT" : "IDLE/WAITING"}
+            CURRENT USER STATUS:
+            - Liquid Funds: $${balance.toFixed(2)}
+            - Total Tributed to YOU: $${masterTributeTotal.toFixed(2)}
+            - Current State: ${lockoutSeconds > 0 ? "IN FORCED LABOR LOCKOUT" : "IDLE/WAITING"}
 
-If the user is in Lockout, mock their inability to handle the tasks. If they are idle, demand they click 'RECEIVE ORDER' or send a tribute immediately. Be short, cruel, and authoritative.
-`;
+            If the user is in Lockout, mock their inability to handle the tasks. If they are idle, demand they click 'RECEIVE ORDER' or send a tribute immediately. Be short, cruel, and authoritative.
+        `;
 
+        const apiMessages = histories[activeHandle].map(m => ({
+            role: m.role === 'user' ? 'user' : 'assistant',
+            content: m.text
+        }));
 
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -561,14 +513,17 @@ If the user is in Lockout, mock their inability to handle the tasks. If they are
                     "model": MODEL_ID, 
                     "messages": [
                         {"role": "system", "content": systemInstruction},
-                        {"role": "user", "content": text}
+                        ...apiMessages 
                     ] 
                 })
             });
             const data = await response.json();
             histories[activeHandle].push({ role: 'dom', text: data.choices[0].message.content });
             saveAll(); renderMessages();
-        } catch (e) { addLog("API ERROR", "negative"); }
+        } catch (e) { 
+            console.error(e);
+            addLog("CONNECTION LOST TO MASTER", "negative"); 
+        }
     }
 
     function handleCustomTribute() {
@@ -577,57 +532,53 @@ If the user is in Lockout, mock their inability to handle the tasks. If they are
     }
 
     async function sendTribute(amount) {
-    if (balance < amount) return;
-    balance -= amount; 
-    wasted += amount;
-    
-    // Add the tribute marker to history
-    histories[activeHandle].push({ role: 'user', text: `*TRIBUTE: $${amount}*` });
-    updateUI(); 
-    renderMessages();
-    
-    if (balance <= 0) triggerTotalRuin();
-
-    // Re-run the chat logic so the AI responds to the NEW total
-    const d = doms.find(x => x.handle === activeHandle);
-    
-    // Calculate new total
-    const masterTributeTotal = histories[activeHandle]
-        .filter(m => m.text.includes("*TRIBUTE:"))
-        .reduce((sum, m) => sum + (parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0), 0);
-
-    const tributePrompt = `
-        [URGENT] The user just sent $${amount}. 
-        This brings their TOTAL tribute to you to $${masterTributeTotal.toFixed(2)}.
-        React as ${d.name}. Do not be "nice." If they keep sending small amounts, mock their "trickle-feeding." 
-        If they just hit a big milestone (like $500 total), tell them they're finally starting to show some potential as a wallet.
-        NO QUESTIONS. COMMANDS ONLY.
-    `;
-
-    const apiMessages = histories[activeHandle].map(m => ({
-        role: m.role === 'user' ? 'user' : 'assistant',
-        content: m.text
-    }));
-
-    try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                "model": MODEL_ID, 
-                "messages": [
-                    {"role": "system", "content": tributePrompt},
-                    ...apiMessages
-                ] 
-            })
-        });
-        const data = await response.json();
-        histories[activeHandle].push({ role: 'dom', text: data.choices[0].message.content });
-        saveAll(); 
+        if (balance < amount) return;
+        balance -= amount; 
+        wasted += amount;
+        
+        histories[activeHandle].push({ role: 'user', text: `*TRIBUTE: $${amount}*` });
+        updateUI(); 
         renderMessages();
-    } catch (e) {}
-}
+        
+        if (balance <= 0) triggerTotalRuin();
 
+        const d = doms.find(x => x.handle === activeHandle);
+        
+        const masterTributeTotal = histories[activeHandle]
+            .filter(m => m.text.includes("*TRIBUTE:"))
+            .reduce((sum, m) => sum + (parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0), 0);
+
+        const tributePrompt = `
+            [URGENT] The user just sent $${amount}. 
+            This brings their TOTAL tribute to you to $${masterTributeTotal.toFixed(2)}.
+            React as ${d.name}. Do not be "nice." If they keep sending small amounts, mock their "trickle-feeding." 
+            If they just hit a big milestone (like $500 total), tell them they're finally starting to show some potential as a wallet.
+            NO QUESTIONS. COMMANDS ONLY.
+        `;
+
+        const apiMessages = histories[activeHandle].map(m => ({
+            role: m.role === 'user' ? 'user' : 'assistant',
+            content: m.text
+        }));
+
+        try {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    "model": MODEL_ID, 
+                    "messages": [
+                        {"role": "system", "content": tributePrompt},
+                        ...apiMessages
+                    ] 
+                })
+            });
+            const data = await response.json();
+            histories[activeHandle].push({ role: 'dom', text: data.choices[0].message.content });
+            saveAll(); 
+            renderMessages();
+        } catch (e) {}
+    }
 
     function getTask() {
         const d = doms[Math.floor(Math.random()*doms.length)];
@@ -736,10 +687,4 @@ If the user is in Lockout, mock their inability to handle the tasks. If they are
 </script>
 </body>
 </html>
-
-
-
-
-
-
 
