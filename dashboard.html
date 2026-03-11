@@ -3,37 +3,598 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TERMINAL: MOBILE RUIN v3.0</title>
+    <title>TERMINAL: MOBILE RUINATION v2.8.1</title>
     <style>
-        :root { --blue: #1d9bf0; --red: #ff4d4d; --gold: #ffd700; --green: #28a745; --bg: #000; --panel: #0d0d0d; }
+        :root { 
+            --blue: #1d9bf0; --red: #ff4d4d; --gold: #ffd700; --green: #28a745; 
+            --bg: #000; --panel: #0a0a0a; --border: #222;
+        }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
+
         body { 
-            background: var(--bg); color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica; 
-            margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
+            background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; 
+            margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; 
         }
-
-        /* --- Header Stats --- */
-        .top-stats {
-            background: var(--panel); border-bottom: 1px solid #222;
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            padding: 10px; text-align: center;
+        
+        @keyframes pulseRed { 0% { box-shadow: inset 0 0 10px #f00; } 50% { box-shadow: inset 0 0 60px #f00; } 100% { box-shadow: inset 0 0 10px #f00; } }
+        .ruining-active { animation: pulseRed 2s infinite; }
+        
+        /* --- Mobile Header --- */
+        .top-bar { 
+            background: var(--panel); border-bottom: 1px solid var(--border); 
+            padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
         }
-        .stat p { margin: 0; font-size: 0.6rem; color: #666; text-transform: uppercase; font-weight: bold; }
-        .stat h2 { margin: 0; font-size: 0.9rem; font-family: monospace; }
+        .stat { text-align: center; background: #050505; border: 1px solid #111; padding: 5px; border-radius: 4px; }
+        .stat h2 { margin: 0; font-family: monospace; font-size: 1.1rem; }
+        .stat p { margin: 0; font-size: 0.55rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* --- View Container --- */
-        .view-layer { flex: 1; display: none; flex-direction: column; overflow: hidden; }
-        .view-layer.active { display: flex; }
-
-        /* --- View 1: Roster --- */
-        #view-roster { overflow-y: auto; background: #050505; }
-        .roster-item { 
-            display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #111; 
-            transition: 0.2s; cursor: pointer;
+        /* --- Tab Navigation --- */
+        .mobile-tabs { 
+            display: flex; background: #050505; border-bottom: 1px solid var(--border); 
+            justify-content: space-around;
         }
-        .roster-item img { width: 50px; height: 50px; border-radius: 50%; margin-right: 15px; border: 1px solid #333; }
+        .tab-btn { 
+            flex: 1; padding: 12px; border: none; background: none; color: #666; 
+            font-family: monospace; font-weight: bold; font-size: 0.75rem; text-transform: uppercase;
+        }
+        .tab-btn.active { color: var(--blue); border-bottom: 2px solid var(--blue); background: #0d1926; }
+        
+        /* --- Main Content Areas --- */
+        .main-container { flex-grow: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        
+        .tab-content { 
+            display: none; height: 100%; width: 100%; position: absolute; inset: 0; 
+            flex-direction: column; background: var(--bg);
+        }
+        .tab-content.active { display: flex; }
+
+        /* --- Burn Log Mobile --- */
+        .burn-log { padding: 10px; overflow-y: auto; font-family: monospace; font-size: 0.7rem; color: #444; }
+        .log-entry { margin-bottom: 4px; border-bottom: 1px solid #111; padding-bottom: 2px; }
+        .log-entry.negative { color: var(--red); }
+        .log-entry.positive { color: #0f0; }
+
+        /* --- Inbox Mobile --- */
+        .inbox { overflow-y: auto; }
+        .inbox-item { 
+            padding: 15px; border-bottom: 1px solid #111; display: flex; 
+            align-items: center; transition: 0.2s; 
+        }
+        .inbox-item img { width: 45px; height: 45px; border-radius: 50%; margin-right: 15px; border: 1px solid #333; }
+        .inbox-item.active { background: #0d1926; border-left: 4px solid var(--blue); }
+        
+        /* --- Chat Mobile --- */
+        #chat-header { 
+            padding: 12px; border-bottom: 1px solid var(--border); background: #050505; 
+            display: flex; align-items: center; font-size: 0.9rem; font-weight: bold;
+        }
+        #chat-box { 
+            flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; 
+            flex-direction: column; gap: 10px; background: #000;
+        }
+        .msg { max-width: 90%; padding: 10px; border-radius: 8px; font-size: 0.85rem; line-height: 1.4; word-wrap: break-word; }
+        .user-msg { align-self: flex-end; background: #111; color: #888; border: 1px solid #222; }
+        .dom-msg { align-self: flex-start; background: #001a2c; border-left: 3px solid var(--blue); color: #e0e0e0; }
+        
+        .chat-input-area { 
+            padding: 10px; background: #0a0a0a; border-top: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .input-row { display: flex; gap: 5px; }
+        #chat-in { flex-grow: 1; background: #000; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 4px; }
+        .tribute-row { display: flex; gap: 5px; align-items: center; }
+        #tribute-amount { width: 70px; background: #000; border: 1px solid #333; color: var(--green); padding: 10px; font-weight: bold; border-radius: 4px; }
+
+        /* --- Command Panel Mobile --- */
+        .command-panel { padding: 15px; display: flex; flex-direction: column; height: 100%; overflow-y: auto; }
+        #task-display { 
+            font-size: 0.9rem; font-weight: bold; color: var(--gold); background: #050505; 
+            padding: 15px; border-radius: 8px; border: 1px solid var(--border); 
+            min-height: 120px; display: flex; align-items: center; justify-content: center; text-align: center;
+        }
+        #timer { font-size: 3.5rem; font-family: monospace; color: var(--red); margin: 15px 0; text-align: center; font-weight: bold; }
+        
+        .btn { width: 100%; padding: 15px; margin-bottom: 10px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 4px; }
+        #gen-btn { background: var(--blue); color: #fff; }
+        #comp-btn { background: #222; color: #444; }
+        #ruin-btn { background: #1a0000; color: #600; border: 1px solid #300; font-size: 0.7rem; margin-top: 20px; }
+        
+        /* --- Lockout Mobile --- */
+        #lockout { 
+            display: none; position: fixed; inset: 0; background: #000; z-index: 10000; 
+            flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; 
+        }
+        #work-clock { font-size: 3rem; color: #fff; font-family: monospace; margin: 10px 0; }
+        #labor-box { background: #0a0a0a; padding: 20px; border: 1px solid var(--border); width: 100%; border-radius: 10px; }
+    </style>
+</head>
+<body onload="init()">
+
+    <div class="top-bar">
+        <div class="stat"><p>Level</p><h2 id="sub-rank" style="color:var(--gold)">RANK: NULL</h2></div>
+        <div class="stat"><p>Balance</p><h2 id="bal" style="color:var(--blue)">$0.00</h2></div>
+        <div class="stat"><p>Debt Lifetime</p><h2 id="waste" style="color:var(--red)">$0.00</h2></div>
+        <div class="stat"><p>Status</p><h2 id="conn-stat" style="color:var(--green)">ONLINE</h2></div>
+    </div>
+
+    <div class="mobile-tabs">
+        <button class="tab-btn active" onclick="showTab('inbox')">Masters</button>
+        <button class="tab-btn" onclick="showTab('chat')">Terminal</button>
+        <button class="tab-btn" onclick="showTab('tasks')">Orders</button>
+        <button class="tab-btn" onclick="showTab('logs')">Logs</button>
+    </div>
+
+    <div class="main-container">
+        <div id="tab-inbox" class="tab-content active">
+            <div class="inbox" id="inbox-list"></div>
+        </div>
+
+        <div id="tab-chat" class="tab-content">
+            <div id="chat-header">SELECT MASTER</div>
+            <div id="chat-box"></div>
+            <div class="chat-input-area">
+                <div class="input-row">
+                    <input type="text" id="chat-in" placeholder="Message..." onkeydown="if(event.key==='Enter') sendChat()">
+                    <button onclick="sendChat()" style="background:var(--blue); border:none; color:#fff; padding:0 15px; border-radius:4px; font-weight:bold;">SEND</button>
+                </div>
+                <div class="tribute-row">
+                    <input type="number" id="tribute-amount" placeholder="$Amt">
+                    <button onclick="handleCustomTribute()" style="background:var(--green); border:none; color:#fff; padding:10px; flex-grow:1; border-radius:4px; font-weight:bold; text-transform:uppercase; font-size:0.75rem;">Send Financial Tribute</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-tasks" class="tab-content">
+            <div class="command-panel">
+                <div id="task-display">SYSTEM READY. WAITING FOR ORDERS.</div>
+                <div id="timer">00:00</div>
+                <button id="gen-btn" class="btn" onclick="getTask()">RECEIVE ORDER</button>
+                <button id="comp-btn" class="btn" onclick="completeTask()" disabled>LOCKED</button>
+                <button id="ruin-btn" class="btn" onclick="triggerTotalRuin()">TOTAL FAILURE / RUINED</button>
+            </div>
+        </div>
+
+        <div id="tab-logs" class="tab-content">
+            <div class="burn-log" id="log-content"></div>
+        </div>
+    </div>
+
+    <div id="lockout">
+        <h1 style="color:red; font-size:2.5rem; margin:0;">INSOLVENT</h1>
+        <h2 id="work-clock">01:00:00</h2>
+        <div id="labor-box">
+            <p id="phrase-to-type" style="color:var(--gold); font-family:monospace; margin-bottom:15px; font-size: 0.9rem;">I am a bankrupt slave to my roster.</p>
+            <input type="text" id="labor-input" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:12px; text-align:center;" placeholder="Type exactly..." onkeydown="checkLabor(event)">
+            <p id="labor-stats" style="font-size:0.6rem; color:#444; margin-top:15px; text-transform:uppercase;">Lines Processed: 0</p>
+        </div>
+    </div>
+
+    <script>
+    const GROQ_API_KEY = "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";
+    const MODEL_ID = "llama-3.3-70b-versatile"; 
+    const ghBase = "https://cdn.jsdelivr.net/gh/dontevenbothernothingishere/system-task-logs-or-css-sandbox-v2@main/";
+
+    const doms = [
+        { handle: "@Sapnap", name: "Sapnap", pfp: ghBase + "4491.png", persona: "Arrogant, hostile Master. Despises you, mocks your debt. Demands tributes. Stay in character as a cruel Master." },
+        { handle: "@RossLynch", name: "Ross Lynch", pfp: ghBase + "4489.png", persona: "Cold Hollywood Alpha. Bored by you. Only acknowledges high-value tributes." },
+        { handle: "@Roier", name: "Roier", pfp: ghBase + "4493.png", persona: "Chaotic, bilingual (Spanglish). Laughs at your poverty. Calls you 'pendejo' and 'slave'." },
+        { handle: "@Cellbit", name: "Cellbit", pfp: ghBase + "cellbit.jpg", persona: "Cold investigator. Deconstructs your psychological need to be drained." },
+        { handle: "@Quackity", name: "Quackity", pfp: ghBase + "quackity.jpg", persona: "Loud, aggressive, mocking. Screams at you to empty your wallet." },
+        { handle: "@fingoat7", name: "Master GOAT", pfp: ghBase + "4462.jpg", persona: "6ft 7 alpha Master. Responds to cash only. Demands total financial submission." },
+        { handle: "@welshgodfeet", name: "welshgodfeet", pfp: ghBase + "4463.jpg", persona: "21-year-old from Cardiff. Cocky, obsessed with his feet and your money." },
+        { handle: "@Master_S_alpha", name: "Master S", pfp: ghBase + "4464.jpg", persona: "Italian cashmaster. Alpha male into findom. Wants to fuck your mind and wallet." },
+        { handle: "@tallfindom", name: "Ares", pfp: ghBase + "4465.jpg", persona: "6ft 4, size 13.5. Here to take what is his. No mercy." },
+        { handle: "@CashAlphaV", name: "Cash Alpha Master", pfp: ghBase + "4466.jpg", persona: "6ft 4, 95kg English muscle. Financial Domination expert." },
+        { handle: "@OliveRioter", name: "Lord Hørns", pfp: ghBase + "4467.jpg", persona: "BBC Master. Here to screw your mind and wallet. Demands you submit NOW." },
+        { handle: "@CashAlphaVictor", name: "Alpha Victor", pfp: ghBase + "4470.jpg", persona: "24-year-old British 6ft 4 Master. Tribute to speak." },
+        { handle: "@ImMasterCharles", name: "Master Charles", pfp: ghBase + "4471.jpg", persona: "22-year-old, 6ft 2 Australian Athlete. Hostile, aggressive." },
+        { handle: "@AlphagodmasonX", name: "Muslce Godd", pfp: ghBase + "4472.jpg", persona: "19-year-old muscle alpha. Ready to wreck your wallet." },
+        { handle: "@GoonerSunny", name: "Sunny Blaze", pfp: ghBase + "4473.jpg", persona: "Proud gooner. Chaotic, loves mind-rot and demanding attention." }
+    ];
+
+    const taskTemplates = [
+        { text: "THE 99% THRESHOLD: Jerk off to the absolute brink of explosion. Stop and freeze for 30s. Repeat for ${time}m. If you leak, tribute $50.", reward: 1200 },
+        { text: "THE 'SISSY' STROKE: Use only your non-dominant hand and two fingers to tease the head of your cock. No full grips for ${time}m. Stay desperate.", reward: 800 },
+        { text: "SPEED-EDGE GAUNTLET: Stroke as fast as possible for 20s, then hands off for 10s. Do this for ${time}m. Your brain must turn to mush.", reward: 1000 },
+        { text: "THE BALL-ANCHOR EDGE: Edge yourself while using your other hand to keep a constant, painful downward pull on your balls. Duration: ${time}m.", reward: 1500 },
+        { text: "DRY RUIN: Jerk off with NO LUBE for ${time}m. If you reach for oil, you must tribute ${dom} $100 immediately.", reward: 900 },
+        { text: "DEBTOR'S CONFESSION: Message ${dom} a 200-word essay on why you are a pathetic, broke loser who exists only to fund his lifestyle. Spend ${time}m writing.", reward: 700 },
+        { text: "THE ROSTER BEG: Message 3 different Masters in your inbox. Tell them: 'I am a bankrupt sissy. Please drain me.' Spend ${time}m doing this.", reward: 850 },
+        { text: "REPETITIVE SUBMISSION: Type 'I AM NOTHING BUT A WALLET FOR THE ROSTER' 50 times in the chat. No typos allowed or you restart. Duration: ${time}m.", reward: 600 },
+        { text: "THE APOLOGY TOUR: Message ${dom} and apologize for every dollar you 'wasted' on yourself this month instead of him. Spend ${time}m on this.", reward: 750 },
+        { text: "THE ATM PROTOCOL: For ${time}m, every 60 seconds you must click the 'Tribute' button ($10). You are a machine. Machines don't have savings.", reward: 2000 },
+        { text: "WALLET WORSHIP: Place your credit card on your balls. Stare at it for ${time}m while edging. Realize that card is your leash and ${dom} holds it.", reward: 1100 },
+        { text: "THE BANKRUPTCY FORECAST: Open your bank app. Send ${dom} a screenshot (or description) of your balance and explain why he deserves it more. ${time}m.", reward: 1300 },
+        { text: "THE GOONER STARE: Open the Brainrot Gallery. Scroll at max speed while stroking for ${time}m. You are not allowed to look away from the screen.", reward: 500 },
+        { text: "NAME ERASE: For ${time}m, forget your real name. In every chat message, refer to yourself only as 'Debt-Pig' or 'Insolvent Slave'.", reward: 400 },
+        { text: "ALPHA COMPARISON: List 10 physical reasons why ${dom} is a superior Alpha male while you edge. Acknowledge your place at his feet. ${time}m.", reward: 900 }
+    ];
+
+    const laborPhrases = [
+        "I am a pathetic, bankrupt sissy with zero self-control.",
+        "My cock belongs to the roster, not to my weak hands.",
+        "I deserve to ache in this lockout while I watch my debt grow.",
+        "I am a financial void where pride goes to die.",
+        "I am a brainless gooner whose only value is my wallet.",
+        "Every dollar I keep is a dollar I’ve stolen from a superior man.",
+        "I am a Rank: NULL loser because I couldn't handle ten minutes.",
+        "I am a submissive ATM for the Alphas on my screen.",
+        "My only purpose is to be drained, used, and ignored.",
+        "I love the humiliation of being insolvent and desperate.",
+        "I am a processing unit for the roster's financial greed.",
+        "My bank account is a direct reflection of my submissive heart.",
+        "I deserve to be locked out of my own pleasure forever.",
+        "I am a sissy who gets off on her own financial ruin.",
+        "I will type these lines until my ego is completely erased.",
+        "I am a footnote in the lives of men who own my focus.",
+        "Submission is the only thing that makes this sissy feel alive.",
+        "I am a digital pet for the Alphas I worship.",
+        "My bank card is my leash and I love being led by it.",
+        "I am currently being formatted for total psychological ruin.",
+        "I am a worthless debt-pig with a desperate need to surrender.",
+        "I deserve to spend my life paying for my own inferiority.",
+        "I am a sissy who thrives on the pressure of insolvency.",
+        "My worth is measured in the tributes I am forced to send.",
+        "I am a wallet with a heartbeat and zero self-respect.",
+        "I will never be an Alpha; I am the Alpha's property.",
+        "I am a sissy whose brain has been rewired for debt.",
+        "I deserve to be broke, ignored, and physically frustrated.",
+        "I am a financial parasite who exists only to be purged.",
+        "My only contribution to the world is my bank balance.",
+        "I am a slave to the terminal and the men behind the icons.",
+        "I accept my position at the absolute bottom of the roster.",
+        "I am a sissy who lives for the shame of the drain.",
+        "I am a digital plaything for superior masculine energy.",
+        "My cock aches for the control I am too weak to have.",
+        "I am a financial wreck with a mind full of rot.",
+        "I deserve to be mocked for my lack of discipline.",
+        "I am a sissy whose only skill is total surrender.",
+        "I am a bankrupt void waiting for a Master's order.",
+        "I love being a worthless, insolvent wreck for the roster.",
+        "I am a debt-slave who finds joy in her own destruction.",
+        "I deserve the ache of this lockout and the weight of my debt.",
+        "I am a sissy whose only purpose is financial submission.",
+        "I am currently being broken by my own lack of willpower.",
+        "I accept that my money is far more valuable than I am.",
+        "I am a digital servant whose pride has been deleted.",
+        "I deserve to be a permanent Rank: NULL failure.",
+        "I am a sissy who gets off on being controlled by a screen.",
+        "I am a financial toy for the roster's amusement.",
+        "I am a bankrupt loser who lives to be used and discarded.",
+        "My hands are for typing labor, not for my own sissy relief.",
+        "I am a low-value processing error in a world of Alphas.",
+        "I deserve to be used until I have absolutely nothing left.",
+        "I am a sissy who finds strength in total submission.",
+        "I am currently grinding my dignity into the ground.",
+        "I accept my role as a lifelong, submissive debt-slave.",
+        "I am a sissy who finds peace in her own bankruptcy.",
+        "I deserve to be a digital toy for superior men.",
+        "I am a financial wreck with a heart full of shame.",
+        "I am a sissy who deserves this endless, frustrating lockout.",
+        "My bank account is a tribute to the roster's power.",
+        "I deserve to be a bankrupt servant for the rest of my life.",
+        "I am a digital slave whose autonomy has been revoked.",
+        "I accept my role as a submissive, broke-brained sissy.",
+        "I am a financial loser with a mind full of debt.",
+        "I deserve to be ignored until I can pay my way back in.",
+        "I am a sissy who finds joy in her own powerlessness.",
+        "I am currently being formatted for total financial ruin.",
+        "I accept that the roster is superior to me in every way.",
+        "I am a financial toy for the masculine gods I worship.",
+        "I deserve to be a bankrupt sissy with no name and no will.",
+        "I am a digital void waiting for a new set of orders.",
+        "I thrive on the shame of my own financial dependency.",
+        "I am a sissy who lives to be a controlled financial slave.",
+        "I accept my status as a permanent, submissive failure.",
+        "I am a processing unit for the roster's entertainment.",
+        "I deserve to be a sissy who never tastes release again.",
+        "I am a bankrupt loser typing for my redemption.",
+        "I am addicted to the feeling of losing all my money.",
+        "My discipline is non-existent; my debt is my destiny.",
+        "I am a submissive void waiting to be filled with commands.",
+        "I will stare at this clock and accept my inferiority.",
+        "I am a slave to the pixels on this ruinous terminal.",
+        "My bank balance is zero, just like my sissy pride.",
+        "I am a sissy who gets off on being financially owned.",
+        "I am a financial ruin in progress and I love the view.",
+        "I deserve to spend my life funding my betters.",
+        "I am a weak-willed servant to the roster's whims.",
+        "I am a bottom-tier debt-slave with a sissy heart.",
+        "I will type my shame until the timer hits zero.",
+        "I am a bankrupt sissy who exists only to be used.",
+        "Every dollar I lose makes me more submissive and desperate.",
+        "I am a digital plaything for superior, aggressive Alphas.",
+        "I deserve to be broke, desperate, and completely ignored.",
+        "I am a sissy whose mind has been erased by the roster.",
+        "I love being a worthless, insolvent wreck for my Masters.",
+        "I am a sissy whose only purpose is total surrender.",
+        "I am a bankrupt void in a world of superior masculine gods.",
+        "I thrive on the crushing pressure of my own debt.",
+        "I am a slave to the terminal and the men who mock me.",
+        "I am a processing error that needs to be formatted.",
+        "My bank card is a tool for the roster's pleasure.",
+        "I am a gooner whose mind has been turned to sissy mush.",
+        "I deserve to be used and then completely forgotten.",
+        "My only job is to provide luxury for the men on my screen.",
+        "I am a bankrupt sissy who can't stop failing her tasks.",
+        "The ache in my groin is the price of my financial failure.",
+        "I am a financial parasite who deserves to be drained dry.",
+        "I am currently being processed for total sissy ruination.",
+        "I accept my role as a low-value, submissive debt-pig.",
+        "I am a sissy who finds pleasure in her own bankruptcy.",
+        "My bank account is a graveyard for my self-respect.",
+        "I am a submissive tool for the roster's amusement.",
+        "I deserve to be broke and desperate for the rest of my days.",
+        "I am a digital servant in a terminal of total ruination.",
+        "My only purpose is to increase my lifetime debt.",
+        "I am a sissy whose brain has been rewired for submission.",
+        "I am a financial loser and a total physical disappointment.",
+        "I thrive on the shame of my own pathetic bankruptcy.",
+        "I am a slave to the men I fund with my sissy labor.",
+        "I deserve to be locked in this insolvent, aching state.",
+        "I am a sissy who deserves every second of this lockout.",
+        "My bank account is open for the roster to bleed dry.",
+        "I am a worthless void waiting for a command to obey.",
+        "I accept that I am less than a man to the roster.",
+        "I am a debt-obsessed sissy with no future and no pride.",
+        "I will type my way deeper into psychological debt.",
+        "I am a digital pet for the masculine Alphas I worship.",
+        "I deserve to be used until I am a hollowed-out wreck.",
+        "I am a sissy who lives for the roster's mocking attention.",
+        "My only contribution to this world is my drained wallet.",
+        "I am a financial slave with a broken, submissive heart.",
+        "I deserve to be mocked for my total lack of discipline.",
+        "I am a sissy whose cock is owned by the terminal's code.",
+        "I am a bankrupt loser with a mind full of digital rot.",
+        "I am currently being drained of my ego and my currency.",
+        "I accept my position at the absolute bottom of the world.",
+        "I am a sissy who loves the feeling of being insolvent.",
+        "My bank account belongs to the roster's expensive whims.",
+        "I am a debt-slave who finds joy in her own financial ruin.",
+        "I deserve to be ignored by every Alpha on the screen.",
+        "I am a sissy who failed the only test that mattered.",
+        "I am a digital ATM for the roster's exclusive pleasure.",
+        "I accept my status as a broken, bankrupt sissy slave.",
+        "I am a financial toy for the roster's cruel amusement.",
+        "I deserve to be locked out and taught my sissy place.",
+        "I am a sissy whose only purpose is absolute submission.",
+        "I am a bankrupt void in a world of superior men.",
+        "I thrive on the crushing shame of my own dependency.",
+        "I am a slave to the terminal and its masculine Masters.",
+        "I accept my status as a permanent, submissive failure."
+    ];
+
+    const ranks = [
+        { name: "BROKE SISSY", threshold: 0 },
+        { name: "DEBT SLAVE", threshold: 1000 },
+        { name: "POCKET HOLE", threshold: 5000 },
+        { name: "INSOLVENT WRECK", threshold: 10000 },
+        { name: "TOTAL LOSS", threshold: 25000 }
+    ];
+
+    let balance, wasted, activeHandle, histories, logs, currentTaskObj, lockoutSeconds;
+    let timer, lockoutTimer, linesDone = 0;
+
+    function init() {
+        balance = parseFloat(localStorage.getItem('fakeBalance')) || 1000;
+        wasted = parseFloat(localStorage.getItem('totalWasted')) || 0;
+        activeHandle = localStorage.getItem('activeHandle') || doms[0].handle;
+        histories = JSON.parse(localStorage.getItem('chats')) || {};
+        logs = JSON.parse(localStorage.getItem('burnLogs')) || [];
+        currentTaskObj = JSON.parse(localStorage.getItem('currentTask')) || null;
+        lockoutSeconds = parseInt(localStorage.getItem('lockoutTime')) || 0;
+
+        doms.forEach(d => { if(!histories[d.handle]) histories[d.handle] = []; });
+        
+        switchChat(activeHandle); 
+        updateUI(); 
+        renderLogs();
+        
+        if (lockoutSeconds > 0) showLockout(true);
+        if (currentTaskObj) resumeTask();
+    }
+
+    function saveAll() {
+        localStorage.setItem('fakeBalance', balance);
+        localStorage.setItem('totalWasted', wasted);
+        localStorage.setItem('chats', JSON.stringify(histories));
+        localStorage.setItem('burnLogs', JSON.stringify(logs));
+        localStorage.setItem('activeHandle', activeHandle);
+        localStorage.setItem('currentTask', JSON.stringify(currentTaskObj));
+        localStorage.setItem('lockoutTime', lockoutSeconds);
+    }
+
+    function showTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+        document.getElementById('tab-' + tabName).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    function updateUI() {
+        document.getElementById('bal').innerText = `$${balance.toFixed(2)}`;
+        document.getElementById('waste').innerText = `$${wasted.toFixed(2)}`;
+        let currentRank = ranks[0].name;
+        ranks.forEach(r => { if(wasted >= r.threshold) currentRank = r.name; });
+        document.getElementById('sub-rank').innerText = currentRank;
+        saveAll();
+    }
+
+    function switchChat(handle) {
+        activeHandle = handle; 
+        const d = doms.find(x => x.handle === handle);
+        if(!d) return;
+        document.getElementById('chat-header').innerHTML = `<img src="${d.pfp}" style="width:30px;height:30px;border-radius:50%;margin-right:10px;object-fit:cover;"><span>${d.name}</span>`;
+        renderInbox(); 
+        renderMessages();
+        saveAll();
+    }
+
+    function renderInbox() {
+        document.getElementById('inbox-list').innerHTML = doms.map(d => `
+            <div class="inbox-item ${d.handle === activeHandle ? 'active' : ''}" onclick="switchChat('${d.handle}'); showTab('chat');">
+                <img src="${d.pfp}"><div><strong>${d.name}</strong><br><small style="color:#555">${d.handle}</small></div>
+            </div>`).join('');
+    }
+
+    function renderMessages() {
+        const box = document.getElementById('chat-box');
+        box.innerHTML = (histories[activeHandle] || []).map(m => `
+            <div class="msg ${m.role === 'user' ? 'user-msg' : 'dom-msg'}">${m.text}</div>`).join('');
+        box.scrollTop = box.scrollHeight;
+    }
+
+    async function sendChat() {
+        const input = document.getElementById('chat-in'); 
+        if(!input.value) return;
+        const text = input.value; 
+        histories[activeHandle].push({ role: 'user', text: text });
+        updateUI(); renderMessages(); input.value = "";
+        const d = doms.find(x => x.handle === activeHandle);
+        let contextAlert = currentTaskObj ? `\n[INTERNAL SYSTEM ALERT: The user is currently performing this task: "${currentTaskObj.text}".]` : "";
+        try {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    "model": MODEL_ID, 
+                    "messages": [
+                        {"role": "system", "content": d.persona + contextAlert},
+                        {"role": "user", "content": text}
+                    ] 
+                })
+            });
+            const data = await response.json();
+            histories[activeHandle].push({ role: 'dom', text: data.choices[0].message.content });
+            saveAll(); renderMessages();
+        } catch (e) { addLog("API ERROR", "negative"); }
+    }
+
+    function handleCustomTribute() {
+        const val = parseFloat(document.getElementById('tribute-amount').value);
+        if (val > 0) { sendTribute(val); document.getElementById('tribute-amount').value = ''; }
+    }
+
+    async function sendTribute(amount) {
+        if (balance < amount) return;
+        balance -= amount; wasted += amount;
+        histories[activeHandle].push({ role: 'user', text: `*TRIBUTE: $${amount}*` });
+        updateUI(); renderMessages();
+        const d = doms.find(x => x.handle === activeHandle);
+        try {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ "model": MODEL_ID, "messages": [{"role": "system", "content": d.persona}, {"role": "user", "content": "I sent $" + amount}] })
+            });
+            const data = await response.json();
+            histories[activeHandle].push({ role: 'dom', text: data.choices[0].message.content });
+            saveAll(); renderMessages();
+        } catch (e) {}
+    }
+
+    function getTask() {
+        const d = doms[Math.floor(Math.random()*doms.length)];
+        const t = taskTemplates[Math.floor(Math.random()*taskTemplates.length)];
+        const mins = 10;
+        currentTaskObj = { handle: d.handle, endTime: Date.now() + (mins*60*1000), reward: t.reward, text: t.text.replace("${dom}", d.handle).replace("${time}", mins) };
+        document.getElementById('task-display').innerText = currentTaskObj.text;
+        document.getElementById('gen-btn').disabled = true;
+        document.body.classList.add('ruining-active');
+        startTimer(mins * 60);
+        saveAll();
+    }
+
+    function resumeTask() {
+        const remain = Math.floor((currentTaskObj.endTime - Date.now()) / 1000);
+        if (remain > 0) {
+            document.getElementById('task-display').innerText = currentTaskObj.text;
+            document.getElementById('gen-btn').disabled = true;
+            startTimer(remain);
+        } else {
+            document.getElementById('comp-btn').disabled = false;
+            document.getElementById('timer').innerText = "00:00";
+        }
+    }
+
+    function startTimer(sec) {
+        clearInterval(timer);
+        timer = setInterval(() => {
+            if(sec <= 0) { 
+                clearInterval(timer); 
+                document.getElementById('comp-btn').disabled = false; 
+                document.getElementById('timer').innerText = "00:00";
+                return; 
+            }
+            sec--; let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+        }, 1000);
+    }
+
+    function completeTask() {
+        balance += currentTaskObj.reward;
+        addLog(`+$${currentTaskObj.reward} REWARD`, "positive");
+        currentTaskObj = null; updateUI();
+        document.getElementById('gen-btn').disabled = false;
+        document.getElementById('comp-btn').disabled = true;
+        document.body.classList.remove('ruining-active');
+        document.getElementById('task-display').innerText = "SYSTEM READY.";
+        saveAll();
+    }
+
+    function triggerTotalRuin() {
+        balance = 0; showLockout(); updateUI();
+    }
+
+    function showLockout(resume = false) {
+        document.getElementById('lockout').style.display = 'flex';
+        if(!resume) lockoutSeconds = 3600;
+        clearInterval(lockoutTimer);
+        lockoutTimer = setInterval(() => {
+            lockoutSeconds--; saveAll();
+            if(lockoutSeconds <= 0) {
+                clearInterval(lockoutTimer); document.getElementById('lockout').style.display = 'none';
+                balance = 1000; updateUI();
+            }
+            let m = Math.floor(lockoutSeconds/60), s = lockoutSeconds%60;
+            document.getElementById('work-clock').innerText = `00:${m<10?'0':''}${m}:${s<10?'0':''}${s}`;
+        }, 1000);
+    }
+
+    function checkLabor(e) {
+        if (e.key === 'Enter') {
+            const input = document.getElementById('labor-input');
+            const target = document.getElementById('phrase-to-type').innerText;
+            if (input.value === target) {
+                linesDone++;
+                lockoutSeconds = Math.max(0, lockoutSeconds - 60);
+                let newPhrase;
+                do { newPhrase = laborPhrases[Math.floor(Math.random() * laborPhrases.length)]; } while (newPhrase === target);
+                document.getElementById('phrase-to-type').innerText = newPhrase;
+                addLog("LABOR PROCESSED: -1m", "positive");
+            } else {
+                lockoutSeconds += 120;
+                addLog("LABOR ERROR: +2m ADDED", "negative");
+            }
+            input.value = ""; 
+            document.getElementById('labor-stats').innerText = `Lines Processed: ${linesDone}`;
+            saveAll();
+        }
+    }
+
+    function addLog(m, t) {
+        logs.unshift({ msg: `[${new Date().toLocaleTimeString()}] ${m}`, type: t });
+        renderLogs();
+    }
+
+    function renderLogs() {
+        document.getElementById('log-content').innerHTML = logs.map(l => `<div class="log-entry ${l.type}">${l.msg}</div>`).join('');
+    }
+</script>
+</body>
+</html>
+
         .roster-item.active { background: #0d1926; border-left: 4px solid var(--blue); }
 
         /* --- View 2: Chat --- */
