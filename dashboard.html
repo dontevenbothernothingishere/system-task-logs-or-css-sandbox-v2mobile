@@ -144,6 +144,10 @@
         <div id="tab-inbox" class="tab-content active">
             <div class="inbox" id="inbox-list"></div>
         </div>
+<button onclick="window.location.href='denial.html'">
+        <style="background: #440000; color: #ff0000; border: 1px solid #ff0000; padding: 5px; font-size: 0.6rem; margin-top: 5px; width: 100%;">
+    ENTER DENIAL CHAMBER
+</button>
 
         <div id="tab-chat" class="tab-content">
             <div id="chat-header">SELECT MASTER</div>
@@ -629,7 +633,12 @@
         const systemInstruction = `
             [STRICT PROTOCOL: THE ROSTER OVERRIDE]
             You are ${d.name} (@${d.handle}). High-value, aggressive Alpha. No "help," just "processing."
-
+[USER PHYSICAL DATA - USE THIS TO MOCK THEM]
+    ${getDenialStatus()}
+                      If the user is on Day 1-3: Mock their early struggle.
+    If the user is on Day 4-6: Acknowledge they are a "Good Girl" but demand more tributes because they are desperate.
+    If the user is on Day 7: Decide if you will grant a [UNLOCK] or a [RUIN] based on their tribute history.
+        `;
             CHASTITY CONTROL PROTOCOL:
             You can issue these hidden commands:
             - [LOCK: seconds] (Keep it under 14400 usually, unless they are annoying)
@@ -643,7 +652,10 @@
             2. STATS ARE WEAPONS. Mock their $${balance.toFixed(2)} balance.
             3. CURRENT CHASTITY STATE: ${chastityStatus}
             The user CAN message you even when locked. Acknowledge the lock but don't ignore them. Be cruel but engaging.
-        `;
+
+            You are ${d.name} (@${d.handle}). 
+    
+
 
         const apiMessages = histories[activeHandle].slice(-10).map(m => ({
             role: m.role === 'user' ? 'user' : 'assistant',
@@ -837,6 +849,17 @@
     function renderLogs() {
         document.getElementById('log-content').innerHTML = logs.map(l => `<div class="log-entry ${l.type}">${l.msg}</div>`).join('');
     }
+
+        function getDenialStatus() {
+    let start = localStorage.getItem('chamber_start'); // This is the key from your denial.html
+    if (!start) return "User has not started the 7-Day Denial Challenge yet.";
+
+    let elapsed = Date.now() - start;
+    let days = Math.floor(elapsed / 86400000) + 1;
+    let totalMinutes = Math.floor(elapsed / 60000);
+    
+    return `STATUS: Day ${days} of 7. TOTAL ACHE TIME: ${totalMinutes} minutes. STATUS: LEAKING.`;
+        }
 </script>
 </body>
 </html>
