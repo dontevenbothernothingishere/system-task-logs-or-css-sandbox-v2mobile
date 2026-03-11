@@ -461,6 +461,7 @@
 
     let balance, wasted, activeHandle, histories, logs, currentTaskObj, lockoutSeconds;
     let timer, lockoutTimer, linesDone = 0;
+let chastity = JSON.parse(localStorage.getItem('chastity')) || { locked: false, keyholder: null, endTime: 0 };
 
     function init() {
         const savedBal = localStorage.getItem('fakeBalance');
@@ -488,7 +489,7 @@
         if (currentTaskObj) resumeTask();
     }
 
-    function saveAll() {
+        function saveAll() {
         localStorage.setItem('fakeBalance', balance);
         localStorage.setItem('totalWasted', wasted);
         localStorage.setItem('chats', JSON.stringify(histories));
@@ -496,6 +497,26 @@
         localStorage.setItem('activeHandle', activeHandle);
         localStorage.setItem('currentTask', JSON.stringify(currentTaskObj));
         localStorage.setItem('lockoutTime', lockoutSeconds);
+        localStorage.setItem('chastity', JSON.stringify(chastity)); // Add this line
+    }
+
+
+            function lockChastity(holderHandle, hours) {
+        chastity.locked = true;
+        chastity.keyholder = holderHandle;
+        chastity.endTime = Date.now() + (hours * 60 * 60 * 1000);
+        addLog(`VIRTUAL CHASTITY: ${holderHandle.toUpperCase()} LOCKED YOU.`, "negative");
+        saveAll();
+        updateUI();
+    }
+
+    function unlockChastity() {
+        chastity.locked = false;
+        chastity.keyholder = null;
+        chastity.endTime = 0;
+        addLog(`VIRTUAL CHASTITY: YOU HAVE BEEN RELEASED.`, "positive");
+        saveAll();
+        updateUI();
     }
 
     function showTab(tabName) {
