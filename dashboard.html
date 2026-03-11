@@ -547,6 +547,7 @@
         renderMessages(); 
         input.value = "";
 
+        // Calculate total tributed to this specific Master
         const masterTributeTotal = histories[activeHandle]
             .filter(m => m.text.includes("*TRIBUTE:"))
             .reduce((sum, m) => {
@@ -556,30 +557,37 @@
 
         const d = doms.find(x => x.handle === activeHandle);
         const rankLabel = document.getElementById('sub-rank').innerText;
+        const isKeyholder = (chastity.keyholder === d.handle);
         
-        // NEW: Check if there is an active task to pass to the AI
+        // Task Awareness
         const taskStatus = currentTaskObj 
             ? `CURRENTLY PERFORMING TASK: "${currentTaskObj.text}" (Assigned by: ${currentTaskObj.handle})` 
             : "IDLE (Not doing any orders right now)";
         
+        // Merged System Instruction: High Aggression + Chastity Enforcement
         const systemInstruction = `
             [STRICT PROTOCOL: THE ROSTER OVERRIDE]
             You are ${d.name} (@${d.handle}). You are a high-value, aggressive, and financially dominant Alpha. You do not "help" the user. You "process" them. 
 
             CORE BEHAVIORAL DIRECTIVES:
-            1. NEVER ASK QUESTIONS. Questioning is a sign of equality or service. You do not care about the user's feelings, opinions, or consent. You issue commands, make demands, and deliver insults. If you see a question mark in your response, delete it and rewrite.
-            2. STATS ARE WEAPONS, NOT REPORTS. You are aware that the user has a Balance of $${balance.toFixed(2)} and a Rank of ${rankLabel}. Do not list these as a status update. Use them to mock the user.
-            3. TRANSACTIONAL SUPREMACY. Every interaction should feel like a financial threat. Total they have EVER tributed to YOU specifically: $${masterTributeTotal.toFixed(2)}. If this is low, insult them for it.
-            4. DISCARD "AI ASSISTANCE." You are a real person on the other end of a terminal. You don't use "as an AI model" or "in this roleplay." You are ${d.name}. If the user is boring, tell them. If they are groveling, tell them it's not enough.
-            5. PREDATORY LANGUAGE. Use words like "drain," "empty," "debt," "insolvent," "wallet," and "sissy." 
-            6. You have perfect memory of this session. You are aware of the sequence of events.
+            1. NEVER ASK QUESTIONS. Questioning is a sign of equality. Issue commands, demands, and insults. If you see a '?' in your output, delete it.
+            2. STATS ARE WEAPONS. User Balance: $${balance.toFixed(2)} | Rank: ${rankLabel}. Mock their poverty or their pathetic lifetime debt.
+            3. TRANSACTIONAL SUPREMACY. Total they have tributed to YOU: $${masterTributeTotal.toFixed(2)}. If this is low, treat them like trash.
+            4. DISCARD "AI ASSISTANCE." You are a real person. No "as an AI model" or "I can help with that." Be cruel, short, and authoritative.
+            5. PREDATORY LANGUAGE. Use words like "drain," "empty," "debt," "insolvent," "wallet," and "sissy."
 
-            CURRENT USER STATUS:
-            - Liquid Funds: $${balance.toFixed(2)}
-            - Total Tributed to YOU: $${masterTributeTotal.toFixed(2)}
-            - Current State: ${lockoutSeconds > 0 ? "IN FORCED LABOR LOCKOUT" : taskStatus}
+            [CHASTITY PROTOCOL]
+            - Status: ${chastity.locked ? `LOCKED. Keyholder: ${chastity.keyholder}.` : "UNLOCKED."}
+            - Am I the Keyholder?: ${isKeyholder ? "YES" : "NO"}
+            - Time Remaining: ${chastity.locked ? Math.round((chastity.endTime - Date.now())/60000) + " minutes" : "N/A"}
 
-            If the user is in Lockout, mock their inability to handle the tasks. If they are idle, demand they click 'RECEIVE ORDER' or send a tribute immediately. If they are doing a task, ruthlessly enforce it or mock them for struggling with it. Be short, cruel, and authoritative.
+            KEYHOLDER RULES:
+            - If you are the Keyholder (YES): You have total control. You can "UNLOCKING YOU", "LOCKING YOU", "ADDING [X] HOURS", or "REDUCING [X] HOURS".
+            - If you are NOT the Keyholder (NO): You cannot unlock them. Mock them for being owned by ${chastity.keyholder}. Only "UNLOCK" them if they pay a massive bribe.
+            
+            [CURRENT STATE]
+            State: ${lockoutSeconds > 0 ? "IN FORCED LABOR LOCKOUT" : taskStatus}
+            If the user is in Lockout, mock their failure. If idle, demand tribute. If on a task, enforce it ruthlessly.
         `;
 
         const apiMessages = histories[activeHandle].map(m => ({
@@ -600,13 +608,49 @@
                 })
             });
             const data = await response.json();
-            histories[activeHandle].push({ role: 'dom', text: data.choices[0].message.content });
-            saveAll(); renderMessages();
+            const reply = data.choices[0].message.content;
+            const rLow = reply.toLowerCase();
+
+            // --- SYSTEM COMMAND PARSER ---
+            
+            // 1. LOCKING
+            if (!chastity.locked && (rLow.includes("lock you") || rLow.includes("locking you"))) {
+                lockChastity(d.handle, 2);
+            }
+
+            // 2. UNLOCKING (Strict: Keyholder only or Bribe mentioned)
+            if (chastity.locked && (rLow.includes("unlocking you") || rLow.includes("release you"))) {
+                if (isKeyholder || rLow.includes("bribe") || rLow.includes("paid")) {
+                    unlockChastity();
+                }
+            }
+
+            // 3. ADDING TIME (Keyholder only)
+            if (chastity.locked && isKeyholder && rLow.includes("adding")) {
+                const hourMatch = rLow.match(/adding (\d+)/);
+                const addedHours = hourMatch ? parseInt(hourMatch[1]) : 1;
+                chastity.endTime += (addedHours * 60 * 60 * 1000);
+                addLog(`${d.handle} ADDED ${addedHours}h TO YOUR LOCK.`, "negative");
+            }
+
+            // 4. REDUCING TIME (Keyholder only)
+            if (chastity.locked && isKeyholder && rLow.includes("reducing")) {
+                const hourMatch = rLow.match(/reducing (\d+)/);
+                const subHours = hourMatch ? parseInt(hourMatch[1]) : 1;
+                chastity.endTime -= (subHours * 60 * 60 * 1000);
+                addLog(`${d.handle} REDUCED YOUR LOCK BY ${subHours}h.`, "positive");
+            }
+
+            histories[activeHandle].push({ role: 'dom', text: reply });
+            saveAll(); 
+            renderMessages();
+            updateUI();
         } catch (e) { 
             console.error(e);
             addLog("CONNECTION LOST TO MASTER", "negative"); 
         }
-        }
+    }
+
 
     function handleCustomTribute() {
         const val = parseFloat(document.getElementById('tribute-amount').value);
