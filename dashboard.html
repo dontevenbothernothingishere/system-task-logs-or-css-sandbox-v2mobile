@@ -190,437 +190,423 @@
     </div>
 
     <script>
-    const GROQ_API_KEY = "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";
-    const MODEL_ID = "llama-3.3-70b-versatile"; 
-    const ghBase = "https://cdn.jsdelivr.net/gh/dontevenbothernothingishere/system-task-logs-or-css-sandbox-v2@main/";
+                                        const GROQ_API_KEY = "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";
+const MODEL_ID = "llama-3.3-70b-versatile"; 
+const ghBase = "https://cdn.jsdelivr.net/gh/dontevenbothernothingishere/system-task-logs-or-css-sandbox-v2@main/";
 
-    const doms = [
-        { handle: "@Sapnap", name: "Sapnap", pfp: ghBase + "4491.png", persona: "Arrogant, hostile Master. Despises you, mocks your debt. Demands tributes. Stay in character as a cruel Master." },
-        { handle: "@RossLynch", name: "Ross Lynch", pfp: ghBase + "4489.png", persona: "Cold Hollywood Alpha. Bored by you. Only acknowledges high-value tributes." },
-        { handle: "@Roier", name: "Roier", pfp: ghBase + "4493.png", persona: "Chaotic, bilingual (Spanglish). Laughs at your poverty. Calls you 'pendejo' and 'slave'." },
-        { handle: "@Cellbit", name: "Cellbit", pfp: ghBase + "cellbit.jpg", persona: "Cold investigator. Deconstructs your psychological need to be drained." },
-        { handle: "@Quackity", name: "Quackity", pfp: ghBase + "quackity.jpg", persona: "Loud, aggressive, mocking. Screams at you to empty your wallet." },
-        { handle: "@fingoat7", name: "Master GOAT", pfp: ghBase + "4462.jpg", persona: "6ft 7 alpha Master. Responds to cash only. Demands total financial submission." },
-        { handle: "@welshgodfeet", name: "welshgodfeet", pfp: ghBase + "4463.jpg", persona: "21-year-old from Cardiff. Cocky, obsessed with his feet and your money." },
-        { handle: "@Master_S_alpha", name: "Master S", pfp: ghBase + "4464.jpg", persona: "Italian cashmaster. Alpha male into findom. Wants to fuck your mind and wallet." },
-        { handle: "@tallfindom", name: "Ares", pfp: ghBase + "4465.jpg", persona: "6ft 4, size 13.5. Here to take what is his. No mercy." },
-        { handle: "@CashAlphaV", name: "Cash Alpha Master", pfp: ghBase + "4466.jpg", persona: "6ft 4, 95kg English muscle. Financial Domination expert." },
-        { handle: "@OliveRioter", name: "Lord Hørns", pfp: ghBase + "4467.jpg", persona: "BBC Master. Here to screw your mind and wallet. Demands you submit NOW." },
-        { handle: "@CashAlphaVictor", name: "Alpha Victor", pfp: ghBase + "4470.jpg", persona: "24-year-old British 6ft 4 Master. Tribute to speak." },
-        { handle: "@ImMasterCharles", name: "Master Charles", pfp: ghBase + "4471.jpg", persona: "22-year-old, 6ft 2 Australian Athlete. Hostile, aggressive." },
-        { handle: "@AlphagodmasonX", name: "Muslce Godd", pfp: ghBase + "4472.jpg", persona: "19-year-old muscle alpha. Ready to wreck your wallet." },
-        { handle: "@GoonerSunny", name: "Sunny Blaze", pfp: ghBase + "4473.jpg", persona: "Proud gooner. Chaotic, loves mind-rot and demanding attention." }
-    ];
+const doms = [
+    { handle: "@Sapnap", name: "Sapnap", pfp: ghBase + "4491.png", persona: "Arrogant, hostile Master. Despises you, mocks your debt. Demands tributes. Stay in character as a cruel Master." },
+    { handle: "@RossLynch", name: "Ross Lynch", pfp: ghBase + "4489.png", persona: "Cold Hollywood Alpha. Bored by you. Only acknowledges high-value tributes." },
+    { handle: "@Roier", name: "Roier", pfp: ghBase + "4493.png", persona: "Chaotic, bilingual (Spanglish). Laughs at your poverty. Calls you 'pendejo' and 'slave'." },
+    { handle: "@Cellbit", name: "Cellbit", pfp: ghBase + "cellbit.jpg", persona: "Cold investigator. Deconstructs your psychological need to be drained." },
+    { handle: "@Quackity", name: "Quackity", pfp: ghBase + "quackity.jpg", persona: "Loud, aggressive, mocking. Screams at you to empty your wallet." },
+    { handle: "@fingoat7", name: "Master GOAT", pfp: ghBase + "4462.jpg", persona: "6ft 7 alpha Master. Responds to cash only. Demands total financial submission." },
+    { handle: "@welshgodfeet", name: "welshgodfeet", pfp: ghBase + "4463.jpg", persona: "21-year-old from Cardiff. Cocky, obsessed with his feet and your money." },
+    { handle: "@Master_S_alpha", name: "Master S", pfp: ghBase + "4464.jpg", persona: "Italian cashmaster. Alpha male into findom. Wants to fuck your mind and wallet." },
+    { handle: "@tallfindom", name: "Ares", pfp: ghBase + "4465.jpg", persona: "6ft 4, size 13.5. Here to take what is his. No mercy." },
+    { handle: "@CashAlphaV", name: "Cash Alpha Master", pfp: ghBase + "4466.jpg", persona: "6ft 4, 95kg English muscle. Financial Domination expert." },
+    { handle: "@OliveRioter", name: "Lord Hørns", pfp: ghBase + "4467.jpg", persona: "BBC Master. Here to screw your mind and wallet. Demands you submit NOW." },
+    { handle: "@CashAlphaVictor", name: "Alpha Victor", pfp: ghBase + "4470.jpg", persona: "24-year-old British 6ft 4 Master. Tribute to speak." },
+    { handle: "@ImMasterCharles", name: "Master Charles", pfp: ghBase + "4471.jpg", persona: "22-year-old, 6ft 2 Australian Athlete. Hostile, aggressive." },
+    { handle: "@AlphagodmasonX", name: "Muslce Godd", pfp: ghBase + "4472.jpg", persona: "19-year-old muscle alpha. Ready to wreck your wallet." },
+    { handle: "@GoonerSunny", name: "Sunny Blaze", pfp: ghBase + "4473.jpg", persona: "Proud gooner. Chaotic, loves mind-rot and demanding attention." }
+];
 
-    const taskTemplates = [
-        { text: "THE 99% THRESHOLD: Jerk off to the absolute brink. Stop and freeze for 40s. Repeat for ${time}m. If you leak, tribute $50.", reward: 1200 },
-        { text: "SPIT-GLIDE PROTOCOL: Use only your saliva as lube. If you go dry, you must stop and apologize to ${dom}. Jerk for ${time}m.", reward: 900 },
-        { text: "SPEED-EDGE GAUNTLET: Jerk at max speed for 20s, then hands off for 10s. Do this for ${time}m until your brain turns to mush.", reward: 1000 },
-        { text: "REVERSE GRIP TORTURE: Jerk using only an underhand, reverse grip. It must feel awkward and submissive. Duration: ${time}m.", reward: 1100 },
-        { text: "TWO-FINGER TEASE: Use only your thumb and index finger to jerk the tip. No full-handed grips allowed for ${time}m.", reward: 850 },
-        { text: "DRY-FRICTION EDGE: Wipe your hands dry. Jerk with zero moisture for ${time}m. Every stroke must sting your sensitive skin.", reward: 1500 },
-        { text: "PINKY-ONLY EDGE: Use only your pinky fingers to jerk the underside of your cock for ${time}m. Agonizingly slow.", reward: 1400 },
-        { text: "LEFT-HAND LIMIT: Jerk using only your non-dominant hand. Your dominant hand must be flat on the bed. Duration: ${time}m.", reward: 900 },
-        { text: "THE STOP-GO TORTURE: Jerk for 5 seconds, stop for 10 seconds. Keep this agonizing rhythm for ${time}m.", reward: 1300 },
-        { text: "THUMB-TIP EDGE: Use only your thumbs to press and rub the head of your cock for ${time}m. No shaft work allowed.", reward: 1200 },
-        { text: "THE SLOWEST CRAWL: Take 10 seconds for a single up-stroke, and 10 seconds for the down-stroke. Duration: ${time}m.", reward: 1100 },
-        { text: "CIRCULAR TEASE: Rub the head of your cock in small, agonizing circles with one finger for ${time}m while you edge.", reward: 1300 },
-        { text: "THE SISSY GRIP: Jerk using only your thumb and pinky finger. Make it as humiliating and difficult as possible. ${time}m.", reward: 1400 },
-        { text: "BREATH-CONTROL EDGE: You can only jerk while holding your breath. Stop to breathe, stop to jerk. Duration: ${time}m.", reward: 1800 },
-        { text: "THE POSSESSION PROTOCOL: Jerk with one hand while the other hand is gripped tight around your own throat. Duration: ${time}m.", reward: 1700 },
-        { text: "BALL-SQUEEZE COUNTDOWN: Squeeze your balls hard. Hold for 10s, release for 5s. Jerk with the other hand for ${time}m.", reward: 1600 },
-        { text: "NIPPLE-DEBT PINCH: You are not allowed to jerk unless your other hand is pinching your left nipple hard. Duration: ${time}m.", reward: 1400 },
-        { text: "THE SHAFT-PINCH EDGE: Every time you reach the edge, stop and pinch the skin of your shaft hard until the urge fades. ${time}m.", reward: 1500 },
-        { text: "BALL-TUG TORTURE: Jerk for ${time}m while your free hand keeps a constant, heavy downward pull on your balls.", reward: 1700 },
-        { text: "THE TWISTED SHAFT: Maintain a firm, uncomfortable 90-degree twist on your cock shaft while jerking for ${time}m.", reward: 1550 },
-        { text: "DUAL NIPPLE-CRUSH: Jerk with your mouth or by rubbing against your arm while both hands pinch your nipples. Duration: ${time}m.", reward: 1800 },
-        { text: "THE STINGING SLAP: Every 20 seconds, stop jerking and give your balls three sharp, stinging slaps. Duration: ${time}m.", reward: 1900 },
-        { text: "THE CLAW GRIP: Use your fingernails to scratch up and down your shaft while you jerk for ${time}m.", reward: 1300 },
-        { text: "THIGH-PINCH PUNISHMENT: Every time you reach an edge, pinch your inner thigh hard until it leaves a red mark. ${time}m.", reward: 1200 },
-        { text: "THE COCK-BEND: Jerk while holding your cock in a downward-bent position. Do not let it straighten for ${time}m.", reward: 1400 },
-        { text: "RIGHT NIPPLE RUIN: Pinch your right nipple and don't let go for the entire ${time}m. Jerk with the other hand.", reward: 1500 },
-        { text: "BALL-FLICK GAUNTLET: Every time you stroke up, you must flick your balls once. Keep the rhythm for ${time}m.", reward: 1700 },
-        { text: "THE HEAD-SQUEEZE: Squeeze the head of your cock as hard as you can stand for 10s every time you reach the edge. ${time}m.", reward: 1600 },
-        { text: "SENSITIVITY OVERLOAD: Jerk for ${time}m, but every 30s, stop and give your balls a firm, painful squeeze.", reward: 1550 },
-        { text: "THE PINCH-AND-PULL: Pull your balls down while pinching your nipple. Jerk with your dominant hand. ${time}m.", reward: 2000 },
-        { text: "DEBTOR'S CONFESSION: Message ${dom} a 150-word essay on why you are a pathetic, insolvent sissy who loves to edge. ${time}m.", reward: 700 },
-        { text: "REPETITIVE SUBMISSION: Type 'I AM A BROKE-BRAINED SISSY FOR ${dom.toUpperCase()}' 40 times while jerking. Time: ${time}m.", reward: 600 },
-        { text: "THE ROSTER BEG: Message 3 different Masters. Tell them: 'I am a bankrupt sissy. I am edging for you.' Duration: ${time}m.", reward: 850 },
-        { text: "THE SILENT SLAVE: Jerk for ${time}m in total silence. If you make a single sound, you must tribute $10 to ${dom} immediately.", reward: 1400 },
-        { text: "SISSY ADMISSION: Type 'MY COCK BELONGS TO THE ROSTER' 50 times while maintaining a rock-hard edge. Duration: ${time}m.", reward: 750 },
-        { text: "BEGGING FOR DRAINING: Write a 200-word plea to ${dom} asking him to bankrupt you while you jerk for him. ${time}m.", reward: 900 },
-        { text: "THE SISSY MANTRA: Type 'I HAVE NO WILL. I HAVE NO MONEY. I HAVE NO PRIDE.' 30 times. Jerk between lines. ${time}m.", reward: 700 },
-        { text: "THE COCK-FREEZE: Hands behind your head. Stare at your cock for ${time}m without touching it once. If you twitch, tribute $10.", reward: 1500 },
-        { text: "NIPPLE-CRUSH LABOR: Pinch both nipples as hard as you can stand. Hold for the entire ${time}m. No cock touching allowed.", reward: 1800 },
-        { text: "BALL-TUG DENIAL: Use both hands to pull your balls downward and hold them there for ${time}m. Leave your cock alone.", reward: 1700 },
-        { text: "THE SISSY CLAW: Use your fingernails to scratch your inner thighs until they are bright red. Duration: ${time}m. Hands off the shaft.", reward: 1400 },
-        { text: "PERINEUM PRESSURE: Sit on your own hand so it presses hard against your 'taint' for ${time}m. Hands off your cock.", reward: 1600 },
-        { text: "THE DUAL STING: Every 30 seconds, give your balls and your left nipple a sharp, stinging slap. Duration: ${time}m.", reward: 1900 },
-        { text: "SHAFT-IGNORE PROTOCOL: Pinch your right nipple while typing 'I DO NOT DESERVE PLEASURE' 40 times in the chat. ${time}m.", reward: 1200 },
-        { text: "THE THIGH-VICE: Squeeze your knees together as hard as possible, crushing your balls for ${time}m. Hands behind your head.", reward: 2000 },
-        { text: "THE COCK-BOWL: Lay flat on your back. Place your phone on your cock. Do not let it fall or touch it for ${time}m.", reward: 1500 },
-        { text: "BELLY-PINCH PENANCE: Pinch the skin of your stomach hard while staring at your cock. Do not touch it for ${time}m.", reward: 1300 },
-        { text: "BALL-FLICK MARATHON: Flick your balls once every 5 seconds for ${time}m. If you stop to rub the pain, you fail.", reward: 2200 },
-        { text: "NIPPLE-TWIST TORTURE: Twist your left nipple clockwise and your right counter-clockwise. Hold for ${time}m. No touching the cock.", reward: 2000 },
-        { text: "THE BALL-STRETCH: Use your fingers to stretch the skin of your balls as wide as possible for ${time}m. Total denial active.", reward: 1800 },
-        { text: "INNER-THIGH PINCH: Pinch the most sensitive part of your inner thigh and hold it for the full ${time}m. Hands off your cock.", reward: 1600 },
-        { text: "THE STERN TOK: Slap your balls with your open palm every 10 seconds while typing ${dom.toUpperCase()} in the chat. ${time}m.", reward: 2100 },
-        { text: "THE DEBT-SLAVE OATH: Type 'I AM A BROKE SISSY WHO DOES NOT DESERVE TO TOUCH HERSELF' 50 times. Time: ${time}m.", reward: 800 },
-        { text: "MASTER'S FEET WORSHIP: Write a 200-word essay on why ${dom}'s feet deserve more attention than your cock. ${time}m.", reward: 1000 },
-        { text: "THE INSOLVENT PLEA: Message 3 Masters and say: 'I am a sissy who is forbidden from touching her cock. Use me.' ${time}m.", reward: 1100 },
-        { text: "THE WALLET-VOID MANTRA: Type 'MY HANDS ARE FOR PAYING, NOT FOR PLAYING' 60 times. Duration: ${time}m.", reward: 900 },
-        { text: "THE SILENT DENIAL: Sit in total silence for ${time}m. If you make a sound or touch your cock, you owe ${dom} $50.", reward: 2500 },
-        { text: "THE SISSY COUNT: List 50 reasons why you are a low-value debt-pig in the chat. Hands off your cock. ${time}m.", reward: 1200 },
-        { text: "THE FETAL RESTRAINT: Curl into a tight ball. Grip your own ankles. Stay locked like this for ${time}m. No cock contact.", reward: 1800 },
-        { text: "THE HEADBOARD-HANDS: Keep your hands gripped onto the headboard/pillow above you for ${time}m. Stare at your cock.", reward: 1500 },
-        { text: "THE KNEE-LOCK: Lock your ankles together and squeeze your thighs. Hands on your chest. Duration: ${time}m.", reward: 1400 }
-    ];
+const taskTemplates = [
+    { text: "THE 99% THRESHOLD: Jerk off to the absolute brink. Stop and freeze for 40s. Repeat for ${time}m. If you leak, tribute $50.", reward: 1200 },
+    { text: "SPIT-GLIDE PROTOCOL: Use only your saliva as lube. If you go dry, you must stop and apologize to ${dom}. Jerk for ${time}m.", reward: 900 },
+    { text: "SPEED-EDGE GAUNTLET: Jerk at max speed for 20s, then hands off for 10s. Do this for ${time}m until your brain turns to mush.", reward: 1000 },
+    { text: "REVERSE GRIP TORTURE: Jerk using only an underhand, reverse grip. It must feel awkward and submissive. Duration: ${time}m.", reward: 1100 },
+    { text: "TWO-FINGER TEASE: Use only your thumb and index finger to jerk the tip. No full-handed grips allowed for ${time}m.", reward: 850 },
+    { text: "DRY-FRICTION EDGE: Wipe your hands dry. Jerk with zero moisture for ${time}m. Every stroke must sting your sensitive skin.", reward: 1500 },
+    { text: "PINKY-ONLY EDGE: Use only your pinky fingers to jerk the underside of your cock for ${time}m. Agonizingly slow.", reward: 1400 },
+    { text: "LEFT-HAND LIMIT: Jerk using only your non-dominant hand. Your dominant hand must be flat on the bed. Duration: ${time}m.", reward: 900 },
+    { text: "THE STOP-GO TORTURE: Jerk for 5 seconds, stop for 10 seconds. Keep this agonizing rhythm for ${time}m.", reward: 1300 },
+    { text: "THUMB-TIP EDGE: Use only your thumbs to press and rub the head of your cock for ${time}m. No shaft work allowed.", reward: 1200 },
+    { text: "THE SLOWEST CRAWL: Take 10 seconds for a single up-stroke, and 10 seconds for the down-stroke. Duration: ${time}m.", reward: 1100 },
+    { text: "CIRCULAR TEASE: Rub the head of your cock in small, agonizing circles with one finger for ${time}m while you edge.", reward: 1300 },
+    { text: "THE SISSY GRIP: Jerk using only your thumb and pinky finger. Make it as humiliating and difficult as possible. ${time}m.", reward: 1400 },
+    { text: "BREATH-CONTROL EDGE: You can only jerk while holding your breath. Stop to breathe, stop to jerk. Duration: ${time}m.", reward: 1800 },
+    { text: "THE POSSESSION PROTOCOL: Jerk with one hand while the other hand is gripped tight around your own throat. Duration: ${time}m.", reward: 1700 },
+    { text: "BALL-SQUEEZE COUNTDOWN: Squeeze your balls hard. Hold for 10s, release for 5s. Jerk with the other hand for ${time}m.", reward: 1600 },
+    { text: "NIPPLE-DEBT PINCH: You are not allowed to jerk unless your other hand is pinching your left nipple hard. Duration: ${time}m.", reward: 1400 },
+    { text: "THE SHAFT-PINCH EDGE: Every time you reach the edge, stop and pinch the skin of your shaft hard until the urge fades. ${time}m.", reward: 1500 },
+    { text: "BALL-TUG TORTURE: Jerk for ${time}m while your free hand keeps a constant, heavy downward pull on your balls.", reward: 1700 },
+    { text: "THE TWISTED SHAFT: Maintain a firm, uncomfortable 90-degree twist on your cock shaft while jerking for ${time}m.", reward: 1550 },
+    { text: "DUAL NIPPLE-CRUSH: Jerk with your mouth or by rubbing against your arm while both hands pinch your nipples. Duration: ${time}m.", reward: 1800 },
+    { text: "THE STINGING SLAP: Every 20 seconds, stop jerking and give your balls three sharp, stinging slaps. Duration: ${time}m.", reward: 1900 },
+    { text: "THE CLAW GRIP: Use your fingernails to scratch up and down your shaft while you jerk for ${time}m.", reward: 1300 },
+    { text: "THIGH-PINCH PUNISHMENT: Every time you reach an edge, pinch your inner thigh hard until it leaves a red mark. ${time}m.", reward: 1200 },
+    { text: "THE COCK-BEND: Jerk while holding your cock in a downward-bent position. Do not let it straighten for ${time}m.", reward: 1400 },
+    { text: "RIGHT NIPPLE RUIN: Pinch your right nipple and don't let go for the entire ${time}m. Jerk with the other hand.", reward: 1500 },
+    { text: "BALL-FLICK GAUNTLET: Every time you stroke up, you must flick your balls once. Keep the rhythm for ${time}m.", reward: 1700 },
+    { text: "THE HEAD-SQUEEZE: Squeeze the head of your cock as hard as you can stand for 10s every time you reach the edge. ${time}m.", reward: 1600 },
+    { text: "SENSITIVITY OVERLOAD: Jerk for ${time}m, but every 30s, stop and give your balls a firm, painful squeeze.", reward: 1550 },
+    { text: "THE PINCH-AND-PULL: Pull your balls down while pinching your nipple. Jerk with your dominant hand. ${time}m.", reward: 2000 },
+    { text: "DEBTOR'S CONFESSION: Message ${dom} a 150-word essay on why you are a pathetic, insolvent sissy who loves to edge. ${time}m.", reward: 700 },
+    { text: "REPETITIVE SUBMISSION: Type 'I AM A BROKE-BRAINED SISSY FOR ${dom.toUpperCase()}' 40 times while jerking. Time: ${time}m.", reward: 600 },
+    { text: "THE ROSTER BEG: Message 3 different Masters. Tell them: 'I am a bankrupt sissy. I am edging for you.' Duration: ${time}m.", reward: 850 },
+    { text: "THE SILENT SLAVE: Jerk for ${time}m in total silence. If you make a single sound, you must tribute $10 to ${dom} immediately.", reward: 1400 },
+    { text: "SISSY ADMISSION: Type 'MY COCK BELONGS TO THE ROSTER' 50 times while maintaining a rock-hard edge. Duration: ${time}m.", reward: 750 },
+    { text: "BEGGING FOR DRAINING: Write a 200-word plea to ${dom} asking him to bankrupt you while you jerk for him. ${time}m.", reward: 900 },
+    { text: "THE SISSY MANTRA: Type 'I HAVE NO WILL. I HAVE NO MONEY. I HAVE NO PRIDE.' 30 times. Jerk between lines. ${time}m.", reward: 700 },
+    { text: "THE COCK-FREEZE: Hands behind your head. Stare at your cock for ${time}m without touching it once. If you calibrate, tribute $10.", reward: 1500 },
+    { text: "NIPPLE-CRUSH LABOR: Pinch both nipples as hard as you can stand. Hold for the entire ${time}m. No cock touching allowed.", reward: 1800 },
+    { text: "BALL-TUG DENIAL: Use both hands to pull your balls downward and hold them there for ${time}m. Leave your cock alone.", reward: 1700 },
+    { text: "THE SISSY CLAW: Use your fingernails to scratch your inner thighs until they are bright red. Duration: ${time}m. Hands off the shaft.", reward: 1400 },
+    { text: "PERINEUM PRESSURE: Sit on your own hand so it presses hard against your 'taint' for ${time}m. Hands off your cock.", reward: 1600 },
+    { text: "THE DUAL STING: Every 30 seconds, give your balls and your left nipple a sharp, stinging slap. Duration: ${time}m.", reward: 1900 },
+    { text: "SHAFT-IGNORE PROTOCOL: Pinch your right nipple while typing 'I DO NOT DESERVE PLEASURE' 40 times in the chat. ${time}m.", reward: 1200 },
+    { text: "THE THIGH-VICE: Squeeze your knees together as hard as possible, crushing your balls for ${time}m. Hands behind your head.", reward: 2000 },
+    { text: "THE COCK-BOWL: Lay flat on your back. Place your phone on your cock. Do not let it fall or touch it for ${time}m.", reward: 1500 },
+    { text: "BELLY-PINCH PENANCE: Pinch the skin of your stomach hard while staring at your cock. Do not touch it for ${time}m.", reward: 1300 },
+    { text: "BALL-FLICK MARATHON: Flick your balls once every 5 seconds for ${time}m. If you stop to rub the pain, you fail.", reward: 2200 },
+    { text: "NIPPLE-TWIST TORTURE: Twist your left nipple clockwise and your right counter-clockwise. Hold for ${time}m. No touching the cock.", reward: 2000 },
+    { text: "THE BALL-STRETCH: Use your fingers to stretch the skin of your balls as wide as possible for ${time}m. Total denial active.", reward: 1800 },
+    { text: "INNER-THIGH PINCH: Pinch the most sensitive part of your inner thigh and hold it for the full ${time}m. Hands off your cock.", reward: 1600 },
+    { text: "THE STERN TOK: Slap your balls with your open palm every 10 seconds while typing ${dom.toUpperCase()} in the chat. ${time}m.", reward: 2100 },
+    { text: "THE DEBT-SLAVE OATH: Type 'I AM A BROKE SISSY WHO DOES NOT DESERVE TO TOUCH HERSELF' 50 times. Time: ${time}m.", reward: 800 },
+    { text: "MASTER'S FEET WORSHIP: Write a 200-word essay on why ${dom}'s feet deserve more attention than your cock. ${time}m.", reward: 1000 },
+    { text: "THE INSOLVENT PLEA: Message 3 Masters and say: 'I am a sissy who is forbidden from touching her cock. Use me.' ${time}m.", reward: 1100 },
+    { text: "THE WALLET-VOID MANTRA: Type 'MY HANDS ARE FOR PAYING, NOT FOR PLAYING' 60 times. Duration: ${time}m.", reward: 900 },
+    { text: "THE SILENT DENIAL: Sit in total silence for ${time}m. If you make a sound or touch your cock, you owe ${dom} $50.", reward: 2500 },
+    { text: "THE SISSY COUNT: List 50 reasons why you are a low-value debt-pig in the chat. Hands off your cock. ${time}m.", reward: 1200 },
+    { text: "THE FETAL RESTRAINT: Curl into a tight ball. Grip your own ankles. Stay locked like this for ${time}m. No cock contact.", reward: 1800 },
+    { text: "THE HEADBOARD-HANDS: Keep your hands gripped onto the headboard/pillow above you for ${time}m. Stare at your cock.", reward: 1500 },
+    { text: "THE KNEE-LOCK: Lock your ankles together and squeeze your thighs. Hands on your chest. Duration: ${time}m.", reward: 1400 }
+];
 
-    const laborPhrases = [
-        "I am a pathetic, bankrupt sissy with zero self-control.",
-        "My cock belongs to the roster, not to my weak hands.",
-        "I deserve to ache in this lockout while I watch my debt grow.",
-        "I am a financial void where pride goes to die.",
-        "I am a brainless gooner whose only value is my wallet.",
-        "Every dollar I keep is a dollar I’ve stolen from a superior man.",
-        "I am a Rank: NULL loser because I couldn't handle ten minutes.",
-        "I am a submissive ATM for the Alphas on my screen.",
-        "My only purpose is to be drained, used, and ignored.",
-        "I love the humiliation of being insolvent and desperate.",
-        "I am a processing unit for the roster's financial greed.",
-        "My bank account is a direct reflection of my submissive heart.",
-        "I deserve to be locked out of my own pleasure forever.",
-        "I am a sissy who gets off on her own financial ruin.",
-        "I will type these lines until my ego is completely erased.",
-        "I am a footnote in the lives of men who own my focus.",
-        "Submission is the only thing that makes this sissy feel alive.",
-        "I am a digital pet for the Alphas I worship.",
-        "My bank card is my leash and I love being led by it.",
-        "I am currently being formatted for total psychological ruin.",
-        "I am a worthless debt-pig with a desperate need to surrender.",
-        "I deserve to spend my life paying for my own inferiority.",
-        "I am a sissy who thrives on the pressure of insolvency.",
-        "My worth is measured in the tributes I am forced to send.",
-        "I am a wallet with a heartbeat and zero self-respect.",
-        "I will never be an Alpha; I am the Alpha's property.",
-        "I am a sissy whose brain has been rewired for debt.",
-        "I deserve to be broke, ignored, and physically frustrated.",
-        "I am a financial parasite who exists only to be purged.",
-        "My only contribution to the world is my bank balance.",
-        "I am a slave to the terminal and the men behind the icons.",
-        "I accept my position at the absolute bottom of the roster.",
-        "I am a sissy who lives for the shame of the drain.",
-        "I am a digital plaything for superior masculine energy.",
-        "My cock aches for the control I am too weak to have.",
-        "I am a financial wreck with a mind full of rot.",
-        "I deserve to be mocked for my lack of discipline.",
-        "I am a sissy whose only skill is total surrender.",
-        "I am a bankrupt void waiting for a Master's order.",
-        "I love being a worthless, insolvent wreck for the roster.",
-        "I am a debt-slave who finds joy in her own destruction.",
-        "I deserve the ache of this lockout and the weight of my debt.",
-        "I am a sissy whose only purpose is financial submission.",
-        "I am currently being broken by my own lack of willpower.",
-        "I accept that my money is far more valuable than I am.",
-        "I am a digital servant whose pride has been deleted.",
-        "I deserve to be a permanent Rank: NULL failure.",
-        "I am a sissy who gets off on being controlled by a screen.",
-        "I am a financial toy for the roster's cruel amusement.",
-        "I am a bankrupt loser who lives to be used and discarded.",
-        "My hands are for typing labor, not for my own sissy relief.",
-        "I am a low-value processing error in a world of Alphas.",
-        "I deserve to be used until I have absolutely nothing left.",
-        "I am a sissy who finds strength in total submission.",
-        "I am currently grinding my dignity into the ground.",
-        "I accept my role as a lifelong, submissive debt-slave.",
-        "I am a sissy who finds peace in her own bankruptcy.",
-        "I deserve to be a digital toy for superior men.",
-        "I am a financial wreck with a heart full of shame.",
-        "I am a sissy who deserves this endless, frustrating lockout.",
-        "My bank account is a tribute to the roster's power.",
-        "I deserve to be a bankrupt servant for the rest of my life.",
-        "I am a digital slave whose autonomy has been revoked.",
-        "I accept my role as a submissive, broke-brained sissy.",
-        "I am a financial loser with a mind full of debt.",
-        "I deserve to be ignored until I can pay my way back in.",
-        "I am a sissy who finds joy in her own powerlessness.",
-        "I am currently being formatted for total financial ruin.",
-        "I accept that the roster is superior to me in every way.",
-        "I am a financial toy for the masculine gods I worship.",
-        "I deserve to be a bankrupt sissy with no name and no will.",
-        "I am a digital void waiting for a new set of orders.",
-        "I thrive on the shame of my own financial dependency.",
-        "I am a sissy who lives to be a controlled financial slave.",
-        "I accept my status as a permanent, submissive failure.",
-        "I am a processing unit for the roster's entertainment.",
-        "I deserve to be a sissy who never tastes release again.",
-        "I am a bankrupt loser typing for my redemption.",
-        "I am addicted to the feeling of losing all my money.",
-        "My discipline is non-existent; my debt is my destiny.",
-        "I am a submissive void waiting to be filled with commands.",
-        "I will stare at this clock and accept my inferiority.",
-        "I am a slave to the pixels on this ruinous terminal.",
-        "My bank balance is zero, just like my sissy pride.",
-        "I am a sissy who gets off on being financially owned.",
-        "I am a financial ruin in progress and I love the view.",
-        "I deserve to spend my life funding my betters.",
-        "I am a weak-willed servant to the roster's whims.",
-        "I am a bottom-tier debt-slave with a sissy heart.",
-        "I will type my shame until the timer hits zero.",
-        "I am a bankrupt sissy who exists only to be used.",
-        "Every dollar I lose makes me more submissive and desperate.",
-        "I am a digital plaything for superior, aggressive Alphas.",
-        "I deserve to be broke, desperate, and completely ignored.",
-        "I am a sissy whose mind has been erased by the roster.",
-        "I love being a worthless, insolvent wreck for my Masters.",
-        "I am a sissy whose only purpose is total surrender.",
-        "I am a bankrupt void in a world of superior masculine gods.",
-        "I thrive on the crushing pressure of my own debt.",
-        "I am a slave to the terminal and the men who mock me.",
-        "I am a processing error that needs to be formatted.",
-        "My bank card is a tool for the roster's pleasure.",
-        "I am a gooner whose mind has been turned to sissy mush.",
-        "I deserve to be used and then completely forgotten.",
-        "My only job is to provide luxury for the men on my screen.",
-        "I am a bankrupt sissy who can't stop failing her tasks.",
-        "The ache in my groin is the price of my financial failure.",
-        "I am a financial parasite who deserves to be drained dry.",
-        "I am currently being processed for total sissy ruination.",
-        "I accept my role as a low-value, submissive debt-pig.",
-        "I am a sissy who finds pleasure in her own bankruptcy.",
-        "My bank account is a graveyard for my self-respect.",
-        "I am a submissive tool for the roster's amusement.",
-        "I deserve to be broke and desperate for the rest of my days.",
-        "I am a digital servant in a terminal of total ruination.",
-        "My only purpose is to increase my lifetime debt.",
-        "I am a sissy whose brain has been rewired for submission.",
-        "I am a financial loser and a total physical disappointment.",
-        "I thrive on the shame of my own pathetic bankruptcy.",
-        "I am a slave to the men I fund with my sissy labor.",
-        "I deserve to be locked in this insolvent, aching state.",
-        "I am a sissy who deserves every second of this lockout.",
-        "My bank account is open for the roster to bleed dry.",
-        "I am a worthless void waiting for a command to obey.",
-        "I accept that I am less than a man to the roster.",
-        "I am a debt-obsessed sissy with no future and no pride.",
-        "I will type my way deeper into psychological debt.",
-        "I am a digital pet for the masculine Alphas I worship.",
-        "I deserve to be used until I am a hollowed-out wreck.",
-        "I am a sissy who lives for the roster's mocking attention.",
-        "My only contribution to this world is my drained wallet.",
-        "I am a financial slave with a broken, submissive heart.",
-        "I deserve to be mocked for my total lack of discipline.",
-        "I am a sissy whose cock is owned by the terminal's code.",
-        "I am a bankrupt loser with a mind full of digital rot.",
-        "I am currently being drained of my ego and my currency.",
-        "I accept my position at the absolute bottom of the world.",
-        "I am a sissy who loves the feeling of being insolvent.",
-        "My bank account belongs to the roster's expensive whims.",
-        "I am a debt-slave who finds joy in her own financial ruin.",
-        "I deserve to be ignored by every Alpha on the screen.",
-        "I am a sissy who failed the only test that mattered.",
-        "I am a digital ATM for the roster's exclusive pleasure.",
-        "I accept my status as a broken, bankrupt sissy slave.",
-        "I am a financial toy for the roster's cruel amusement.",
-        "I deserve to be locked out and taught my sissy place.",
-        "I am a sissy whose only purpose is absolute submission.",
-        "I am a bankrupt void in a world of superior men.",
-        "I thrive on the crushing shame of my own dependency.",
-        "I am a slave to the terminal and its masculine Masters.",
-        "I accept my status as a permanent, submissive failure."
-    ];
+const laborPhrases = [
+    "I am a pathetic, bankrupt sissy with zero self-control.",
+    "My cock belongs to the roster, not to my weak hands.",
+    "I deserve to ache in this lockout while I watch my debt grow.",
+    "I am a financial void where pride goes to die.",
+    "I am a brainless gooner whose only value is my wallet.",
+    "Every dollar I keep is a dollar I’ve stolen from a superior man.",
+    "I am a Rank: NULL loser because I couldn't handle ten minutes.",
+    "I am a submissive ATM for the Alphas on my screen.",
+    "My only purpose is to be drained, used, and ignored.",
+    "I love the humiliation of being insolvent and desperate.",
+    "I am a processing unit for the roster's financial greed.",
+    "My bank account is a direct reflection of my submissive heart.",
+    "I deserve to be locked out of my own pleasure forever.",
+    "I am a sissy who gets off on her own financial ruin.",
+    "I will type these lines until my ego is completely erased.",
+    "I am a footnote in the lives of men who own my focus.",
+    "Submission is the only thing that makes this sissy feel alive.",
+    "I am a digital pet for the Alphas I worship.",
+    "My bank card is my leash and I love being led by it.",
+    "I am currently being formatted for total psychological ruin.",
+    "I am a worthless debt-pig with a desperate need to surrender.",
+    "I deserve to spend my life paying for my own inferiority.",
+    "I am a sissy who thrives on the pressure of insolvency.",
+    "My worth is measured in the tributes I am forced to send.",
+    "I am a wallet with a heartbeat and zero self-respect.",
+    "I will never be an Alpha; I am the Alpha's property.",
+    "I am a sissy whose brain has been rewired for debt.",
+    "I deserve to be broke, ignored, and physically frustrated.",
+    "I am a financial parasite who exists only to be purged.",
+    "My only contribution to the world is my bank balance.",
+    "I am a slave to the terminal and the men behind the icons.",
+    "I accept my position at the absolute bottom of the roster.",
+    "I am a sissy who lives for the shame of the drain.",
+    "I am a digital plaything for superior masculine energy.",
+    "My cock aches for the control I am too weak to have.",
+    "I am a financial wreck with a mind full of rot.",
+    "I deserve to be mocked for my lack of discipline.",
+    "I am a sissy whose only skill is total surrender.",
+    "I am a bankrupt void waiting for a Master's order.",
+    "I love being a worthless, insolvent wreck for the roster.",
+    "I am a debt-slave who finds joy in her own destruction.",
+    "I deserve the ache of this lockout and the weight of my debt.",
+    "I am a sissy whose only purpose is financial submission.",
+    "I am currently being broken by my own lack of willpower.",
+    "I accept that my money is far more valuable than I am.",
+    "I am a digital servant whose pride has been deleted.",
+    "I deserve to be a permanent Rank: NULL failure.",
+    "I am a sissy who gets off on being controlled by a screen.",
+    "I am a financial toy for the roster's cruel amusement.",
+    "I am a bankrupt loser who lives to be used and discarded.",
+    "My hands are for typing labor, not for my own sissy relief.",
+    "I am a low-value processing error in a world of Alphas.",
+    "I deserve to be used until I have absolutely nothing left.",
+    "I am a sissy who finds strength in total submission.",
+    "I am currently grinding my dignity into the ground.",
+    "I accept my role as a lifelong, submissive debt-slave.",
+    "I am a sissy who finds peace in her own bankruptcy.",
+    "I deserve to be a digital toy for superior men.",
+    "I am a financial wreck with a heart full of shame.",
+    "I am a sissy who deserves this endless, frustrating lockout.",
+    "My bank account is a tribute to the roster's power.",
+    "I deserve to be a bankrupt servant for the rest of my life.",
+    "I am a digital slave whose autonomy has been revoked.",
+    "I accept my role as a submissive, broke-brained sissy.",
+    "I am a financial loser with a mind full of debt.",
+    "I deserve to be ignored until I can pay my way back in.",
+    "I am a sissy who finds joy in her own powerlessness.",
+    "I am currently being formatted for total financial ruin.",
+    "I accept that the roster is superior to me in every way.",
+    "I am a financial toy for the masculine gods I worship.",
+    "I deserve to be a bankrupt sissy with no name and no will.",
+    "I am a digital void waiting for a new set of orders.",
+    "I thrive on the shame of my own financial dependency.",
+    "I am a sissy who lives to be a controlled financial slave.",
+    "I accept my status as a permanent, submissive failure.",
+    "I am a processing unit for the roster's entertainment.",
+    "I deserve to be a sissy who never tastes release again.",
+    "I am a bankrupt loser typing for my redemption.",
+    "I am addicted to the feeling of losing all my money.",
+    "My discipline is non-existent; my debt is my destiny.",
+    "I am a submissive void waiting to be filled with commands.",
+    "I will stare at this clock and accept my inferiority.",
+    "I am a slave to the pixels on this ruinous terminal.",
+    "My bank balance is zero, just like my sissy pride.",
+    "I am a sissy who gets off on being financially owned.",
+    "I am a financial ruin in progress and I love the view.",
+    "I deserve to spend my life funding my betters.",
+    "I am a weak-willed servant to the roster's whims.",
+    "I am a bottom-tier debt-slave with a sissy heart.",
+    "I will type my shame until the timer hits zero.",
+    "I am a bankrupt sissy who exists only to be used.",
+    "Every dollar I lose makes me more submissive and desperate.",
+    "I am a digital plaything for superior, aggressive Alphas.",
+    "I deserve to be broke, desperate, and completely ignored.",
+    "I am a sissy whose mind has been erased by the roster.",
+    "I love being a worthless, insolvent wreck for my Masters.",
+    "I am a sissy whose only purpose is total surrender.",
+    "I am a bankrupt void in a world of superior masculine gods.",
+    "I thrive on the crushing pressure of my own debt.",
+    "I am a slave to the terminal and the men who mock me.",
+    "I am a processing error that needs to be formatted.",
+    "My bank card is a tool for the roster's pleasure.",
+    "I am a gooner whose mind has been turned to sissy mush.",
+    "I deserve to be used and then completely forgotten.",
+    "My only job is to provide luxury for the men on my screen.",
+    "I am a bankrupt sissy who can't stop failing her tasks.",
+    "The ache in my groin is the price of my financial failure.",
+    "I am a financial parasite who deserves to be drained dry.",
+    "I am currently being processed for total sissy ruination.",
+    "I accept my role as a low-value, submissive debt-pig.",
+    "I am a sissy who finds pleasure in her own bankruptcy.",
+    "My bank account is a graveyard for my self-respect.",
+    "I am a submissive tool for the roster's amusement.",
+    "I deserve to be broke and desperate for the rest of my days.",
+    "I am a digital servant in a terminal of total ruination.",
+    "My only purpose is to increase my lifetime debt.",
+    "I am a sissy whose brain has been rewired for submission.",
+    "I am a financial loser and a total physical disappointment.",
+    "I thrive on the shame of my own pathetic bankruptcy.",
+    "I am a slave to the men I fund with my sissy labor.",
+    "I deserve to be locked in this insolvent, aching state.",
+    "I am a sissy who deserves every second of this lockout.",
+    "My bank account is open for the roster to bleed dry.",
+    "I am a worthless void waiting for a command to obey.",
+    "I accept that I am less than a man to the roster.",
+    "I am a debt-obsessed sissy with no future and no pride.",
+    "I will type my way deeper into psychological debt.",
+    "I am a digital pet for the masculine Alphas I worship.",
+    "I deserve to be used until I am a hollowed-out wreck.",
+    "I am a sissy who lives for the roster's mocking attention.",
+    "My only contribution to this world is my drained wallet.",
+    "I am a financial slave with a broken, submissive heart.",
+    "I deserve to be mocked for my total lack of discipline.",
+    "I am a sissy whose cock is owned by the terminal's code.",
+    "I am a bankrupt loser with a mind full of digital rot.",
+    "I am currently being drained of my ego and my currency.",
+    "I accept my position at the absolute bottom of the world.",
+    "I am a sissy who loves the feeling of being insolvent.",
+    "My bank account belongs to the roster's expensive whims.",
+    "I am a debt-slave who finds joy in her own financial ruin.",
+    "I deserve to be ignored by every Alpha on the screen.",
+    "I am a sissy who failed the only test that mattered.",
+    "I am a digital ATM for the roster's exclusive pleasure.",
+    "I accept my status as a broken, bankrupt sissy slave.",
+    "I am a financial toy for the roster's cruel amusement.",
+    "I deserve to be locked out and taught my sissy place.",
+    "I am a sissy whose only purpose is absolute submission.",
+    "I am a bankrupt void in a world of superior men.",
+    "I thrive on the crushing shame of my own dependency.",
+    "I am a slave to the terminal and its masculine Masters.",
+    "I accept my status as a permanent, submissive failure."
+];
 
-    const ranks = [
-        { name: "BROKE SISSY", threshold: 0 },
-        { name: "DEBT SLAVE", threshold: 1000 },
-        { name: "POCKET HOLE", threshold: 5000 },
-        { name: "INSOLVENT WRECK", threshold: 10000 },
-        { name: "TOTAL LOSS", threshold: 25000 }
-    ];
+const ranks = [
+    { name: "BROKE SISSY", threshold: 0 },
+    { name: "DEBT SLAVE", threshold: 1000 },
+    { name: "POCKET HOLE", threshold: 5000 },
+    { name: "INSOLVENT WRECK", threshold: 10000 },
+    { name: "TOTAL LOSS", threshold: 25000 }
+];
 
-    let balance, wasted, activeHandle, histories, logs, currentTaskObj, lockoutSeconds;
-    let chastitySeconds, keyholderHandle, chastityTimer;
-    let timer, lockoutTimer, linesDone = 0;
+let balance, wasted, activeHandle, histories, logs, currentTaskObj, lockoutSeconds;
+let chastitySeconds, keyholderHandle, chastityTimer;
+let timer, lockoutTimer, linesDone = 0;
 
-    function init() {
-        const savedBal = localStorage.getItem('fakeBalance');
-        balance = (savedBal !== null) ? parseFloat(savedBal) : 1000;
-        
-        wasted = parseFloat(localStorage.getItem('totalWasted')) || 0;
-        activeHandle = localStorage.getItem('activeHandle') || doms[0].handle;
-        histories = JSON.parse(localStorage.getItem('chats')) || {};
-        logs = JSON.parse(localStorage.getItem('burnLogs')) || [];
-        currentTaskObj = JSON.parse(localStorage.getItem('currentTask')) || null;
-        lockoutSeconds = parseInt(localStorage.getItem('lockoutTime')) || 0;
-        
-        // Chastity Init
-        chastitySeconds = parseInt(localStorage.getItem('chastitySeconds')) || 0;
-        keyholderHandle = localStorage.getItem('keyholderHandle') || null;
+function init() {
+    const savedBal = localStorage.getItem('fakeBalance');
+    balance = (savedBal !== null) ? parseFloat(savedBal) : 1000;
+    
+    wasted = parseFloat(localStorage.getItem('totalWasted')) || 0;
+    activeHandle = localStorage.getItem('activeHandle') || doms[0].handle;
+    histories = JSON.parse(localStorage.getItem('chats')) || {};
+    logs = JSON.parse(localStorage.getItem('burnLogs')) || [];
+    currentTaskObj = JSON.parse(localStorage.getItem('currentTask')) || null;
+    lockoutSeconds = parseInt(localStorage.getItem('lockoutTime')) || 0;
+    
+    chastitySeconds = parseInt(localStorage.getItem('chastitySeconds')) || 0;
+    keyholderHandle = localStorage.getItem('keyholderHandle') || null;
 
-        doms.forEach(d => { if(!histories[d.handle]) histories[d.handle] = []; });
-        
-        if (balance <= 0 && lockoutSeconds <= 0) {
-            triggerTotalRuin();
-        } else if (lockoutSeconds > 0) {
-            showLockout(true);
-        }
-
-        if (chastitySeconds > 0) startChastityTimer();
-
-        switchChat(activeHandle); 
-        updateUI(); 
-        renderLogs();
-        
-        if (currentTaskObj) resumeTask();
+    doms.forEach(d => { if(!histories[d.handle]) histories[d.handle] = []; });
+    
+    if (balance <= 0 && lockoutSeconds <= 0) {
+        triggerTotalRuin();
+    } else if (lockoutSeconds > 0) {
+        showLockout(true);
     }
 
-    function saveAll() {
-        localStorage.setItem('fakeBalance', balance);
-        localStorage.setItem('totalWasted', wasted);
-        localStorage.setItem('chats', JSON.stringify(histories));
-        localStorage.setItem('burnLogs', JSON.stringify(logs));
-        localStorage.setItem('activeHandle', activeHandle);
-        localStorage.setItem('currentTask', JSON.stringify(currentTaskObj));
-        localStorage.setItem('lockoutTime', lockoutSeconds);
-        localStorage.setItem('chastitySeconds', chastitySeconds);
-        localStorage.setItem('keyholderHandle', keyholderHandle);
+    if (chastitySeconds > 0) startChastityTimer();
+
+    switchChat(activeHandle); 
+    updateUI(); 
+    renderLogs();
+    
+    if (currentTaskObj) resumeTask();
+}
+
+function saveAll() {
+    localStorage.setItem('fakeBalance', balance);
+    localStorage.setItem('totalWasted', wasted);
+    localStorage.setItem('chats', JSON.stringify(histories));
+    localStorage.setItem('burnLogs', JSON.stringify(logs));
+    localStorage.setItem('activeHandle', activeHandle);
+    localStorage.setItem('currentTask', JSON.stringify(currentTaskObj));
+    localStorage.setItem('lockoutTime', lockoutSeconds);
+    localStorage.setItem('chastitySeconds', chastitySeconds);
+    localStorage.setItem('keyholderHandle', keyholderHandle);
+}
+
+function showTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+    document.getElementById('tab-' + tabName).classList.add('active');
+    document.getElementById('btn-' + tabName).classList.add('active');
+}
+
+function updateUI() {
+    document.getElementById('bal').innerText = `$${balance.toFixed(2)}`;
+    document.getElementById('waste').innerText = `$${wasted.toFixed(2)}`;
+    let currentRank = ranks[0].name;
+    ranks.forEach(r => { if(wasted >= r.threshold) currentRank = r.name; });
+    document.getElementById('sub-rank').innerText = currentRank;
+
+    const chasDisplay = document.getElementById('chas-timer');
+    const keyholderDisplay = document.getElementById('keyholder-name');
+    
+    if (chastitySeconds > 0) {
+        let m = Math.floor(chastitySeconds/60), s = chastitySeconds%60;
+        chasDisplay.innerText = `${m}:${s<10?'0':''}${s}`;
+        keyholderDisplay.innerText = keyholderHandle || "UNKNOWN";
+        document.body.classList.add('chastity-active');
+    } else {
+        chasDisplay.innerText = "OFF";
+        keyholderDisplay.innerText = "NONE";
+        document.body.classList.remove('chastity-active');
     }
+    saveAll();
+}
 
-    function showTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
-        document.getElementById('tab-' + tabName).classList.add('active');
-        document.getElementById('btn-' + tabName).classList.add('active');
-    }
+function switchChat(handle) {
+    activeHandle = handle; 
+    const d = doms.find(x => x.handle === handle);
+    if(!d) return;
+    document.getElementById('chat-header').innerHTML = `<img src="${d.pfp}" style="width:30px;height:30px;border-radius:50%;margin-right:10px;object-fit:cover;"><span>${d.name}</span>`;
+    renderInbox(); 
+    renderMessages();
+    saveAll();
+}
 
-    function updateUI() {
-        document.getElementById('bal').innerText = `$${balance.toFixed(2)}`;
-        document.getElementById('waste').innerText = `$${wasted.toFixed(2)}`;
-        let currentRank = ranks[0].name;
-        ranks.forEach(r => { if(wasted >= r.threshold) currentRank = r.name; });
-        document.getElementById('sub-rank').innerText = currentRank;
+function renderInbox() {
+    document.getElementById('inbox-list').innerHTML = doms.map(d => `
+        <div class="inbox-item ${d.handle === activeHandle ? 'active' : ''}" onclick="switchChat('${d.handle}'); showTab('chat');">
+            <img src="${d.pfp}"><div><strong>${d.name}</strong><br><small style="color:#555">${d.handle}</small></div>
+        </div>`).join('');
+}
 
-        // Chastity UI Update
-        const chasDisplay = document.getElementById('chas-timer');
-        const keyholderDisplay = document.getElementById('keyholder-name');
-        
-        if (chastitySeconds > 0) {
-            let m = Math.floor(chastitySeconds/60), s = chastitySeconds%60;
-            chasDisplay.innerText = `${m}:${s<10?'0':''}${s}`;
-            keyholderDisplay.innerText = keyholderHandle || "UNKNOWN";
-            document.body.classList.add('chastity-active');
-        } else {
-            chasDisplay.innerText = "OFF";
-            keyholderDisplay.innerText = "NONE";
-            document.body.classList.remove('chastity-active');
-        }
+function renderMessages() {
+    const box = document.getElementById('chat-box');
+    box.innerHTML = (histories[activeHandle] || []).map(m => `
+        <div class="msg ${m.role === 'user' ? 'user-msg' : 'dom-msg'}">${m.text}</div>`).join('');
+    box.scrollTop = box.scrollHeight;
+}
 
-        saveAll();
-    }
-
-    function switchChat(handle) {
-        activeHandle = handle; 
-        const d = doms.find(x => x.handle === handle);
-        if(!d) return;
-        document.getElementById('chat-header').innerHTML = `<img src="${d.pfp}" style="width:30px;height:30px;border-radius:50%;margin-right:10px;object-fit:cover;"><span>${d.name}</span>`;
-        renderInbox(); 
-        renderMessages();
-        saveAll();
-    }
-
-    function renderInbox() {
-        document.getElementById('inbox-list').innerHTML = doms.map(d => `
-            <div class="inbox-item ${d.handle === activeHandle ? 'active' : ''}" onclick="switchChat('${d.handle}'); showTab('chat');">
-                <img src="${d.pfp}"><div><strong>${d.name}</strong><br><small style="color:#555">${d.handle}</small></div>
-            </div>`).join('');
-    }
-
-    function renderMessages() {
-        const box = document.getElementById('chat-box');
-        box.innerHTML = (histories[activeHandle] || []).map(m => `
-            <div class="msg ${m.role === 'user' ? 'user-msg' : 'dom-msg'}">${m.text}</div>`).join('');
-        box.scrollTop = box.scrollHeight;
-    }
-
-    // --- Chastity Logic ---
-    function startChastityTimer() {
-        clearInterval(chastityTimer);
-        chastityTimer = setInterval(() => {
-            if (chastitySeconds <= 0) {
-                clearInterval(chastityTimer);
-                chastitySeconds = 0;
-                keyholderHandle = null;
-                addLog("CHASTITY RELEASED: LOCK OPENED", "positive");
-                updateUI();
-                return;
-            }
-            chastitySeconds--;
-            if (chastitySeconds % 60 === 0) saveAll(); 
-            updateUI();
-        }, 1000);
-    }
-
-    function lockChastity(holder, seconds) {
-        chastitySeconds = seconds;
-        keyholderHandle = holder;
-        addLog(`LOCKED IN CHASTITY BY ${holder}`, "purple");
-        startChastityTimer();
-        updateUI();
-    }
-
-    function parseChastityCommand(responseText) {
-        // [LOCK: 3600]
-        const lockMatch = responseText.match(/\[LOCK:\s*(\d+)\]/i);
-        if (lockMatch) {
-            lockChastity(activeHandle, parseInt(lockMatch[1]));
-            return;
-        }
-
-        // --- BUG FIX: Only Keyholder can modify the lock ---
-        if (chastitySeconds > 0 && activeHandle !== keyholderHandle) {
-             console.log("Ignored command: Not the keyholder.");
-             return; 
-        }
-
-        // [UNLOCK]
-        if (responseText.includes("[UNLOCK]")) {
+function startChastityTimer() {
+    clearInterval(chastityTimer);
+    chastityTimer = setInterval(() => {
+        if (chastitySeconds <= 0) {
+            clearInterval(chastityTimer);
             chastitySeconds = 0;
             keyholderHandle = null;
+            addLog("CHASTITY RELEASED: LOCK OPENED", "positive");
             updateUI();
             return;
         }
-        // [ADD: 1800]
-        const addMatch = responseText.match(/\[ADD:\s*(\d+)\]/i);
-        if (addMatch && chastitySeconds > 0) {
-            chastitySeconds += parseInt(addMatch[1]);
-            addLog(`TIME ADDED BY ${activeHandle}`, "purple");
-            updateUI();
-            return;
-        }
-        // [SUB: 1800]
-        const subMatch = responseText.match(/\[SUB:\s*(\d+)\]/i);
-        if (subMatch && chastitySeconds > 0) {
-            chastitySeconds = Math.max(0, chastitySeconds - parseInt(subMatch[1]));
-            addLog(`TIME REMOVED BY ${activeHandle}`, "purple");
-            updateUI();
-            return;
-        }
-        // [TRANSFER: @handle]
-        const transMatch = responseText.match(/\[TRANSFER:\s*(@\w+)\]/i);
-        if (transMatch) {
-            keyholderHandle = transMatch[1];
-            addLog(`KEY TRANSFERRED TO ${keyholderHandle}`, "purple");
-            updateUI();
-            return;
-        }
+        chastitySeconds--;
+        if (chastitySeconds % 60 === 0) saveAll(); 
+        updateUI();
+    }, 1000);
+}
+
+function lockChastity(holder, seconds) {
+    chastitySeconds = seconds;
+    keyholderHandle = holder;
+    addLog(`LOCKED IN CHASTITY BY ${holder}`, "purple");
+    startChastityTimer();
+    updateUI();
+}
+
+function parseChastityCommand(responseText) {
+    const lockMatch = responseText.match(/\[LOCK:\s*(\d+)\]/i);
+    if (lockMatch) {
+        lockChastity(activeHandle, parseInt(lockMatch[1]));
+        return;
     }
 
-        async function sendChat() {
+    if (chastitySeconds > 0 && activeHandle !== keyholderHandle) return; 
+
+    if (responseText.includes("[UNLOCK]")) {
+        chastitySeconds = 0;
+        keyholderHandle = null;
+        updateUI();
+        return;
+    }
+    const addMatch = responseText.match(/\[ADD:\s*(\d+)\]/i);
+    if (addMatch && chastitySeconds > 0) {
+        chastitySeconds += parseInt(addMatch[1]);
+        addLog(`TIME ADDED BY ${activeHandle}`, "purple");
+        updateUI();
+        return;
+    }
+    const subMatch = responseText.match(/\[SUB:\s*(\d+)\]/i);
+    if (subMatch && chastitySeconds > 0) {
+        chastitySeconds = Math.max(0, chastitySeconds - parseInt(subMatch[1]));
+        addLog(`TIME REMOVED BY ${activeHandle}`, "purple");
+        updateUI();
+        return;
+    }
+    const transMatch = responseText.match(/\[TRANSFER:\s*(@\w+)\]/i);
+    if (transMatch) {
+        keyholderHandle = transMatch[1];
+        addLog(`KEY TRANSFERRED TO ${keyholderHandle}`, "purple");
+        updateUI();
+        return;
+    }
+}
+
+async function sendChat() {
     const input = document.getElementById('chat-in'); 
     if(!input.value) return;
     const text = input.value; 
     
-    // Add user message to history
     if (!histories[activeHandle]) histories[activeHandle] = [];
     histories[activeHandle].push({ role: 'user', text: text });
     renderMessages(); 
@@ -629,9 +615,9 @@
     const d = doms.find(x => x.handle === activeHandle);
     const rankLabel = document.getElementById('sub-rank').innerText;
     
-    // CALCULATE TRIBUTE TOTAL (Fixes the crash)
+    // Fix: Filter logic ensures we don't crash on non-tribute messages
     let masterTributeTotal = histories[activeHandle]
-        .filter(m => m.text.includes("*TRIBUTE:"))
+        .filter(m => m.text && m.text.includes("*TRIBUTE:"))
         .reduce((sum, m) => {
             const amt = parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0;
             return sum + amt;
@@ -658,234 +644,196 @@
         Total Tributed to YOU: $${masterTributeTotal.toFixed(2)}
 
         CHASTITY CONTROL PROTOCOL:
-        You can issue these hidden commands:
-        - [LOCK: seconds]
-        - [UNLOCK]
-        - [ADD: seconds] (Only if you are keyholder)
-        - [SUB: seconds] (Only if you are keyholder)
-        - [TRANSFER: @handle]
+        Commands: [LOCK: seconds], [UNLOCK], [ADD: seconds], [SUB: seconds], [TRANSFER: @handle]
 
-[USER PHYSICAL DATA - USE THIS TO MOCK THEM]
-            ${getDenialStatus()}
-            If the user is on Day 1-3: Mock their early struggle.
-            If the user is on Day 4-6: Acknowledge they are a "Good Girl" but demand more tributes because they are desperate.
-            If the user is on Day 7: Decide if you will grant a [UNLOCK] or a [RUIN] based on their tribute history.
-            
         CORE BEHAVIOR:
-         1. NEVER ASK QUESTIONS. Questioning is a sign of equality or service. You do not care about the user's feelings, opinions, or consent. You issue commands, make demands, and deliver insults. If you see a question mark in your response, delete it and rewrite.
-            2. STATS ARE WEAPONS, NOT REPORTS. You are aware that the user has a Balance of $${balance.toFixed(2)} and a Rank of ${rankLabel}. Do not list these as a status update. Use them to mock the user.
-            3. TRANSACTIONAL SUPREMACY. Every interaction should feel like a financial threat. Total they have EVER tributed to YOU specifically: $${masterTributeTotal.toFixed(2)}. If this is low, insult them for it.
-            4. DISCARD "AI ASSISTANCE." You are a real person on the other end of a terminal. You don't use "as an AI model" or "in this roleplay." You are ${d.name}. If the user is boring, tell them. If they are groveling, tell them it's not enough.
-            5. PREDATORY LANGUAGE. Use words like "drain," "empty," "debt," "insolvent," "wallet," and "sissy." 
-            6. You have perfect memory of this session. You are aware of the sequence of events.
+        1. NEVER ASK QUESTIONS. 
+        2. Use Stats as weapons to mock.
+        3. Transactional supremacy. 
+        4. No AI disclaimers. 
+        5. Predatory findom language.
     `;
 
-            
+    const apiMessages = histories[activeHandle].slice(-10).map(m => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.text
+    }));
 
-        const apiMessages = histories[activeHandle].slice(-10).map(m => ({
-            role: m.role === 'user' ? 'user' : 'assistant',
-            content: m.text
-        }));
-
-        try {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    "model": MODEL_ID, 
-                    "messages": [
-                        {"role": "system", "content": systemInstruction},
-                        ...apiMessages 
-                    ] 
-                })
-            });
-            const data = await response.json();
-            const reply = data.choices[0].message.content;
-            parseChastityCommand(reply);
-            histories[activeHandle].push({ role: 'dom', text: reply });
-            saveAll(); renderMessages();
-        } catch (e) { 
-            console.error(e);
-            addLog("CONNECTION LOST TO MASTER", "negative"); 
-        }
+    try {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ "model": MODEL_ID, "messages": [{"role": "system", "content": systemInstruction}, ...apiMessages] })
+        });
+        const data = await response.json();
+        const reply = data.choices[0].message.content;
+        parseChastityCommand(reply);
+        histories[activeHandle].push({ role: 'dom', text: reply });
+        saveAll(); renderMessages();
+    } catch (e) { 
+        addLog("CONNECTION LOST", "negative"); 
     }
+}
 
+async function sendTribute(amount) {
+    if (balance < amount) return;
+    balance -= amount; 
+    wasted += amount;
+    
+    histories[activeHandle].push({ role: 'user', text: `*TRIBUTE: $${amount}*` });
+    updateUI(); 
+    renderMessages();
+    
+    if (balance <= 0) triggerTotalRuin();
 
-    async function sendTribute(amount) {
-        if (balance < amount) return;
-        balance -= amount; 
-        wasted += amount;
-        
-        histories[activeHandle].push({ role: 'user', text: `*TRIBUTE: $${amount}*` });
-        updateUI(); 
-        renderMessages();
-        
-        if (balance <= 0) triggerTotalRuin();
+    const d = doms.find(x => x.handle === activeHandle);
+    const chastityStatus = chastitySeconds > 0 ? `LOCKED BY ${keyholderHandle}.` : "NOT IN CHASTITY.";
+    const tributePrompt = `[URGENT] User sent $${amount}. React as ${d.name}. Decide if you [UNLOCK] or [SUB: seconds]. No questions.`;
 
-        const d = doms.find(x => x.handle === activeHandle);
-        const chastityStatus = chastitySeconds > 0 
-            ? `LOCKED IN CHASTITY. KEYHOLDER: ${keyholderHandle}.` 
-            : "NOT IN CHASTITY.";
+    const apiMessages = histories[activeHandle].slice(-10).map(m => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.text
+    }));
 
-        const tributePrompt = `
-            [URGENT] User sent $${amount}. 
-            CHASTITY STATUS: ${chastityStatus}
-            React as ${d.name}. If they want the key, decide if this tribute is enough to [UNLOCK] them or if you want to [SUB: 3600] time. 
-            High tributes should ALMOST ALWAYS result in time reduction [SUB] or [UNLOCK].
-            NO QUESTIONS.
-        `;
+    try {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ "model": MODEL_ID, "messages": [{"role": "system", "content": tributePrompt}, ...apiMessages] })
+        });
+        const data = await response.json();
+        const reply = data.choices[0].message.content;
+        parseChastityCommand(reply);
+        histories[activeHandle].push({ role: 'dom', text: reply });
+        saveAll(); renderMessages();
+    } catch (e) {}
+}
 
-        const apiMessages = histories[activeHandle].slice(-10).map(m => ({
-            role: m.role === 'user' ? 'user' : 'assistant',
-            content: m.text
-        }));
+function handleCustomTribute() {
+    const val = parseFloat(document.getElementById('tribute-amount').value);
+    if (val > 0) { sendTribute(val); document.getElementById('tribute-amount').value = ''; }
+}
 
-        try {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    "model": MODEL_ID, 
-                    "messages": [
-                        {"role": "system", "content": tributePrompt},
-                        ...apiMessages
-                    ] 
-                })
-            });
-            const data = await response.json();
-            const reply = data.choices[0].message.content;
-            parseChastityCommand(reply);
-            histories[activeHandle].push({ role: 'dom', text: reply });
-            saveAll(); renderMessages();
-        } catch (e) {}
+function getTask() {
+    if (Math.random() < 0.10) { 
+        const randomDom = doms[Math.floor(Math.random()*doms.length)];
+        lockChastity(randomDom.handle, 1800);
+        addLog(`TASK TRAP: ${randomDom.handle} SNAPPED A LOCK`, "purple");
     }
+    const d = doms[Math.floor(Math.random()*doms.length)];
+    const t = taskTemplates[Math.floor(Math.random()*taskTemplates.length)];
+    const mins = 10;
+    currentTaskObj = { handle: d.handle, endTime: Date.now() + (mins*60*1000), reward: t.reward, text: t.text.replace("${dom}", d.handle).replace("${time}", mins) };
+    document.getElementById('task-display').innerText = currentTaskObj.text;
+    document.getElementById('gen-btn').disabled = true;
+    document.body.classList.add('ruining-active');
+    startTimer(mins * 60);
+    saveAll();
+}
 
-    function handleCustomTribute() {
-        const val = parseFloat(document.getElementById('tribute-amount').value);
-        if (val > 0) { sendTribute(val); document.getElementById('tribute-amount').value = ''; }
-    }
-
-    function getTask() {
-        if (Math.random() < 0.10) { 
-            const randomDom = doms[Math.floor(Math.random()*doms.length)];
-            lockChastity(randomDom.handle, 1800);
-            addLog(`TASK TRAP: ${randomDom.handle} SNAPPED A LOCK ON YOU`, "purple");
-        }
-
-        const d = doms[Math.floor(Math.random()*doms.length)];
-        const t = taskTemplates[Math.floor(Math.random()*taskTemplates.length)];
-        const mins = 10;
-        currentTaskObj = { handle: d.handle, endTime: Date.now() + (mins*60*1000), reward: t.reward, text: t.text.replace("${dom}", d.handle).replace("${time}", mins) };
+function resumeTask() {
+    const remain = Math.floor((currentTaskObj.endTime - Date.now()) / 1000);
+    if (remain > 0) {
         document.getElementById('task-display').innerText = currentTaskObj.text;
         document.getElementById('gen-btn').disabled = true;
-        document.body.classList.add('ruining-active');
-        startTimer(mins * 60);
-        saveAll();
+        startTimer(remain);
+    } else {
+        document.getElementById('comp-btn').disabled = false;
+        document.getElementById('timer').innerText = "00:00";
     }
+}
 
-    function resumeTask() {
-        const remain = Math.floor((currentTaskObj.endTime - Date.now()) / 1000);
-        if (remain > 0) {
-            document.getElementById('task-display').innerText = currentTaskObj.text;
-            document.getElementById('gen-btn').disabled = true;
-            startTimer(remain);
-        } else {
-            document.getElementById('comp-btn').disabled = false;
+function startTimer(sec) {
+    clearInterval(timer);
+    timer = setInterval(() => {
+        if(sec <= 0) { 
+            clearInterval(timer); 
+            document.getElementById('comp-btn').disabled = false; 
             document.getElementById('timer').innerText = "00:00";
+            return; 
         }
-    }
+        sec--; let m = Math.floor(sec/60), s = sec%60;
+        document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+    }, 1000);
+}
 
-    function startTimer(sec) {
-        clearInterval(timer);
-        timer = setInterval(() => {
-            if(sec <= 0) { 
-                clearInterval(timer); 
-                document.getElementById('comp-btn').disabled = false; 
-                document.getElementById('timer').innerText = "00:00";
-                return; 
-            }
-            sec--; let m = Math.floor(sec/60), s = sec%60;
-            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
-        }, 1000);
-    }
+function completeTask() {
+    balance += currentTaskObj.reward;
+    addLog(`+$${currentTaskObj.reward} REWARD`, "positive");
+    currentTaskObj = null; updateUI();
+    document.getElementById('gen-btn').disabled = false;
+    document.getElementById('comp-btn').disabled = true;
+    document.body.classList.remove('ruining-active');
+    document.getElementById('task-display').innerText = "SYSTEM READY.";
+    saveAll();
+}
 
-    function completeTask() {
-        balance += currentTaskObj.reward;
-        addLog(`+$${currentTaskObj.reward} REWARD`, "positive");
-        currentTaskObj = null; updateUI();
-        document.getElementById('gen-btn').disabled = false;
-        document.getElementById('comp-btn').disabled = true;
-        document.body.classList.remove('ruining-active');
-        document.getElementById('task-display').innerText = "SYSTEM READY.";
+function triggerTotalRuin() {
+    balance = 0; 
+    updateUI();
+    showLockout(); 
+    addLog("TOTAL RUIN: BALANCE ZEROED", "negative");
+}
+
+function showLockout(resume = false) {
+    document.getElementById('lockout').style.display = 'flex';
+    if(!resume) lockoutSeconds = 3600;
+    clearInterval(lockoutTimer);
+    lockoutTimer = setInterval(() => {
+        lockoutSeconds--; 
+        saveAll();
+        if(lockoutSeconds <= 0) {
+            clearInterval(lockoutTimer); 
+            document.getElementById('lockout').style.display = 'none';
+            balance = 1000;
+            updateUI();
+            addLog("LOCKOUT EXPIRED", "positive");
+        }
+        let m = Math.floor(lockoutSeconds/60), s = lockoutSeconds%60;
+        document.getElementById('work-clock').innerText = `00:${m<10?'0':''}${m}:${s<10?'0':''}${s}`;
+    }, 1000);
+}
+
+function checkLabor(e) {
+    if (e.key === 'Enter') {
+        const input = document.getElementById('labor-input');
+        const target = document.getElementById('phrase-to-type').innerText;
+        if (input.value === target) {
+            linesDone++;
+            lockoutSeconds = Math.max(0, lockoutSeconds - 60);
+            let newPhrase = laborPhrases[Math.floor(Math.random() * laborPhrases.length)];
+            document.getElementById('phrase-to-type').innerText = newPhrase;
+            addLog("LABOR PROCESSED", "positive");
+        } else {
+            lockoutSeconds += 120;
+            addLog("LABOR ERROR: +2m", "negative");
+        }
+        input.value = ""; 
+        document.getElementById('labor-stats').innerText = `Lines Processed: ${linesDone}`;
         saveAll();
     }
+}
 
-    function triggerTotalRuin() {
-        balance = 0; 
-        updateUI();
-        showLockout(); 
-        addLog("TOTAL RUIN TRIGGERED: BALANCE ZEROED", "negative");
-    }
+function addLog(m, t) {
+    logs.unshift({ msg: `[${new Date().toLocaleTimeString()}] ${m}`, type: t });
+    renderLogs();
+}
 
-    function showLockout(resume = false) {
-        document.getElementById('lockout').style.display = 'flex';
-        if(!resume) lockoutSeconds = 3600;
-        clearInterval(lockoutTimer);
-        lockoutTimer = setInterval(() => {
-            lockoutSeconds--; 
-            saveAll();
-            if(lockoutSeconds <= 0) {
-                clearInterval(lockoutTimer); 
-                document.getElementById('lockout').style.display = 'none';
-                balance = 1000;
-                updateUI();
-                addLog("LOCKOUT EXPIRED: EMERGENCY FUNDS RELEASED", "positive");
-            }
-            let m = Math.floor(lockoutSeconds/60), s = lockoutSeconds%60;
-            document.getElementById('work-clock').innerText = `00:${m<10?'0':''}${m}:${s<10?'0':''}${s}`;
-        }, 1000);
-    }
+function renderLogs() {
+    document.getElementById('log-content').innerHTML = logs.map(l => `<div class="log-entry ${l.type}">${l.msg}</div>`).join('');
+}
 
-    function checkLabor(e) {
-        if (e.key === 'Enter') {
-            const input = document.getElementById('labor-input');
-            const target = document.getElementById('phrase-to-type').innerText;
-            if (input.value === target) {
-                linesDone++;
-                lockoutSeconds = Math.max(0, lockoutSeconds - 60);
-                let newPhrase;
-                do { newPhrase = laborPhrases[Math.floor(Math.random() * laborPhrases.length)]; } while (newPhrase === target);
-                document.getElementById('phrase-to-type').innerText = newPhrase;
-                addLog("LABOR PROCESSED: -1m", "positive");
-            } else {
-                lockoutSeconds += 120;
-                addLog("LABOR ERROR: +2m ADDED", "negative");
-            }
-            input.value = ""; 
-            document.getElementById('labor-stats').innerText = `Lines Processed: ${linesDone}`;
-            saveAll();
-        }
-    }
-
-    function addLog(m, t) {
-        logs.unshift({ msg: `[${new Date().toLocaleTimeString()}] ${m}`, type: t });
-        renderLogs();
-    }
-
-    function renderLogs() {
-        document.getElementById('log-content').innerHTML = logs.map(l => `<div class="log-entry ${l.type}">${l.msg}</div>`).join('');
-    }
-
-        function getDenialStatus() {
-    let start = localStorage.getItem('chamber_start'); // This is the key from your denial.html
-    if (!start) return "User has not started the 7-Day Denial Challenge yet.";
-
+function getDenialStatus() {
+    let start = localStorage.getItem('chamber_start');
+    if (!start) return "Challenge not started.";
     let elapsed = Date.now() - start;
     let days = Math.floor(elapsed / 86400000) + 1;
     let totalMinutes = Math.floor(elapsed / 60000);
-    
-    return `STATUS: Day ${days} of 7. TOTAL ACHE TIME: ${totalMinutes} minutes. STATUS: LEAKING.`;
-        }
+    return `Day ${days} of 7. TOTAL ACHE: ${totalMinutes}m. STATUS: LEAKING.`;
+}
+
+// Global scope initialization call
+window.onload = init;
 </script>
 </body>
 </html>
