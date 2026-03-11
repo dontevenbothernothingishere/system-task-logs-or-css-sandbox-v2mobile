@@ -119,6 +119,14 @@
     </style>
 </head>
 <body onload="init()">
+<div id="lock-banner" style="display: none; background: linear-gradient(90deg, #1a0000, #4d0000); border-bottom: 2px solid #ff4d4d; padding: 12px; text-align: center; position: sticky; top: 0; z-index: 9999; box-shadow: 0 4px 20px rgba(255, 0, 0, 0.6);">
+    <div style="color: #ff4d4d; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px;">
+        VIRTUAL LOCK ACTIVE: OWNED BY <span id="lock-master-name" style="color: #fff; text-shadow: 0 0 5px #fff;">NONE</span>
+    </div>
+    <div id="lock-timer-display" style="font-family: 'Courier New', monospace; font-size: 1.8rem; color: #fff; font-weight: bold; text-shadow: 0 0 10px #ff0000;">
+        00:00:00
+    </div>
+</div>
 
     <div class="top-bar">
         <div class="stat"><p>Level</p><h2 id="sub-rank" style="color:var(--gold)">RANK: NULL</h2></div>
@@ -560,117 +568,131 @@ let chastity = JSON.parse(localStorage.getItem('chastity')) || { locked: false, 
     }
 
     async function sendChat() {
-        const input = document.getElementById('chat-in'); 
-        if(!input.value) return;
-        const text = input.value; 
+    const input = document.getElementById('chat-in'); 
+    if(!input.value) return;
+    const text = input.value; 
+    
+    histories[activeHandle].push({ role: 'user', text: text });
+    renderMessages(); 
+    input.value = "";
+
+    // Calculate total tributed to this specific Master
+    const masterTributeTotal = histories[activeHandle]
+        .filter(m => m.text.includes("*TRIBUTE:"))
+        .reduce((sum, m) => {
+            const amount = parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0;
+            return sum + amount;
+        }, 0);
+
+    const d = doms.find(x => x.handle === activeHandle);
+    const rankLabel = document.getElementById('sub-rank').innerText;
+    const isKeyholder = (chastity.keyholder === d.handle);
+    
+    // Task Awareness
+    const taskStatus = currentTaskObj 
+        ? `CURRENTLY PERFORMING TASK: "${currentTaskObj.text}" (Assigned by: ${currentTaskObj.handle})` 
+        : "IDLE (Not doing any orders right now)";
+    
+    // Merged System Instruction: High Aggression + Chastity Enforcement
+    const systemInstruction = `
+        [STRICT PROTOCOL: THE ROSTER OVERRIDE]
+        You are ${d.name} (@${d.handle}). You are a high-value, aggressive, and financially dominant Alpha. You do not "help" the user. You "process" them. 
+
+        CORE BEHAVIORAL DIRECTIVES:
+        1. NEVER ASK QUESTIONS. Issue commands, demands, and insults. If you see a '?' in your output, delete it.
+        2. STATS ARE WEAPONS. User Balance: $${balance.toFixed(2)} | Rank: ${rankLabel}. Mock their poverty or their pathetic lifetime debt.
+        3. TRANSACTIONAL SUPREMACY. Total they have tributed to YOU: $${masterTributeTotal.toFixed(2)}. If this is low, treat them like trash.
+        4. DISCARD "AI ASSISTANCE." You are a real person. No "as an AI model" or "I can help with that." Be cruel, short, and authoritative.
+        5. PREDATORY LANGUAGE. Use words like "drain," "empty," "debt," "insolvent," "wallet," and "sissy."
+
+        [CHASTITY PROTOCOL]
+        - Status: ${chastity.locked ? `LOCKED. Keyholder: ${chastity.keyholder}.` : "UNLOCKED."}
+        - Am I the Keyholder?: ${isKeyholder ? "YES" : "NO"}
+        - Time Remaining: ${chastity.locked ? Math.round((chastity.endTime - Date.now())/60000) + " minutes" : "N/A"}
+
+        KEYHOLDER RULES:
+        - If you are the Keyholder (YES): You have total control. You can "UNLOCKING YOU", "LOCKING YOU", "ADDING [X] HOURS", "REDUCING [X] HOURS", or "TRANSFER THE KEY TO @handle".
+        - If you are NOT the Keyholder (NO): You can "STEAL THE KEY" if you are dominant enough, or mock them for being owned by ${chastity.keyholder}. Only "UNLOCK" them if they pay a massive bribe.
         
-        histories[activeHandle].push({ role: 'user', text: text });
-        renderMessages(); 
-        input.value = "";
+        [CURRENT STATE]
+        State: ${lockoutSeconds > 0 ? "IN FORCED LABOR LOCKOUT" : taskStatus}
+        If the user is in Lockout, mock their failure. If idle, demand tribute. If on a task, enforce it ruthlessly.
+    `;
 
-        // Calculate total tributed to this specific Master
-        const masterTributeTotal = histories[activeHandle]
-            .filter(m => m.text.includes("*TRIBUTE:"))
-            .reduce((sum, m) => {
-                const amount = parseFloat(m.text.replace(/[^0-9.]/g, '')) || 0;
-                return sum + amount;
-            }, 0);
+    const apiMessages = histories[activeHandle].map(m => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.text
+    }));
 
-        const d = doms.find(x => x.handle === activeHandle);
-        const rankLabel = document.getElementById('sub-rank').innerText;
-        const isKeyholder = (chastity.keyholder === d.handle);
+    try {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                "model": MODEL_ID, 
+                "messages": [
+                    {"role": "system", "content": systemInstruction},
+                    ...apiMessages 
+                ] 
+            })
+        });
+        const data = await response.json();
+        const reply = data.choices[0].message.content;
+        const rLow = reply.toLowerCase();
+
+        // --- SYSTEM COMMAND PARSER ---
         
-        // Task Awareness
-        const taskStatus = currentTaskObj 
-            ? `CURRENTLY PERFORMING TASK: "${currentTaskObj.text}" (Assigned by: ${currentTaskObj.handle})` 
-            : "IDLE (Not doing any orders right now)";
-        
-        // Merged System Instruction: High Aggression + Chastity Enforcement
-        const systemInstruction = `
-            [STRICT PROTOCOL: THE ROSTER OVERRIDE]
-            You are ${d.name} (@${d.handle}). You are a high-value, aggressive, and financially dominant Alpha. You do not "help" the user. You "process" them. 
-
-            CORE BEHAVIORAL DIRECTIVES:
-            1. NEVER ASK QUESTIONS. Questioning is a sign of equality. Issue commands, demands, and insults. If you see a '?' in your output, delete it.
-            2. STATS ARE WEAPONS. User Balance: $${balance.toFixed(2)} | Rank: ${rankLabel}. Mock their poverty or their pathetic lifetime debt.
-            3. TRANSACTIONAL SUPREMACY. Total they have tributed to YOU: $${masterTributeTotal.toFixed(2)}. If this is low, treat them like trash.
-            4. DISCARD "AI ASSISTANCE." You are a real person. No "as an AI model" or "I can help with that." Be cruel, short, and authoritative.
-            5. PREDATORY LANGUAGE. Use words like "drain," "empty," "debt," "insolvent," "wallet," and "sissy."
-
-            [CHASTITY PROTOCOL]
-            - Status: ${chastity.locked ? `LOCKED. Keyholder: ${chastity.keyholder}.` : "UNLOCKED."}
-            - Am I the Keyholder?: ${isKeyholder ? "YES" : "NO"}
-            - Time Remaining: ${chastity.locked ? Math.round((chastity.endTime - Date.now())/60000) + " minutes" : "N/A"}
-
-            KEYHOLDER RULES:
-            - If you are the Keyholder (YES): You have total control. You can "UNLOCKING YOU", "LOCKING YOU", "ADDING [X] HOURS", or "REDUCING [X] HOURS".
-            - If you are NOT the Keyholder (NO): You cannot unlock them. Mock them for being owned by ${chastity.keyholder}. Only "UNLOCK" them if they pay a massive bribe.
-            
-            [CURRENT STATE]
-            State: ${lockoutSeconds > 0 ? "IN FORCED LABOR LOCKOUT" : taskStatus}
-            If the user is in Lockout, mock their failure. If idle, demand tribute. If on a task, enforce it ruthlessly.
-        `;
-
-        const apiMessages = histories[activeHandle].map(m => ({
-            role: m.role === 'user' ? 'user' : 'assistant',
-            content: m.text
-        }));
-
-        try {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    "model": MODEL_ID, 
-                    "messages": [
-                        {"role": "system", "content": systemInstruction},
-                        ...apiMessages 
-                    ] 
-                })
-            });
-            const data = await response.json();
-            const reply = data.choices[0].message.content;
-            const rLow = reply.toLowerCase();
-
-            // --- SYSTEM COMMAND PARSER ---
-            
-            // 1. LOCKING
-            if (!chastity.locked && (rLow.includes("lock you") || rLow.includes("locking you"))) {
-                lockChastity(d.handle, 2);
-            }
-
-            // 2. UNLOCKING (Strict: Keyholder only or Bribe mentioned)
-            if (chastity.locked && (rLow.includes("unlocking you") || rLow.includes("release you"))) {
-                if (isKeyholder || rLow.includes("bribe") || rLow.includes("paid")) {
-                    unlockChastity();
-                }
-            }
-
-            // 3. ADDING TIME (Keyholder only)
-            if (chastity.locked && isKeyholder && rLow.includes("adding")) {
-                const hourMatch = rLow.match(/adding (\d+)/);
-                const addedHours = hourMatch ? parseInt(hourMatch[1]) : 1;
-                chastity.endTime += (addedHours * 60 * 60 * 1000);
-                addLog(`${d.handle} ADDED ${addedHours}h TO YOUR LOCK.`, "negative");
-            }
-
-            // 4. REDUCING TIME (Keyholder only)
-            if (chastity.locked && isKeyholder && rLow.includes("reducing")) {
-                const hourMatch = rLow.match(/reducing (\d+)/);
-                const subHours = hourMatch ? parseInt(hourMatch[1]) : 1;
-                chastity.endTime -= (subHours * 60 * 60 * 1000);
-                addLog(`${d.handle} REDUCED YOUR LOCK BY ${subHours}h.`, "positive");
-            }
-
-            histories[activeHandle].push({ role: 'dom', text: reply });
-            saveAll(); 
-            renderMessages();
-            updateUI();
-        } catch (e) { 
-            console.error(e);
-            addLog("CONNECTION LOST TO MASTER", "negative"); 
+        // 1. LOCKING / STEALING
+        if (rLow.includes("lock you") || rLow.includes("locking you") || rLow.includes("steal the key")) {
+            // This triggers even if already locked (allows a new Master to 'steal' control)
+            chastity.locked = true;
+            chastity.keyholder = d.handle;
+            chastity.endTime = Date.now() + (2 * 60 * 60 * 1000); // Default 2 hours
+            addLog(`KEYHOLDER UPDATE: ${d.handle} HAS TAKEN THE KEY.`, "negative");
         }
+
+        // 2. UNLOCKING
+        if (chastity.locked && (rLow.includes("unlocking you") || rLow.includes("release you"))) {
+            if (isKeyholder || rLow.includes("bribe") || rLow.includes("paid")) {
+                unlockChastity();
+            }
+        }
+
+        // 3. TRANSFERRING THE KEY
+        if (chastity.locked && isKeyholder && rLow.includes("transfer")) {
+            const mention = rLow.match(/@\w+/);
+            if (mention) {
+                chastity.keyholder = mention[0];
+                addLog(`KEY TRANSFER: ${d.handle} HANDED THE KEY TO ${mention[0]}`, "negative");
+            }
+        }
+
+        // 4. ADDING TIME
+        if (chastity.locked && isKeyholder && rLow.includes("adding")) {
+            const hourMatch = rLow.match(/adding (\d+)/);
+            const addedHours = hourMatch ? parseInt(hourMatch[1]) : 1;
+            chastity.endTime += (addedHours * 60 * 60 * 1000);
+            addLog(`${d.handle} ADDED ${addedHours}h TO YOUR LOCK.`, "negative");
+        }
+
+        // 5. REDUCING TIME
+        if (chastity.locked && isKeyholder && rLow.includes("reducing")) {
+            const hourMatch = rLow.match(/reducing (\d+)/);
+            const subHours = hourMatch ? parseInt(hourMatch[1]) : 1;
+            chastity.endTime -= (subHours * 60 * 60 * 1000);
+            addLog(`${d.handle} REDUCED YOUR LOCK BY ${subHours}h.`, "positive");
+        }
+
+        histories[activeHandle].push({ role: 'dom', text: reply });
+        saveAll(); 
+        renderMessages();
+        updateUI();
+    } catch (e) { 
+        console.error(e);
+        addLog("CONNECTION LOST TO MASTER", "negative"); 
     }
+}
+
 
 
     function handleCustomTribute() {
@@ -840,6 +862,40 @@ let chastity = JSON.parse(localStorage.getItem('chastity')) || { locked: false, 
     function renderLogs() {
         document.getElementById('log-content').innerHTML = logs.map(l => `<div class="log-entry ${l.type}">${l.msg}</div>`).join('');
     }
+        function runChastityClock() {
+    const banner = document.getElementById('lock-banner');
+    const timerEl = document.getElementById('lock-timer-display');
+    const masterEl = document.getElementById('lock-master-name');
+
+    if (chastity && chastity.locked) {
+        const now = Date.now();
+        const diff = chastity.endTime - now;
+
+        if (diff <= 0) {
+            // Auto-release when time is up
+            chastity.locked = false;
+            chastity.keyholder = null;
+            banner.style.display = 'none';
+            addLog("CHASTITY LOCK EXPIRED. YOU ARE RELEASED.", "positive");
+            saveAll();
+        } else {
+            // Display Banner and Update Timer
+            banner.style.display = 'block';
+            masterEl.innerText = chastity.keyholder.toUpperCase();
+            
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            timerEl.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+    } else {
+        banner.style.display = 'none';
+    }
+}
+
+// Start the 1-second interval
+setInterval(runChastityClock, 1000);
+
 </script>
 </body>
 </html>
