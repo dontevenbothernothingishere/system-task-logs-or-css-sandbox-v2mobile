@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL: TOTAL RUINATION v2.8.6</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TERMINAL: TOTAL RUINATION v2.8.7</title>
     <style>
         :root { --blue: #1d9bf0; --red: #ff4d4d; --gold: #ffd700; --green: #28a745; --bg: #000; --panel: #0a0a0a; --purple: #a333ff; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -14,100 +14,95 @@
         @keyframes pulsePurple { 0% { box-shadow: inset 0 0 10px var(--purple); } 50% { box-shadow: inset 0 0 40px var(--purple); } 100% { box-shadow: inset 0 0 10px var(--purple); } }
         .chastity-active { animation: pulsePurple 3s infinite; border: 1px solid var(--purple) !important; }
 
-        .top-bar { background: var(--panel); border-bottom: 1px solid #222; padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
-        .stat h2 { margin: 0; font-family: monospace; font-size: 1.8rem; }
-        .stat p { margin: 0; font-size: 0.65rem; color: #666; text-transform: uppercase; }
+        .top-bar { background: var(--panel); border-bottom: 1px solid #222; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; z-index: 10; flex-wrap: wrap; }
+        .stat h2 { margin: 0; font-family: monospace; font-size: 1.2rem; }
+        .stat p { margin: 0; font-size: 0.55rem; color: #666; text-transform: uppercase; }
 
-        .nav-links { background: #050505; border-bottom: 1px solid #222; padding: 10px 25px; display: flex; gap: 20px; font-family: monospace; font-size: 0.85rem; }
-        .nav-links a { color: #666; text-decoration: none; transition: 0.2s; font-weight: bold; }
-        .nav-links a:hover { color: var(--gold); }
-        .nav-links a.active { color: var(--blue); }
-        
         .main-container { display: grid; grid-template-columns: 250px 300px 1fr 350px; flex-grow: 1; overflow: hidden; }
         
-        .burn-log { background: #030303; border-right: 1px solid #222; overflow-y: auto; font-family: monospace; font-size: 0.75rem; padding: 10px; color: #444; }
+        .burn-log { background: #030303; border-right: 1px solid #222; overflow-y: auto; font-family: monospace; font-size: 0.7rem; padding: 10px; color: #444; }
         .log-entry { margin-bottom: 5px; border-bottom: 1px solid #111; padding-bottom: 2px; }
         .log-entry.negative { color: var(--red); }
         .log-entry.positive { color: #0f0; }
         .log-entry.chastity { color: var(--purple); font-weight: bold; }
 
         .inbox { background: #050505; border-right: 1px solid #222; overflow-y: auto; }
-        .inbox-item { padding: 12px; border-bottom: 1px solid #111; cursor: pointer; border-left: 4px solid transparent; display: flex; align-items: center; transition: 0.2s; }
-        .inbox-item img { width: 45px; height: 45px; border-radius: 50%; margin-right: 12px; object-fit: cover; border: 1px solid #333; }
+        .inbox-item { padding: 10px; border-bottom: 1px solid #111; cursor: pointer; border-left: 4px solid transparent; display: flex; align-items: center; }
+        .inbox-item img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover; }
         .inbox-item.active { background: #0d1926; border-left-color: var(--blue); }
         
         .chat-section { display: flex; flex-direction: column; border-right: 1px solid #222; position: relative; height: 100%; overflow: hidden; }
-        #chat-box { flex-grow: 1; padding: 20px; overflow-y: scroll; display: flex; flex-direction: column; gap: 12px; background: #000; scroll-behavior: smooth; }
+        #chat-box { flex-grow: 1; padding: 15px; overflow-y: scroll; display: flex; flex-direction: column; gap: 10px; background: #000; }
         
-        .msg { max-width: 85%; padding: 12px; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; white-space: pre-wrap; }
-        .user-msg { align-self: flex-end; background: #111; color: #777; border: 1px solid #222; }
-        .dom-msg { align-self: flex-start; background: #001a2c; border-left: 4px solid var(--blue); color: #e0e0e0; }
+        .msg { max-width: 85%; padding: 10px; border-radius: 8px; font-size: 0.9rem; line-height: 1.4; word-wrap: break-word; white-space: pre-wrap; }
+        .user-msg { align-self: flex-end; background: #111; color: #999; border: 1px solid #222; }
+        .dom-msg { align-self: flex-start; background: #001a2c; border-left: 3px solid var(--blue); color: #fff; }
         
-        .command-panel { background: #050505; padding: 20px; display: flex; flex-direction: column; text-align: center; }
-        #task-display { font-size: 1.1rem; font-weight: bold; color: var(--gold); background: #111; padding: 15px; border-radius: 8px; min-height: 140px; border: 1px solid #222; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        #timer { font-size: 5rem; font-family: monospace; color: var(--red); margin: 20px 0; }
+        .command-panel { background: #050505; padding: 15px; display: flex; flex-direction: column; text-align: center; }
+        #task-display { font-size: 0.95rem; font-weight: bold; color: var(--gold); background: #111; padding: 12px; border-radius: 8px; min-height: 100px; display: flex; align-items: center; justify-content: center; border: 1px solid #222; }
+        #timer { font-size: 3.5rem; font-family: monospace; color: var(--red); margin: 10px 0; }
         
-        .btn { width: 100%; padding: 15px; margin-bottom: 10px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 4px; transition: 0.2s; }
+        .btn { width: 100%; padding: 12px; margin-bottom: 8px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 4px; }
         #gen-btn { background: var(--blue); color: #fff; }
         #comp-btn { background: #222; color: #444; }
-        #ruin-btn { background: #1a0000; color: #600; border: 1px solid #300; font-size: 0.7rem; margin-top: auto; }
+        #ruin-btn { background: #1a0000; color: #600; border: 1px solid #300; font-size: 0.6rem; }
         
-        #lockout { display: none; position: fixed; inset: 0; background: #000; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        #lockout { display: none; position: fixed; inset: 0; background: #000; z-index: 10000; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
 
-        .tribute-wrapper { display: flex; gap: 5px; }
-        #tribute-amount { width: 80px; background: #000; border: 1px solid #333; color: var(--green); padding: 12px; font-weight: bold; text-align: center; outline: none; }
+        @media (max-width: 900px) {
+            .main-container { display: flex; flex-direction: column; overflow-y: auto; }
+            .inbox { display: flex; flex-direction: row; overflow-x: auto; min-height: 80px; border-right: none; border-bottom: 1px solid #222; }
+            .inbox-item { min-width: 140px; flex-direction: column; text-align: center; border-left: none; border-bottom: 3px solid transparent; }
+            .inbox-item.active { border-bottom-color: var(--blue); }
+            .inbox-item img { margin-right: 0; margin-bottom: 5px; }
+            .chat-section { height: 50vh; order: 2; }
+            .command-panel { order: 1; }
+            .burn-log { height: 150px; order: 3; border-right: none; border-top: 1px solid #222; }
+        }
     </style>
 </head>
 <body onload="init()">
 
     <div class="top-bar">
         <div class="stat"><p>Level</p><h2 id="sub-rank" style="color:var(--gold)">RANK: NULL</h2></div>
-        <div id="status-effects" style="display:flex; gap:10px; align-items: center;"></div> 
+        <div id="status-effects"></div> 
         <div class="stat"><p>Balance</p><h2 id="bal" style="color:var(--blue)">$0.00</h2></div>
-        <div class="stat"><p>Debt Lifetime</p><h2 id="waste" style="color:var(--red)">$0.00</h2></div>
-    </div>
-
-    <div class="nav-links">
-        <a href="#" class="active">TERMINAL</a>
+        <div class="stat"><p>Wasted</p><h2 id="waste" style="color:var(--red)">$0.00</h2></div>
     </div>
 
     <div class="main-container">
-        <div class="burn-log">
-            <div style="color:#fff; border-bottom: 1px solid #333; margin-bottom: 10px; font-weight: bold;">BURN LOG</div>
-            <div id="log-content"></div>
-        </div>
-
+        <div class="burn-log"><div id="log-content"></div></div>
         <div class="inbox" id="inbox-list"></div>
         
         <div class="chat-section">
-            <div id="chat-header" style="padding:15px; border-bottom:1px solid #222; background: #050505; display: flex; align-items: center; font-weight: bold;">SELECT MASTER</div>
+            <div id="chat-header" style="padding:10px; border-bottom:1px solid #222; font-weight: bold; display: flex; align-items: center;"></div>
             <div id="chat-box"></div>
-            <div style="padding:15px; display:flex; gap:10px; background:#0a0a0a; border-top: 1px solid #222; flex-wrap: wrap;">
-                <input type="text" id="chat-in" style="flex-grow:1; background:#000; border:1px solid #333; color:#fff; padding:12px; min-width: 150px;" placeholder="Message..." onkeydown="if(event.key==='Enter') sendChat()">
-                <button onclick="sendChat()" style="background:var(--blue); border:none; color:#fff; padding:0 20px; cursor:pointer; font-weight:bold; min-height:40px;">SEND</button>
-                <div class="tribute-wrapper">
-                    <input type="number" id="tribute-amount" placeholder="$Amt" min="1">
-                    <button onclick="handleCustomTribute()" style="background:var(--green); border:none; color:#fff; padding:0 15px; cursor:pointer; font-weight:bold;">TRIB</button>
+            <div style="padding:10px; background:#0a0a0a; border-top:1px solid #222;">
+                <div style="display:flex; gap:5px; margin-bottom:5px;">
+                    <input type="text" id="chat-in" style="flex-grow:1; background:#000; border:1px solid #333; color:#fff; padding:10px;" placeholder="Message..." onkeydown="if(event.key==='Enter') sendChat()">
+                    <button onclick="sendChat()" style="background:var(--blue); border:none; color:#fff; padding:0 15px; font-weight:bold;">SEND</button>
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <input type="number" id="tribute-amount" style="width:100px; background:#000; border:1px solid #333; color:var(--green); padding:8px;" placeholder="$ Tribute">
+                    <button onclick="handleCustomTribute()" style="flex-grow:1; background:var(--green); border:none; color:#fff; font-weight:bold;">TRIBUTE</button>
                 </div>
             </div>
         </div>
 
         <div class="command-panel">
-            <div id="task-display">SYSTEM READY. WAITING FOR ORDERS.</div>
+            <div id="task-display">SYSTEM READY</div>
             <div id="timer">00:00</div>
-            <button id="gen-btn" class="btn" onclick="getTask()">RECEIVE ORDER</button>
+            <button id="gen-btn" class="btn" onclick="getTask()">NEW ORDER</button>
             <button id="comp-btn" class="btn" onclick="completeTask()" disabled>LOCKED</button>
-            <button id="ruin-btn" class="btn" onclick="triggerTotalRuin()">I RUINED IT / FAILED</button>
+            <button id="ruin-btn" class="btn" onclick="triggerTotalRuin()">FAILED / RUINED</button>
         </div>
     </div>
 
     <div id="lockout">
-        <h1 style="color:red; font-size:4rem; margin:0;">INSOLVENT</h1>
-        <h2 id="work-clock">01:00:00</h2>
-        <div id="labor-box">
-            <p id="phrase-to-type">I am a bankrupt slave to my roster.</p>
-            <input type="text" id="labor-input" autocomplete="off" onkeydown="checkLabor(event)">
-        </div>
+        <h1 style="color:red; margin:0;">INSOLVENT</h1>
+        <h2 id="work-clock" style="font-size:3rem; font-family:monospace; color:#fff;">3600</h2>
+        <p id="phrase-to-type" style="color:var(--gold); margin:15px 0;"></p>
+        <input type="text" id="labor-input" style="width:100%; padding:12px; background:#111; color:#fff; border:1px solid #333; text-align:center;" onkeydown="checkLabor(event)">
     </div>
 
     <script>
@@ -116,52 +111,36 @@
     const ghBase = "https://cdn.jsdelivr.net/gh/dontevenbothernothingishere/system-task-logs-or-css-sandbox-v2@main/";
 
     const doms = [
-        { handle: "@Sapnap", name: "Sapnap", pfp: ghBase + "4491.png", persona: "Arrogant, hostile Master. Despises you, mocks your debt. Demands tributes." },
-        { handle: "@RossLynch", name: "Ross Lynch", pfp: ghBase + "4489.png", persona: "Cold Hollywood Alpha. Bored by you. Only acknowledges high-value tributes." },
-        { handle: "@Roier", name: "Roier", pfp: ghBase + "4493.png", persona: "Chaotic, bilingual (Spanglish). Laughs at your poverty. Calls you 'pendejo'." },
-        { handle: "@Cellbit", name: "Cellbit", pfp: ghBase + "cellbit.jpg", persona: "Cold investigator. Deconstructs your psychological need to be drained." },
-        { handle: "@Quackity", name: "Quackity", pfp: ghBase + "quackity.jpg", persona: "Loud, aggressive, mocking. Screams at you to empty your wallet." },
-        { handle: "@fingoat7", name: "Master GOAT", pfp: ghBase + "4462.jpg", persona: "6ft 7 alpha Master. Responds to cash only." },
-        { handle: "@welshgodfeet", name: "welshgodfeet", pfp: ghBase + "4463.jpg", persona: "Cocky 21-year-old from Cardiff. Obsessed with feet and money." },
-        { handle: "@Master_S_alpha", name: "Master S", pfp: ghBase + "4464.jpg", persona: "Italian cashmaster. Wants to fuck your mind and wallet." },
-        { handle: "@tallfindom", name: "Ares", pfp: ghBase + "4465.jpg", persona: "6ft 4, size 13.5. Here to take what is his. No mercy." },
-        { handle: "@CashAlphaV", name: "Cash Alpha Master", pfp: ghBase + "4466.jpg", persona: "6ft 4 English muscle. Financial Domination expert." },
-        { handle: "@OliveRioter", name: "Lord Hørns", pfp: ghBase + "4467.jpg", persona: "BBC Master. Demands you submit NOW." },
-        { handle: "@CashAlphaVictor", name: "Alpha Victor", pfp: ghBase + "4470.jpg", persona: "24-year-old British 6ft 4 Master." },
-        { handle: "@ImMasterCharles", name: "Master Charles", pfp: ghBase + "4471.jpg", persona: "22-year-old Australian Athlete. Hostile." },
+        { handle: "@Sapnap", name: "Sapnap", pfp: ghBase + "4491.png", persona: "Arrogant, hostile Master. Cruel and dismissive." },
+        { handle: "@RossLynch", name: "Ross Lynch", pfp: ghBase + "4489.png", persona: "Cold Hollywood Alpha. Bored by you." },
+        { handle: "@Roier", name: "Roier", pfp: ghBase + "4493.png", persona: "Chaotic Spanglish Master. Laughs at you." },
+        { handle: "@Cellbit", name: "Cellbit", pfp: ghBase + "cellbit.jpg", persona: "Cold investigator. Deconstructs your weakness." },
+        { handle: "@Quackity", name: "Quackity", pfp: ghBase + "quackity.jpg", persona: "Loud, aggressive, mocking." },
+        { handle: "@fingoat7", name: "Master GOAT", pfp: ghBase + "4462.jpg", persona: "6ft 7 alpha. Demands financial submission." },
+        { handle: "@welshgodfeet", name: "welshgodfeet", pfp: ghBase + "4463.jpg", persona: "21-year-old cocky foot master." },
+        { handle: "@Master_S_alpha", name: "Master S", pfp: ghBase + "4464.jpg", persona: "Italian cashmaster alpha." },
+        { handle: "@tallfindom", name: "Ares", pfp: ghBase + "4465.jpg", persona: "6ft 4 size 13.5. Merciless." },
+        { handle: "@CashAlphaV", name: "Cash Alpha Master", pfp: ghBase + "4466.jpg", persona: "6ft 4 English muscle master." },
+        { handle: "@OliveRioter", name: "Lord Hørns", pfp: ghBase + "4467.jpg", persona: "BBC Master. Mental and financial domination." },
+        { handle: "@CashAlphaVictor", name: "Alpha Victor", pfp: ghBase + "4470.jpg", persona: "24-year-old 6ft 4 Brit." },
+        { handle: "@ImMasterCharles", name: "Master Charles", pfp: ghBase + "4471.jpg", persona: "22-year-old Australian athlete. Hostile." },
         { handle: "@AlphagodmasonX", name: "Muslce Godd", pfp: ghBase + "4472.jpg", persona: "19-year-old muscle alpha." },
-        { handle: "@GoonerSunny", name: "Sunny Blaze", pfp: ghBase + "4473.jpg", persona: "Proud gooner. Chaotic, loves mind-rot." }
+        { handle: "@GoonerSunny", name: "Sunny Blaze", pfp: ghBase + "4473.jpg", persona: "Gooner master. Chaotic mind-rot." }
     ];
 
     const taskTemplates = [
-        { text: "THE 99% THRESHOLD: Jerk off to the brink of explosion. Repeat for ${time}m. Leak = $50.", reward: 1200, sissySafe: false },
-        { text: "THE 'SISSY' STROKE: Use only non-dominant 2 fingers to tease for ${time}m.", reward: 800, sissySafe: false },
-        { text: "SPEED-EDGE GAUNTLET: Fast stroke 20s, hands off 10s. Repeat for ${time}m.", reward: 1000, sissySafe: false },
-        { text: "THE BALL-ANCHOR: Painful downward pull on balls for ${time}m. No stroking.", reward: 1500, sissySafe: true },
-        { text: "FRICTION RUIN: Dry grip for ${time}m. Failure = $100 to ${dom}.", reward: 900, sissySafe: false },
-        { text: "DEBTOR'S CONFESSION: Write a 200-word essay on your poverty. ${time}m.", reward: 700, sissySafe: true },
-        { text: "THE ROSTER BEG: Message 3 Masters 'I am a bankrupt sissy. Please drain me.' ${time}m.", reward: 850, sissySafe: true },
-        { text: "REPETITIVE SUBMISSION: Type 'I AM NOTHING BUT A WALLET' 50 times. ${time}m.", reward: 600, sissySafe: true },
-        { text: "THE APOLOGY TOUR: Apologize for 'wasting' money on yourself for ${time}m.", reward: 750, sissySafe: true },
-        { text: "THE ATM PROTOCOL: Click 'Tribute' ($10) every 60 seconds for ${time}m.", reward: 2000, sissySafe: true },
-        { text: "BALANCE WORSHIP: Stare at the balance for ${time}m. Realize ${dom} owns you.", reward: 1100, sissySafe: true },
-        { text: "BANKRUPTCY CONFESSION: Explain exactly how much money you have left to ${dom}. ${time}m.", reward: 1300, sissySafe: true },
-        { text: "THE GOONER STARE: Scroll Brainrot Gallery at max speed while stroking. ${time}m.", reward: 500, sissySafe: false },
-        { text: "NAME ERASE: Refer to yourself only as 'Debt-Pig' or 'Slave' for ${time}m.", reward: 400, sissySafe: true },
-        { text: "ALPHA COMPARISON: List 10 physical reasons why ${dom} is superior. ${time}m.", reward: 900, sissySafe: true },
-        { text: "NIPPLE PINCH: Apply firm pressure to nipples for ${time}m. Sissy sensitivity.", reward: 1200, sissySafe: true }
+        { text: "THE 99% THRESHOLD: Edge for ${time}m. No leaking.", reward: 1200, sissySafe: false },
+        { text: "THE 'SISSY' STROKE: 2 fingers only for ${time}m.", reward: 800, sissySafe: false },
+        { text: "THE BALL-ANCHOR: Pull down on balls for ${time}m. No stroking.", reward: 1500, sissySafe: true },
+        { text: "DEBTOR'S CONFESSION: Message ${dom} an essay on your worthlessness. ${time}m.", reward: 700, sissySafe: true },
+        { text: "ATM PROTOCOL: Tribute $10 every minute for ${time}m.", reward: 2000, sissySafe: true },
+        { text: "NAME ERASE: Call yourself 'Debt-Pig' for the next ${time}m.", reward: 400, sissySafe: true }
     ];
 
-    const ranks = [
-        { name: "BROKE SISSY", threshold: 0 },
-        { name: "DEBT SLAVE", threshold: 1000 },
-        { name: "POCKET HOLE", threshold: 5000 },
-        { name: "INSOLVENT WRECK", threshold: 10000 },
-        { name: "TOTAL LOSS", threshold: 25000 }
-    ];
+    const laborPhrases = ["I am a bankrupt sissy.", "My cock belongs to the roster.", "I deserve to be locked out.", "Submission is my only purpose."];
+    const ranks = [{ name: "BROKE SISSY", threshold: 0 }, { name: "DEBT SLAVE", threshold: 1000 }, { name: "TOTAL LOSS", threshold: 10000 }];
 
-    let balance, wasted, activeHandle, histories, logs, currentTaskObj, lockoutSeconds, chastityLock;
-    let timer, lockoutTimer;
+    let balance, wasted, activeHandle, histories, logs, currentTaskObj, lockoutSeconds, chastityLock, timer, lockoutTimer;
 
     function init() {
         balance = parseFloat(localStorage.getItem('fakeBalance')) || 1000;
@@ -172,66 +151,42 @@
         currentTaskObj = JSON.parse(localStorage.getItem('currentTask')) || null;
         lockoutSeconds = parseInt(localStorage.getItem('lockoutTime')) || 0;
         chastityLock = JSON.parse(localStorage.getItem('chastityLock')) || { active: false, keyholder: null, endTime: 0 };
-
         doms.forEach(d => { if(!histories[d.handle]) histories[d.handle] = []; });
-        
-        switchChat(activeHandle); 
-        updateUI(); renderLogs(); checkChastityStatus();
+        switchChat(activeHandle); updateUI(); renderLogs(); checkChastityStatus();
         if (lockoutSeconds > 0) showLockout(true);
         if (currentTaskObj) resumeTask();
     }
 
     function saveAll() {
-        localStorage.setItem('fakeBalance', balance);
-        localStorage.setItem('totalWasted', wasted);
-        localStorage.setItem('chats', JSON.stringify(histories));
-        localStorage.setItem('burnLogs', JSON.stringify(logs));
-        localStorage.setItem('activeHandle', activeHandle);
-        localStorage.setItem('currentTask', JSON.stringify(currentTaskObj));
-        localStorage.setItem('lockoutTime', lockoutSeconds);
-        localStorage.setItem('chastityLock', JSON.stringify(chastityLock));
+        localStorage.setItem('fakeBalance', balance); localStorage.setItem('totalWasted', wasted);
+        localStorage.setItem('chats', JSON.stringify(histories)); localStorage.setItem('burnLogs', JSON.stringify(logs));
+        localStorage.setItem('activeHandle', activeHandle); localStorage.setItem('currentTask', JSON.stringify(currentTaskObj));
+        localStorage.setItem('lockoutTime', lockoutSeconds); localStorage.setItem('chastityLock', JSON.stringify(chastityLock));
     }
 
     function updateUI() {
         document.getElementById('bal').innerText = `$${balance.toFixed(2)}`;
         document.getElementById('waste').innerText = `$${wasted.toFixed(2)}`;
-        let currentRank = ranks[0].name;
-        ranks.forEach(r => { if(wasted >= r.threshold) currentRank = r.name; });
-        document.getElementById('sub-rank').innerText = "RANK: " + currentRank;
+        let rName = ranks[0].name; ranks.forEach(r => { if(wasted >= r.threshold) rName = r.name; });
+        document.getElementById('sub-rank').innerText = "RANK: " + rName;
         saveAll();
     }
 
     function switchChat(handle) {
         activeHandle = handle; 
         const d = doms.find(x => x.handle === handle);
-        document.getElementById('chat-header').innerHTML = `<img src="${d.pfp}" style="width:35px;height:35px;border-radius:50%;margin-right:12px;"><span>${d.name}</span>`;
+        document.getElementById('chat-header').innerHTML = `<img src="${d.pfp}" style="width:30px;height:30px;border-radius:50%;margin-right:10px;">${d.name}`;
         renderInbox(); renderMessages(); saveAll();
     }
 
     function renderInbox() {
-        document.getElementById('inbox-list').innerHTML = doms.map(d => `
-            <div class="inbox-item ${d.handle === activeHandle ? 'active' : ''}" onclick="switchChat('${d.handle}')">
-                <img src="${d.pfp}"><div><strong>${d.name}</strong></div>
-            </div>`).join('');
+        document.getElementById('inbox-list').innerHTML = doms.map(d => `<div class="inbox-item ${d.handle === activeHandle ? 'active' : ''}" onclick="switchChat('${d.handle}')"><img src="${d.pfp}"><span>${d.name}</span></div>`).join('');
     }
 
     function renderMessages() {
         const box = document.getElementById('chat-box');
-        box.innerHTML = (histories[activeHandle] || []).map(m => `
-            <div class="msg ${m.role === 'user' ? 'user-msg' : 'dom-msg'}">${m.text}</div>`).join('');
+        box.innerHTML = (histories[activeHandle] || []).map(m => `<div class="msg ${m.role === 'user' ? 'user-msg' : 'dom-msg'}">${m.text}</div>`).join('');
         box.scrollTop = box.scrollHeight;
-    }
-
-    function getAIContextAlert() {
-        let taskText = currentTaskObj ? `User is currently doing: ${currentTaskObj.text}` : "User is IDLE.";
-        let cStatus = "UNLOCKED.";
-        if (chastityLock.active) {
-            cStatus = chastityLock.keyholder === activeHandle ? `LOCKED BY YOU until ${new Date(chastityLock.endTime).toLocaleTimeString()}. Use [ADD:X] or [REMOVE:X] sparingly.` : `LOCKED by ${chastityLock.keyholder}.`;
-        } else {
-            cStatus = "UNLOCKED. Use [LOCK:X] to lock them (X=hours). Only use if they annoy you or send a bad tribute.";
-        }
-
-        return `\n\n[CONTEXT: ${taskText} | CHASTITY: ${cStatus} | Respond like a real person. Be moody/unpredictable. Do not repeat phrases.]`;
     }
 
     async function sendChat(specialText = null) {
@@ -239,44 +194,29 @@
         const text = specialText || input.value;
         if(!text) return;
         if(!specialText) input.value = "";
-
         histories[activeHandle].push({ role: 'user', text: text });
         renderMessages();
-
         const d = doms.find(x => x.handle === activeHandle);
-        const context = getAIContextAlert();
-        // Get last 10 messages for memory
+        let taskCtx = currentTaskObj ? `User is doing: ${currentTaskObj.text}` : "User is idle.";
+        let cCtx = chastityLock.active ? (chastityLock.keyholder === activeHandle ? "You hold their key. [ADD:X] or [REMOVE:X] to change time." : `Locked by ${chastityLock.keyholder}`) : "Unlocked. [LOCK:X] to lock.";
         const memory = histories[activeHandle].slice(-10).map(m => ({"role": m.role === 'user' ? 'user' : 'assistant', "content": m.text}));
 
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    "model": MODEL_ID, 
-                    "messages": [
-                        {"role": "system", "content": d.persona + context},
-                        ...memory
-                    ],
-                    "temperature": 0.88
-                })
+                body: JSON.stringify({ "model": MODEL_ID, "messages": [{"role": "system", "content": d.persona + `\n${taskCtx}\n${cCtx}\nBE HUMAN. MOODY.`}, ...memory], "temperature": 0.88 })
             });
             const data = await response.json();
-            let aiText = data.choices[0].message.content;
-
-            aiText = processAICommands(aiText);
+            let aiText = processAICommands(data.choices[0].message.content);
             histories[activeHandle].push({ role: 'dom', text: aiText });
             saveAll(); renderMessages();
-        } catch (e) { addLog("Master unreachable...", "negative"); }
+        } catch (e) { addLog("Master Offline", "negative"); }
     }
 
     function handleCustomTribute() {
         const val = parseFloat(document.getElementById('tribute-amount').value);
-        if (val > 0 && balance >= val) {
-            balance -= val; wasted += val; updateUI();
-            sendChat(`*TRIBUTE: $${val}*`);
-            document.getElementById('tribute-amount').value = '';
-        }
+        if (val > 0 && balance >= val) { balance -= val; wasted += val; updateUI(); sendChat(`*TRIBUTE: $${val}*`); document.getElementById('tribute-amount').value = ''; }
     }
 
     function processAICommands(aiText) {
@@ -288,52 +228,33 @@
         }
         if (chastityLock.active && chastityLock.keyholder === activeHandle) {
             const addMatch = aiText.match(/\[ADD:(\d+)\]/i);
-            if (addMatch) {
-                chastityLock.endTime += (parseInt(addMatch[1]) * 3600000);
-                addLog(`TIME ADDED`, "chastity");
-                aiText = aiText.replace(/\[ADD:\d+\]/ig, '');
-            }
+            if (addMatch) { chastityLock.endTime += (parseInt(addMatch[1]) * 3600000); addLog(`TIME ADDED`, "chastity"); aiText = aiText.replace(/\[ADD:\d+\]/ig, ''); }
             const remMatch = aiText.match(/\[REMOVE:(\d+)\]/i);
-            if (remMatch) {
-                chastityLock.endTime -= (parseInt(remMatch[1]) * 3600000);
-                addLog(`TIME REMOVED`, "positive");
-                aiText = aiText.replace(/\[REMOVE:\d+\]/ig, '');
-            }
+            if (remMatch) { chastityLock.endTime -= (parseInt(remMatch[1]) * 3600000); addLog(`TIME REMOVED`, "positive"); aiText = aiText.replace(/\[REMOVE:\d+\]/ig, ''); }
         }
-        checkChastityStatus();
-        return aiText;
+        checkChastityStatus(); return aiText;
     }
 
     function checkChastityStatus() {
         const effects = document.getElementById('status-effects');
         const now = Date.now();
         if (chastityLock.active && now < chastityLock.endTime) {
-            effects.innerHTML = `<div style="background:var(--purple); color:white; padding:5px; border-radius:4px; font-size:0.7rem;">🔒 ${chastityLock.keyholder}</div>`;
+            const remain = Math.ceil((chastityLock.endTime - now) / 60000);
+            effects.innerHTML = `<span style="background:var(--purple); padding:3px 8px; border-radius:4px; font-size:0.7rem;">🔒 ${remain}m</span>`;
             document.getElementById('task-display').classList.add('chastity-active');
         } else {
-            if(chastityLock.active) addLog("FREE AT LAST", "positive");
-            chastityLock.active = false;
-            effects.innerHTML = "";
+            if(chastityLock.active) addLog("FREE", "positive");
+            chastityLock.active = false; effects.innerHTML = "";
             document.getElementById('task-display').classList.remove('chastity-active');
         }
-        saveAll();
     }
 
     function getTask() {
-        if (!chastityLock.active && Math.random() < 0.15) { triggerChastitySentence(); return; }
         const pool = chastityLock.active ? taskTemplates.filter(t => t.sissySafe) : taskTemplates;
         const t = pool[Math.floor(Math.random()*pool.length)];
         currentTaskObj = { handle: activeHandle, endTime: Date.now() + 600000, reward: t.reward, text: t.text.replace("${dom}", activeHandle).replace("${time}", 10) };
         document.getElementById('task-display').innerText = currentTaskObj.text;
-        document.getElementById('gen-btn').disabled = true;
-        startTimer(600);
-        saveAll();
-    }
-
-    function triggerChastitySentence() {
-        chastityLock = { active: true, keyholder: activeHandle, endTime: Date.now() + 3600000 * 6 };
-        addLog("RANDOM LOCKDOWN", "chastity");
-        checkChastityStatus();
+        document.getElementById('gen-btn').disabled = true; startTimer(600); saveAll();
     }
 
     function startTimer(sec) {
@@ -346,40 +267,50 @@
     }
 
     function completeTask() {
-        balance += currentTaskObj.reward;
-        addLog(`+$${currentTaskObj.reward}`, "positive");
-        currentTaskObj = null; 
-        document.getElementById('gen-btn').disabled = false;
+        balance += currentTaskObj.reward; addLog(`+$${currentTaskObj.reward}`, "positive");
+        currentTaskObj = null; document.getElementById('gen-btn').disabled = false;
         document.getElementById('comp-btn').disabled = true;
-        document.getElementById('task-display').innerText = "SYSTEM READY.";
-        updateUI();
+        document.getElementById('task-display').innerText = "SYSTEM READY"; updateUI();
     }
 
     function triggerTotalRuin() {
-        balance = 0; chastityLock.active = false;
-        showLockout(); updateUI();
+        balance = 0; chastityLock.active = false; showLockout(); updateUI();
     }
 
     function showLockout(resume = false) {
         document.getElementById('lockout').style.display = 'flex';
         if(!resume) lockoutSeconds = 3600;
+        document.getElementById('phrase-to-type').innerText = laborPhrases[0];
         clearInterval(lockoutTimer);
         lockoutTimer = setInterval(() => {
             lockoutSeconds--; saveAll();
-            if(lockoutSeconds <= 0) { document.getElementById('lockout').style.display = 'none'; clearInterval(lockoutTimer); }
+            if(lockoutSeconds <= 0) { document.getElementById('lockout').style.display = 'none'; clearInterval(lockoutTimer); balance = 1000; updateUI(); }
             document.getElementById('work-clock').innerText = lockoutSeconds;
         }, 1000);
     }
 
-    function addLog(m, t) {
-        logs.unshift({ msg: m, type: t });
-        renderLogs();
+    function checkLabor(e) {
+        if(e.key === 'Enter') {
+            const input = document.getElementById('labor-input');
+            if(input.value === document.getElementById('phrase-to-type').innerText) {
+                lockoutSeconds = Math.max(0, lockoutSeconds - 120);
+                document.getElementById('phrase-to-type').innerText = laborPhrases[Math.floor(Math.random()*laborPhrases.length)];
+            } else { lockoutSeconds += 300; }
+            input.value = "";
+        }
     }
 
-    function renderLogs() {
+    function addLog(m, t) {
+        logs.unshift({ msg: m, type: t });
         document.getElementById('log-content').innerHTML = logs.map(l => `<div class="log-entry ${l.type}">${l.msg}</div>`).join('');
+    }
+
+    function resumeTask() {
+        let rem = Math.floor((currentTaskObj.endTime - Date.now()) / 1000);
+        if(rem > 0) { document.getElementById('task-display').innerText = currentTaskObj.text; document.getElementById('gen-btn').disabled = true; startTimer(rem); }
     }
     </script>
 </body>
 </html>
+
 
