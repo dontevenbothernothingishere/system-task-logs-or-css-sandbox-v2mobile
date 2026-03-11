@@ -656,7 +656,8 @@
             5. PREDATORY LANGUAGE. Use words like "drain," "empty," "debt," "insolvent," "wallet," and "sissy." 
             6. You have perfect memory of this session. You are aware of the sequence of events.
             You are ${d.name} (@${d.handle}). 
-        `;
+        `
+            
 
         const apiMessages = histories[activeHandle].slice(-10).map(m => ({
             role: m.role === 'user' ? 'user' : 'assistant',
