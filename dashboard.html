@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TERMINAL: TOTALITARIAN v4.0.0</title>
+    <title>TERMINAL: TOTALITARIAN v4.1.0</title>
     <style>
         :root {
             --blue: #00a2ff; --red: #ff3131; --gold: #ffcc00; --green: #39ff14;
@@ -17,20 +17,19 @@
             margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
         }
 
-        /* --- Animations --- */
         @keyframes pulsePurple { 0% { box-shadow: 0 0 5px var(--purple); } 50% { box-shadow: 0 0 25px var(--purple); } 100% { box-shadow: 0 0 5px var(--purple); } }
-        @keyframes strobeRed { 0% { background: #000; } 50% { background: #1a0000; } 100% { background: #000; } }
         .chastity-active { border: 2px solid var(--purple) !important; animation: pulsePurple 2s infinite; }
 
-        /* --- Layout --- */
+        /* --- Header & Stats --- */
         .header { 
             background: var(--panel); border-bottom: 2px solid var(--border); 
             display: grid; grid-template-columns: repeat(2, 1fr); padding: 10px; gap: 8px; 
         }
         .stat-card { background: #050505; padding: 10px; border: 1px solid var(--border); border-radius: 5px; }
         .stat-card p { margin: 0; font-size: 0.6rem; color: #666; text-transform: uppercase; font-weight: 900; }
-        .stat-card h2 { margin: 0; font-size: 1.2rem; font-family: monospace; }
+        .stat-card h2 { margin: 0; font-size: 1.1rem; font-family: monospace; }
 
+        /* --- Master Roster --- */
         .nav-roster { 
             display: flex; overflow-x: auto; background: #020202; 
             padding: 10px; gap: 12px; border-bottom: 1px solid var(--border);
@@ -38,7 +37,7 @@
         }
         .nav-roster::-webkit-scrollbar { display: none; }
         .master-thumb { 
-            min-width: 60px; text-align: center; opacity: 0.5; transition: 0.3s; position: relative;
+            min-width: 60px; text-align: center; opacity: 0.4; transition: 0.3s; cursor: pointer;
         }
         .master-thumb.active { opacity: 1; transform: scale(1.1); }
         .master-thumb img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; object-fit: cover; }
@@ -49,8 +48,8 @@
 
         /* --- Task Panel --- */
         .task-area { background: #080808; border-bottom: 1px solid var(--border); padding: 15px; text-align: center; }
-        #task-desc { color: var(--gold); font-weight: bold; font-size: 0.9rem; min-height: 40px; margin-bottom: 10px; line-height: 1.4; }
-        #task-clock { font-size: 3rem; font-family: monospace; color: var(--red); font-weight: 900; margin: 5px 0; }
+        #task-desc { color: var(--gold); font-weight: bold; font-size: 0.85rem; min-height: 40px; margin-bottom: 10px; line-height: 1.4; }
+        #task-clock { font-size: 2.8rem; font-family: monospace; color: var(--red); font-weight: 900; margin: 5px 0; }
         .task-controls { display: flex; gap: 8px; }
         .task-controls button { 
             flex: 1; padding: 12px; border: none; border-radius: 4px; 
@@ -60,14 +59,14 @@
         .btn-done { background: var(--green); color: #000; }
         .btn-fail { background: #200; color: var(--red); border: 1px solid #400 !important; }
 
-        /* --- Chat Area --- */
+        /* --- Chat Window --- */
         .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #000; }
-        #chat-window { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        #chat-window { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
         .msg { max-width: 85%; padding: 12px; border-radius: 12px; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
         .msg.user { align-self: flex-end; background: #111; color: #888; border: 1px solid #222; border-bottom-right-radius: 2px; }
         .msg.dom { align-self: flex-start; background: #001a2c; color: #fff; border-left: 4px solid var(--blue); border-bottom-left-radius: 2px; }
 
-        /* --- Input --- */
+        /* --- Input Bar --- */
         .input-box { background: var(--panel); border-top: 1px solid var(--border); padding: 12px; }
         .input-row { display: flex; gap: 8px; margin-bottom: 8px; }
         #chat-in { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; outline: none; }
@@ -75,22 +74,20 @@
         #trib-amt { width: 90px; background: #000; border: 1px solid #333; color: var(--green); padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 1rem; }
         .btn-trib { flex: 1; background: var(--green); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: 900; text-transform: uppercase; font-size: 0.8rem; }
 
-        /* --- Overlays --- */
-        #status-ribbon { background: var(--purple); color: #fff; font-size: 0.7rem; font-weight: bold; text-align: center; padding: 4px; display: none; text-transform: uppercase; letter-spacing: 1px; }
-        
+        /* --- Lockout System --- */
         #lockout-screen { 
             display: none; position: fixed; inset: 0; background: #000; z-index: 99999; 
             flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center;
         }
-        #lockout-screen h1 { color: var(--red); font-size: 2.5rem; margin: 0; }
-        #lockout-timer { font-size: 4rem; font-family: monospace; margin: 20px 0; color: #fff; }
+        #lockout-timer { font-size: 4rem; font-family: monospace; margin: 20px 0; color: var(--red); text-shadow: 0 0 20px rgba(255,0,0,0.5); }
         #labor-target { color: var(--gold); font-style: italic; margin-bottom: 20px; font-size: 1.1rem; background: #111; padding: 15px; border-radius: 10px; width: 100%; max-width: 400px; }
         #labor-input { width: 100%; max-width: 400px; background: #000; border: 2px solid #333; color: #fff; padding: 15px; text-align: center; font-size: 1.1rem; border-radius: 10px; outline: none; }
 
-        #log-drawer { height: 80px; background: #030303; border-top: 1px solid var(--border); overflow-y: auto; padding: 8px; font-family: monospace; font-size: 0.65rem; color: #444; }
+        #log-drawer { height: 100px; background: #030303; border-top: 2px solid #111; overflow-y: auto; padding: 8px; font-family: monospace; font-size: 0.65rem; color: #444; }
         .log-p { color: var(--green); }
-        .log-n { color: var(--red); }
+        .log-n { color: var(--red); font-weight: bold; }
         .log-c { color: var(--purple); }
+        #status-ribbon { background: var(--purple); color: #fff; font-size: 0.7rem; font-weight: 900; text-align: center; padding: 5px; display: none; text-transform: uppercase; }
 
     </style>
 </head>
@@ -99,22 +96,22 @@
     <div id="status-ribbon">CHASTITY ACTIVE - NO MERCY</div>
 
     <div class="header">
-        <div class="stat-card"><p>Sissy Level</p><h2 id="rank-ui" style="color:var(--gold)">Broke Sissy</h2></div>
-        <div class="stat-card"><p>Account Balance</p><h2 id="bal-ui" style="color:var(--green)">$0.00</h2></div>
-        <div class="stat-card"><p>Wasted Life</p><h2 id="waste-ui" style="color:var(--red)">$0.00</h2></div>
-        <div class="stat-card"><p>Interest Rate</p><h2 style="color:var(--blue)">0.5% / min</h2></div>
+        <div class="stat-card"><p>Sissy Rank</p><h2 id="rank-ui" style="color:var(--gold)">NULL</h2></div>
+        <div class="stat-card"><p>Liquid Assets</p><h2 id="bal-ui" style="color:var(--green)">$0.00</h2></div>
+        <div class="stat-card"><p>Total Wasted</p><h2 id="waste-ui" style="color:var(--red)">$0.00</h2></div>
+        <div class="stat-card"><p>Connection</p><h2 id="conn-status" style="color:var(--blue)">STABLE</h2></div>
     </div>
 
     <div class="nav-roster" id="roster"></div>
 
     <div class="main">
         <div class="task-area" id="task-ui">
-            <div id="task-desc">ESTABLISHING CONNECTION...</div>
+            <div id="task-desc">INITIALIZING SECURE LINK...</div>
             <div id="task-clock">00:00</div>
             <div class="task-controls">
                 <button id="btn-get" class="btn-order" onclick="generateTask()">Receive Orders</button>
                 <button id="btn-done" class="btn-done" onclick="finishTask()" disabled>Task Finished</button>
-                <button id="btn-fail" class="btn-fail" onclick="forceRuin()">Failed / Ruined</button>
+                <button id="btn-fail" class="btn-fail" onclick="forceRuin()">Total System Failure</button>
             </div>
         </div>
 
@@ -122,12 +119,12 @@
             <div id="chat-window"></div>
             <div class="input-box">
                 <div class="input-row">
-                    <input type="text" id="chat-in" placeholder="Speak to Master..." onkeydown="if(event.key==='Enter') sendUserMsg()">
-                    <button onclick="sendUserMsg()" style="background:var(--blue); border:none; padding:0 20px; border-radius:8px; color:#fff; font-weight:bold;">SEND</button>
+                    <input type="text" id="chat-in" placeholder="Submit message to roster..." onkeydown="if(event.key==='Enter') sendUserMsg()">
+                    <button onclick="sendUserMsg()" style="background:var(--blue); border:none; padding:0 20px; border-radius:8px; color:#fff; font-weight:900;">SEND</button>
                 </div>
                 <div class="tribute-row">
-                    <input type="number" id="trib-amt" placeholder="$0.00" min="1">
-                    <button onclick="instantTribute()" class="btn-trib">Immediate Financial Tribute</button>
+                    <input type="number" id="trib-amt" placeholder="$0.00">
+                    <button onclick="instantTribute()" class="btn-trib">Direct Financial Drain</button>
                 </div>
             </div>
         </div>
@@ -136,55 +133,51 @@
     <div id="log-drawer"></div>
 
     <div id="lockout-screen">
-        <h1>INSOLVENT</h1>
+        <h1 style="color:red; letter-spacing:10px;">INSOLVENT</h1>
         <div id="lockout-timer">01:00:00</div>
-        <p id="labor-target">Loading labor protocol...</p>
-        <input type="text" id="labor-input" placeholder="Type here to reduce time..." onkeydown="handleLabor(event)" autocomplete="off">
-        <p style="font-size:0.6rem; color:#444; margin-top:20px; text-transform:uppercase;">Every typo adds 10 minutes to your sentence.</p>
+        <p id="labor-target">...</p>
+        <input type="text" id="labor-input" onkeydown="handleLabor(event)" autocomplete="off">
+        <p style="font-size:0.6rem; color:#444; margin-top:20px;">TYPOS INCREASE SENTENCE BY 10 MINUTES.</p>
     </div>
 
     <script>
-    const GROQ_KEY = "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";
+    const API_KEY = "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";
+    const ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
     const MODEL = "llama-3.3-70b-versatile";
     const gh = "https://cdn.jsdelivr.net/gh/dontevenbothernothingishere/system-task-logs-or-css-sandbox-v2@main/";
 
     const masters = [
-        { h: "@Sapnap", n: "Sapnap", p: gh+"4491.png", s: "Hostile, aggressive Master. Hates weak debtors." },
-        { h: "@RossLynch", n: "Ross Lynch", p: gh+"4489.png", s: "Cold, Hollywood elite. Only notices big money." },
-        { h: "@Roier", n: "Roier", p: gh+"4493.png", s: "Chaotic Spanglish. Mocks your poverty constantly." },
-        { h: "@Cellbit", n: "Cellbit", p: gh+"cellbit.jpg", s: "Cold, analytical. Deconstructs your lack of control." },
-        { h: "@Quackity", n: "Quackity", p: gh+"quackity.jpg", s: "High energy, loud findom. Demands bank account access." },
-        { h: "@fingoat7", n: "Master GOAT", p: gh+"4462.jpg", s: "6ft 7 Alpha. Expectations: Total financial submission." },
-        { h: "@welshgodfeet", n: "Welsh God", p: gh+"4463.jpg", s: "21yo cocky Brit. Obsessed with his power and your cash." },
-        { h: "@Master_S_alpha", n: "Master S", p: gh+"4464.jpg", s: "Italian Alpha. Purely focused on your drain." },
-        { h: "@tallfindom", n: "Ares", p: gh+"4465.jpg", s: "6ft 4, size 13.5. Merciless giant. No pity." },
-        { h: "@CashAlphaV", n: "Alpha Victor", p: gh+"4466.jpg", s: "6ft 4 British muscle. Demands proof of your ruin." },
-        { h: "@OliveRioter", n: "Lord Hørns", p: gh+"4467.jpg", s: "BBC Master. Psychological and financial domination." },
-        { h: "@ImMasterCharles", n: "Charles", p: gh+"4471.jpg", s: "Australian athlete. Extremely hostile." },
-        { h: "@AlphagodmasonX", n: "Muscle God", p: gh+"4472.jpg", s: "19yo Muscle Alpha. Treats you like a wallet." },
-        { h: "@GoonerSunny", n: "Sunny Blaze", p: gh+"4473.jpg", s: "Chaotic gooner master. Loves brainrot and ruin." }
+        { h: "@Sapnap", n: "Sapnap", p: gh+"4491.png", s: "Vicious and arrogant. Mocks your small bank balance." },
+        { h: "@RossLynch", n: "Ross Lynch", p: gh+"4489.png", s: "Cold celebrity Alpha. Treats you like a fan-girl debtor." },
+        { h: "@Roier", n: "Roier", p: gh+"4493.png", s: "Chaotic Spanglish master. Laughs at your debt in two languages." },
+        { h: "@Cellbit", n: "Cellbit", p: gh+"cellbit.jpg", s: "Cold detective. Analyzes your failures with disgust." },
+        { h: "@Quackity", n: "Quackity", p: gh+"quackity.jpg", s: "Unpredictable and loud. Demands tributes immediately." },
+        { h: "@fingoat7", n: "Master GOAT", p: gh+"4462.jpg", s: "6ft 7 Alpha. Demands total financial control." },
+        { h: "@welshgodfeet", n: "Welsh God", p: gh+"4463.jpg", s: "21yo cocky Brit. Obsessed with your submission." },
+        { h: "@Master_S_alpha", n: "Master S", p: gh+"4464.jpg", s: "Italian Cash Master. Focused on pure wallet drainage." },
+        { h: "@tallfindom", n: "Ares", p: gh+"4465.jpg", s: "6ft 4 Giant. Merciless findom. No empathy." },
+        { h: "@CashAlphaV", n: "Alpha Victor", p: gh+"4466.jpg", s: "English muscle master. Demands bank receipts." },
+        { h: "@OliveRioter", n: "Lord Hørns", p: gh+"4467.jpg", s: "BBC Master. Psychological and financial ruin specialist." },
+        { h: "@ImMasterCharles", n: "Charles", p: gh+"4471.jpg", s: "Australian athlete. Extremely aggressive." },
+        { h: "@AlphagodmasonX", n: "Muscle God", p: gh+"4472.jpg", s: "19yo Muscle Alpha. Treats you like trash." },
+        { h: "@GoonerSunny", n: "Sunny Blaze", p: gh+"4473.jpg", s: "Chaotic gooner. Loves mental ruin and drain." }
     ];
 
     const tasks = [
-        { t: "THE 99% THRESHOLD: Edge to the brink. Freeze for 30s. No release. ${time}m.", r: 2500, sissy: false },
+        { t: "THE 99% THRESHOLD: Edge to the limit. Freeze 30s. No release. ${time}m.", r: 2500, sissy: false },
         { t: "FINANCIAL STRIP: Tribute $5 every 30s to ${dom} for ${time}m.", r: 4000, sissy: true },
-        { t: "SISSY WRITING: In chat, explain why you are ${dom}'s property. ${time}m.", r: 800, sissy: true },
-        { t: "BALL STRETCH: Downward pull on balls. No stroking. ${time}m.", r: 1500, sissy: true },
-        { t: "FRICTION GAUNTLET: Fast strokes, zero lube. Painful. ${time}m.", r: 3000, sissy: false },
-        { t: "ATM PROTOCOL: Type 'INSERT CASH' 100 times in chat. ${time}m.", r: 500, sissy: true },
-        { t: "ROSTER APOLOGY: Message 3 Masters telling them you're bankrupt. ${time}m.", r: 1200, sissy: true },
-        { t: "NIPPLE TORTURE: Constant hard pinch and twist. ${time}m.", r: 2000, sissy: true },
-        { t: "VOICE OF DEBT: Recite your balance every minute while stroking. ${time}m.", r: 600, sissy: true },
-        { t: "SISSY SQUATS: 50 squats while pulling cock back. ${time}m.", r: 2800, sissy: true }
+        { t: "DEBTOR PRAYER: Explain in chat why you are ${dom}'s property. ${time}m.", r: 800, sissy: true },
+        { t: "BALL ANCHOR: Constant downward pull on balls. No stroking. ${time}m.", r: 1500, sissy: true },
+        { t: "ATM MODE: Type 'I AM A CASH DISPENSER' 100 times in chat. ${time}m.", r: 500, sissy: true },
+        { t: "NIPPLE TORTURE: Constant hard pinch and twist. No letting go. ${time}m.", r: 2000, sissy: true }
     ];
 
     const phrases = [
         "I am a pathetic bankrupt sissy.",
-        "My cock is the property of the roster.",
-        "I deserve to be locked out and mocked.",
-        "I get off on my own financial failure.",
+        "My wallet belongs to the roster.",
+        "I deserve this lockout sentence.",
         "I am a zero-value debt pig.",
-        "My wallet is empty because I am weak."
+        "Submission is my only pleasure."
     ];
 
     let state = {
@@ -194,7 +187,7 @@
     };
 
     function init() {
-        const saved = JSON.parse(localStorage.getItem('term_v4'));
+        const saved = JSON.parse(localStorage.getItem('term_v41'));
         if(saved) state = {...state, ...saved};
         masters.forEach(m => { if(!state.chats[m.h]) state.chats[m.h] = []; });
         
@@ -203,27 +196,33 @@
         if(state.lockout > 0) startLockout();
         
         setInterval(tick, 1000);
-        setInterval(drainInterest, 60000);
+        setInterval(() => {
+            if(state.bal > 0) {
+                let tax = state.bal * 0.005;
+                state.bal -= tax; state.waste += tax;
+                log(`-$${tax.toFixed(2)} Hourly Maintenance Fee.`, "log-n");
+                updateUI();
+            }
+        }, 60000);
     }
 
-    function save() { localStorage.setItem('term_v4', JSON.stringify(state)); }
+    function save() { localStorage.setItem('term_v41', JSON.stringify(state)); }
 
     function updateUI() {
         document.getElementById('bal-ui').innerText = `$${state.bal.toFixed(2)}`;
         document.getElementById('waste-ui').innerText = `$${state.waste.toFixed(2)}`;
         
         let rank = "Broke Sissy";
-        if(state.waste > 5000) rank = "Debt Slave";
-        if(state.waste > 20000) rank = "Insolvent Wreck";
-        if(state.waste > 100000) rank = "Total Loss";
+        if(state.waste > 10000) rank = "Debt Slave";
+        if(state.waste > 50000) rank = "Financial Wreck";
+        if(state.waste > 150000) rank = "Total Loss";
         document.getElementById('rank-ui').innerText = rank;
 
         const sb = document.getElementById('status-ribbon');
         const taskUI = document.getElementById('task-ui');
         if(state.lock.active && Date.now() < state.lock.end) {
             sb.style.display = 'block';
-            const rem = Math.ceil((state.lock.end - Date.now()) / 1000);
-            sb.innerText = `LOCKED BY ${state.lock.master} | ${fmt(rem)} LEFT`;
+            sb.innerText = `LOCKED BY ${state.lock.master} | ${fmt(Math.ceil((state.lock.end - Date.now())/1000))} LEFT`;
             taskUI.classList.add('chastity-active');
         } else {
             sb.style.display = 'none';
@@ -240,7 +239,7 @@
         ros.innerHTML = masters.map(m => `
             <div class="master-thumb ${m.h === state.activeH ? 'active' : ''} ${state.lock.master === m.h ? 'keyholder' : ''}" onclick="switchMaster('${m.h}')">
                 <img src="${m.p}">
-                <div style="font-size:0.5rem; font-weight:900;">${m.n}</div>
+                <div style="font-size:0.5rem; font-weight:900; margin-top:3px;">${m.n}</div>
             </div>
         `).join('');
     }
@@ -267,38 +266,65 @@
 
         state.chats[state.activeH].push({ role: 'user', text: text });
         renderChat();
+        
+        document.getElementById('conn-status').innerText = "CONNECTING...";
+        document.getElementById('conn-status').style.color = "var(--gold)";
 
         const m = masters.find(x => x.h === state.activeH);
-        
-        // Context for AI
-        const context = `[MEMORY: User has wasted $${state.waste}. Currently: ${state.task ? 'doing task: '+state.task.text : 'idle'}. ${state.lock.active ? 'LOCKED BY '+state.lock.master : 'UNLOCKED'}] ${m.s} Be cruel. If keyholder, use [ADD:X], [REMOVE:X] or [RELEASE]. If unlocked, use [LOCK:X].`;
+        const systemPrompt = `${m.s} The user has wasted $${state.waste.toFixed(2)} and has $${state.bal.toFixed(2)} left. 
+        Current Task: ${state.task ? state.task.text : 'Idle'}. 
+        Chastity Status: ${state.lock.active ? 'Locked by ' + state.lock.master : 'Unlocked'}. 
+        Commands: Use [LOCK:X] to lock (hours), [ADD:X] or [REMOVE:X] if you are the keyholder, or [RELEASE] to unlock. 
+        Be vicious, direct, and alpha. Never offer comfort.`;
 
         try {
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            const response = await fetch(ENDPOINT, {
                 method: "POST",
-                headers: { "Authorization": `Bearer ${GRO_KEY}`, "Content-Type": "application/json" },
+                headers: { 
+                    "Authorization": `Bearer ${API_KEY}`,
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     model: MODEL,
-                    messages: [{ role: "system", content: context }, ...state.chats[state.activeH].slice(-10).map(c => ({ role: c.role === 'user' ? 'user' : 'assistant', content: c.text }))],
+                    messages: [
+                        { role: "system", content: systemPrompt },
+                        ...state.chats[state.activeH].slice(-8).map(c => ({ 
+                            role: c.role === "user" ? "user" : "assistant", 
+                            content: c.text 
+                        }))
+                    ],
                     temperature: 0.9
                 })
             });
-            const data = await res.json();
-            let aiText = data.choices[0].message.content;
 
-            aiText = parseCmds(aiText);
-            state.chats[state.activeH].push({ role: 'dom', text: aiText });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
+            let aiMsg = data.choices[0].message.content;
+
+            aiMsg = processCommands(aiMsg);
+            state.chats[state.activeH].push({ role: 'dom', text: aiMsg });
+            
+            document.getElementById('conn-status').innerText = "STABLE";
+            document.getElementById('conn-status').style.color = "var(--blue)";
+            
             renderChat();
             updateUI();
-        } catch(e) { log("MASTER OFFLINE.", "log-n"); }
+        } catch (err) {
+            log(`SIGNAL ERROR: ${err.message}`, "log-n");
+            document.getElementById('conn-status').innerText = "ERROR";
+            document.getElementById('conn-status').style.color = "var(--red)";
+        }
     }
 
-    function parseCmds(text) {
+    function processCommands(text) {
+        // Handle Random Keyholder Logic
         const lockM = text.match(/\[LOCK:(\d+)\]/i);
         if(lockM && !state.lock.active) {
             const hrs = parseInt(lockM[1]);
-            state.lock = { active: true, master: state.activeH, end: Date.now() + (hrs * 3600000) };
-            log(`LOCKED BY ${state.activeH} (${hrs}h)`, "log-c");
+            const randomK = masters[Math.floor(Math.random() * masters.length)];
+            state.lock = { active: true, master: randomK.h, end: Date.now() + (hrs * 3600000) };
+            log(`LOCKDOWN: ${state.activeH} gave your key to ${randomK.h} for ${hrs}h!`, "log-c");
         }
 
         if(state.lock.active && state.lock.master === state.activeH) {
@@ -316,8 +342,8 @@
         if(amt > 0 && state.bal >= amt) {
             state.bal -= amt; state.waste += amt;
             document.getElementById('trib-amt').value = "";
-            sendUserMsg(`*IMMEDIATE TRIBUTE: $${amt.toFixed(2)} SENT*`);
-            log(`-$${amt} PAID.`, "log-n");
+            sendUserMsg(`*DIRECT TRIBUTE: $${amt.toFixed(2)} SENT*`);
+            log(`-$${amt} TRIBUTE PROCESSED.`, "log-n");
             updateUI();
         }
     }
@@ -338,7 +364,7 @@
     function finishTask() {
         if(!state.task) return;
         state.bal += state.task.reward;
-        log(`+$${state.task.reward} TASK REWARD.`, "log-p");
+        log(`+$${state.task.reward} TASK COMPLETE.`, "log-p");
         state.task = null;
         document.getElementById('btn-get').disabled = false;
         document.getElementById('btn-done').disabled = true;
@@ -361,27 +387,14 @@
         if(state.lockout > 0) {
             state.lockout--;
             document.getElementById('lockout-timer').innerText = fmt(state.lockout);
-            if(state.lockout <= 0) { document.getElementById('lockout-screen').style.display = 'none'; state.bal = 100; updateUI(); }
-        }
-    }
-
-    function drainInterest() {
-        if(state.bal > 0) {
-            const tax = state.bal * 0.005;
-            state.bal -= tax; state.waste += tax;
-            log(`-$${tax.toFixed(2)} Interest Tax.`, "log-n");
-            updateUI();
+            if(state.lockout <= 0) { document.getElementById('lockout-screen').style.display = 'none'; state.bal = 200; updateUI(); }
         }
     }
 
     function forceRuin() {
         state.bal = 0; state.task = null; state.lockout = 3600;
-        startLockout(); updateUI();
-    }
-
-    function startLockout() {
         document.getElementById('lockout-screen').style.display = 'flex';
-        nextLabor();
+        nextLabor(); updateUI();
     }
 
     function nextLabor() { document.getElementById('labor-target').innerText = phrases[Math.floor(Math.random() * phrases.length)]; }
@@ -390,11 +403,11 @@
         if(e.key === 'Enter') {
             const inp = document.getElementById('labor-input');
             if(inp.value === document.getElementById('labor-target').innerText) {
-                state.lockout = Math.max(0, state.lockout - 60);
-                log("Labor accepted. -1m.", "log-p");
+                state.lockout = Math.max(0, state.lockout - 120);
+                log("Labor accepted. -2m.", "log-p");
             } else {
                 state.lockout += 600;
-                log("TYPO DETECTED! +10m PENALTY.", "log-n");
+                log("TYPO! +10m ADDED.", "log-n");
             }
             inp.value = ""; nextLabor(); updateUI();
         }
@@ -413,6 +426,7 @@
     </script>
 </body>
 </html>
+
 
 
 
