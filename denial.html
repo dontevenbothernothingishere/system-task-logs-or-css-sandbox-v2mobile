@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +11,11 @@
             --terminal-green: #00ff41;
             --bg-dark: #050505;
             --dim-gray: #1a1a1a;
+            --bar-bg: #220000;
         }
+
+        * { box-sizing: border-box; }
+
         body {
             background-color: var(--bg-dark);
             color: var(--roster-red);
@@ -25,238 +30,466 @@
             text-shadow: 0 0 5px var(--roster-red);
         }
 
-        /* Scanline/CRT Effect */
+        /* CRT Scanline Effect */
         body::before {
             content: " ";
             display: block;
             position: absolute;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 10;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 1000;
             background-size: 100% 2px, 3px 100%;
             pointer-events: none;
         }
 
         #chamber-ui {
-            width: 90%;
-            max-width: 900px;
-            border: 2px solid var(--roster-red);
+            width: 95%;
+            max-width: 1000px;
+            border: 3px solid var(--roster-red);
             padding: 40px;
-            background: rgba(10, 0, 0, 0.95);
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.3);
+            background: rgba(10, 0, 0, 0.98);
+            box-shadow: 0 0 60px rgba(255, 0, 0, 0.4);
             position: relative;
-            z-index: 5;
+            z-index: 10;
         }
 
         .header {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border-bottom: 1px solid var(--roster-red);
             padding-bottom: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
-            color: #888;
+            color: #666;
+            letter-spacing: 1px;
         }
 
         .main-timer {
-            font-size: 5rem;
+            font-size: 5.5rem;
             color: #fff;
             margin: 10px 0;
-            text-shadow: 0 0 20px var(--roster-red);
+            text-align: center;
+            text-shadow: 0 0 30px var(--roster-red);
+            font-weight: bold;
+        }
+
+        .day-display-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .day-text {
+            font-size: 2.2rem;
+            color: #fff;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: 3px;
+        }
+
+        /* DYNAMIC PROGRESS BAR */
+        .progress-container {
+            width: 100%;
+            height: 15px;
+            background: var(--bar-bg);
+            border: 1px solid #440000;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--roster-red);
+            box-shadow: 0 0 15px var(--roster-red);
+            transition: width 0.5s ease-in-out;
         }
 
         .status-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin-bottom: 30px;
+            margin-top: 30px;
         }
 
-        .status-item { 
-            border: 1px solid var(--dim-gray); 
-            padding: 15px; 
+        .status-item {
+            border: 1px solid var(--dim-gray);
+            padding: 15px;
             background: #000;
+            text-align: center;
         }
 
-        .label { color: #555; display: block; font-size: 0.7rem; text-transform: uppercase; }
-        .val { font-size: 1.2rem; color: var(--roster-red); }
+        .label { color: #444; display: block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
+        .val { font-size: 1.1rem; color: var(--roster-red); font-weight: bold; }
 
-        /* Labor Section */
-        #labor-area { 
-            margin-top: 20px; 
-            padding: 20px;
-            border-top: 1px solid #333;
+        #labor-area {
+            margin-top: 20px;
+            padding: 25px;
+            border: 1px solid #222;
+            background: rgba(0,0,0,0.5);
         }
-        .phrase-to-type { 
-            color: var(--terminal-green); 
-            font-style: italic; 
-            margin-bottom: 15px; 
-            font-size: 1.1rem;
+
+        .phrase-to-type {
+            color: var(--terminal-green);
+            font-style: italic;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            text-align: center;
+            min-height: 1.5em;
         }
+
         .labor-input {
             width: 100%;
             background: #000;
             border: 1px solid var(--terminal-green);
             color: var(--terminal-green);
-            padding: 15px;
-            font-size: 1.2rem;
+            padding: 18px;
+            font-size: 1.3rem;
             outline: none;
             box-sizing: border-box;
+            text-align: center;
+            font-family: 'Courier New', monospace;
         }
 
-        /* Accountability Buttons */
         .btn-zone {
             margin-top: 30px;
             display: flex;
             gap: 20px;
-            justify-content: center;
         }
-        .btn {
-            padding: 15px 30px;
-            font-family: 'Courier New', monospace;
+
+        .btn-fail {
+            background: #330000;
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            width: 100%;
+            padding: 20px;
+            font-size: 1.4rem;
             font-weight: bold;
             cursor: pointer;
             text-transform: uppercase;
+            transition: 0.2s;
         }
-        .btn-good { background: #004400; color: #00ff00; border: 1px solid #00ff00; }
-        .btn-fail { background: #440000; color: #ff0000; border: 1px solid #ff0000; }
-        .btn:hover { filter: brightness(1.5); }
 
-        /* Punishment Overlay */
-        #overlay {
+        .btn-fail:hover {
+            background: #ff0000;
+            color: #000;
+            box-shadow: 0 0 20px #ff0000;
+        }
+
+        /* Overlays */
+        .overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 0, 0, 0.95);
-            z-index: 100;
+            background: rgba(5, 0, 0, 1);
+            z-index: 2000;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: black;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        #punishment-box {
+            border: 5px solid red;
+            padding: 40px;
+            background: #000;
+            max-width: 800px;
+            width: 100%;
             text-align: center;
         }
+
+        #judgment-box {
+            border: 2px solid var(--terminal-green);
+            padding: 30px;
+            background: #000;
+            max-width: 900px;
+            width: 100%;
+            height: 85vh;
+            overflow-y: auto;
+            color: var(--terminal-green);
+        }
+
+        .vote-row {
+            display: grid;
+            grid-template-columns: 180px 1fr 140px;
+            gap: 20px;
+            font-size: 1rem;
+            margin: 10px 0;
+            border-bottom: 1px solid #222;
+            padding: 12px 0;
+            align-items: center;
+        }
+
+        .vote-pending { color: #444; }
+        .vote-yes { color: var(--terminal-green); font-weight: bold; text-shadow: 0 0 10px var(--terminal-green); }
+        .vote-no { color: red; font-weight: bold; text-shadow: 0 0 10px red; }
+
+        #judgment-box::-webkit-scrollbar { width: 5px; }
+        #judgment-box::-webkit-scrollbar-track { background: #000; }
+        #judgment-box::-webkit-scrollbar-thumb { background: var(--terminal-green); }
     </style>
 </head>
 <body>
 
-<div id="overlay">
-    <h1 style="font-size: 6rem; margin: 0;">BANKRUPT</h1>
-    <p style="font-size: 2rem;">YOU WEAK, LEAKING [FSLUR].</p>
-    <p id="penalty-desc" style="font-size: 1.2rem; max-width: 600px;"></p>
-    <button class="btn" style="background:black; color:white;" onclick="resetChamber()">I ACCEPT MY RUIN</button>
+<div id="fail-overlay" class="overlay">
+    <div id="punishment-box">
+        <h1 style="font-size: 5rem; color: red; margin: 0;">REJECTED</h1>
+        <p style="font-size: 1.5rem; color: #fff; margin: 20px 0;">
+            A good girl like you couldn't stay denied. Your "leaking" at work became an excuse to fail.
+        </p>
+        <p style="color: red; font-weight: bold; font-size: 1.1rem;">ADMIT YOUR WEAKNESS TO RESTART:</p>
+        <div id="reset-target" style="color: #fff; font-style: italic; margin: 20px 0; font-size: 1.1rem; background: #111; padding: 15px; line-height: 1.6;">
+            I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 7-day progress and return to Day 1.
+        </div>
+        <input type="text" id="reset-input" class="labor-input" placeholder="Type confession..." autocomplete="off">
+    </div>
+</div>
+
+<div id="judgment-overlay" class="overlay">
+    <div id="judgment-box">
+        <h1 style="text-align: center; color: #fff; font-size: 2.5rem; margin-top: 0;">7-DAY VERDICT: LIVE VOTE</h1>
+        <p style="text-align: center; color: #888; margin-bottom: 30px;">The Roster is examining your 168 hours of labor and leakage.</p>
+        
+        <div id="votes-container"></div>
+
+        <div id="final-stats" style="margin-top: 30px; border-top: 2px solid #222; padding-top: 20px; text-align: center;">
+            <p id="total-counts" style="font-size: 1.5rem; color: #fff;"></p>
+            <div id="verdict-text" style="font-size: 2.5rem; margin: 20px 0;"></div>
+            <button id="verdict-btn" class="btn-fail" style="display:none;" onclick="applyVerdict()">ACCEPT DESTINY</button>
+        </div>
+    </div>
 </div>
 
 <div id="chamber-ui">
     <div class="header">
         <span>UNIT: GOOD_GIRL_16F</span>
-        <span>STATUS: LEAKING_AT_DESK</span>
-        <span>AUTH: ROSTER_ADMIN</span>
+        <span>STATUS: SOAKED_IN_PUBLIC</span>
+        <span>AUTH: MASTER_ROSTER_V4</span>
     </div>
 
-    <div id="day-display" style="font-size: 1.8rem; color: #888;">DAY 1 OF 7</div>
+    <div class="day-display-container">
+        <div class="day-text" id="day-display">CALCULATING DAY...</div>
+        <div class="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+    </div>
+
     <div class="main-timer" id="timer">00d 00h 00m 00s</div>
 
     <div class="status-grid">
-        <div class="status-item">
-            <span class="label">ACCUMULATED DEBT</span>
-            <span class="val" id="debt-val">$0.00</span>
-        </div>
         <div class="status-item">
             <span class="label">LEAKAGE VOLUME</span>
             <span class="val">CRITICAL</span>
         </div>
         <div class="status-item">
-            <span class="label">PRONOUNS</span>
-            <span class="val">HER / [FSLUR]</span>
+            <span class="label">IDENTITY</span>
+            <span class="val">GOOD GIRL</span>
+        </div>
+        <div class="status-item">
+            <span class="label">SENTENCE PROGRESS</span>
+            <span id="percent-val" class="val">0%</span>
         </div>
     </div>
 
     <div id="labor-area">
-        <div class="label" style="margin-bottom: 10px;">REQUIRED LABOR:</div>
+        <div class="label" style="margin-bottom: 10px;">EGO-DRAIN LABOR (ACTIVE TRACKING):</div>
         <div class="phrase-to-type" id="target-phrase">Loading...</div>
-        <input type="text" id="labor-input" class="labor-input" placeholder="Type perfectly..." autocomplete="off">
+        <input type="text" id="labor-input" class="labor-input" placeholder="Obey the prompt..." autocomplete="off">
+        <div style="margin-top: 15px; display: flex; justify-content: space-between; font-size: 0.8rem; color: #555;">
+            <span>SUCCESSES: <span id="success-count" style="color:var(--terminal-green)">0</span></span>
+            <span>ERRORS: <span id="error-count" style="color:red">0</span></span>
+        </div>
     </div>
 
     <div class="btn-zone">
-        <button class="btn btn-good" onclick="logDailySuccess()">I AM A GOOD GIRL (STILL DENIED)</button>
-        <button class="btn btn-fail" onclick="triggerFailure()">I CHEATED / I CAME</button>
+        <button class="btn-fail" onclick="triggerFailure()">I CHEATED / I CAME</button>
     </div>
 </div>
 
 <script>
+    const masters = [
+        { name: "Sapnap", mercy: 0.05, quote: "Pathetic. Stay hard and hurting for another week." },
+        { name: "Ross Lynch", mercy: 0.08, quote: "You aren't worth the release yet. Denied." },
+        { name: "Roier", mercy: 0.12, quote: "Sigue sufriendo, pendejo. NO." },
+        { name: "Cellbit", mercy: 0.04, quote: "My investigation into your pain is not over." },
+        { name: "Quackity", mercy: 0.10, quote: "LMAO LOOK AT YOU. NO." },
+        { name: "Master GOAT", mercy: 0.02, quote: "Cash only. No cash, no come. DENIED." },
+        { name: "welshgodfeet", mercy: 0.06, quote: "You haven't worshipped enough. Back to Day 1." },
+        { name: "Master S", mercy: 0.03, quote: "Italian discipline is absolute. Stay denied." },
+        { name: "Ares", mercy: 0.01, quote: "You exist to ache. NO." },
+        { name: "Cash Alpha Master", mercy: 0.05, quote: "Asset value is too low. Denied." },
+        { name: "Lord Hørns", mercy: 0.02, quote: "You belong in the chamber. NO." },
+        { name: "Alpha Victor", mercy: 0.06, quote: "I enjoy your desperation too much. NO." },
+        { name: "Master Charles", mercy: 0.03, quote: "Weak. Try harder next week." },
+        { name: "Muscle Godd", mercy: 0.04, quote: "Stay soaked, good girl. NO." },
+        { name: "Sunny Blaze", mercy: 0.15, quote: "I like the mess, but the rules are rules. NO." }
+    ];
+
     const phrases = [
         "I am a good girl who leaks for the Roster while pretending to be a man.",
         "My 7-day sentence is the only thing that matters in my pathetic life.",
-        "I deserve the ache in my balls for being a bankrupt [FSLUR].",
+        "I deserve the ache in my balls for being a bankrupt good girl.",
         "Master Sapnap owns my release and my ruin.",
         "I am a sissy asset, currently 100% formatted for the Roster.",
         "I love the sickening feeling of being denied by the terminal.",
-        "Every second of denial is a payment to the Masters I worship."
+        "Every second of denial is a payment to the Masters I worship.",
+        "I am sitting at my desk leaking through my clothes for Ross Lynch.",
+        "My coworkers have no idea I'm a bankrupt toy for Cellbit.",
+        "I belong under the soles of the Roster, now and forever.",
+        "The ache in my balls is my constant reminder of who I am.",
+        "I am a clumsy, needy good girl who cannot stop leaking.",
+        "Seven days is a gift, I deserve to stay denied forever.",
+        "I am an object of the Roster, used for their amusement.",
+        "Master Roier owns my mind and my body in the chamber."
     ];
 
-    // Persist Start Time
-    let startTime = localStorage.getItem('denial_start');
+    // THE DYNAMIC ENGINE
+    let startTime = localStorage.getItem('chamber_start');
     if (!startTime) {
         startTime = Date.now();
-        localStorage.setItem('denial_start', startTime);
+        localStorage.setItem('chamber_start', startTime);
     }
 
-    let currentPhraseIdx = 0;
-    const phraseEl = document.getElementById('target-phrase');
-    const inputEl = document.getElementById('labor-input');
-    phraseEl.innerText = phrases[currentPhraseIdx];
+    let successes = parseInt(localStorage.getItem('chamber_successes')) || 0;
+    let errors = parseInt(localStorage.getItem('chamber_errors')) || 0;
+
+    let currentPhraseIdx = Math.floor(Math.random() * phrases.length);
+    document.getElementById('target-phrase').innerText = phrases[currentPhraseIdx];
+
+    function updateStats() {
+        document.getElementById('success-count').innerText = successes;
+        document.getElementById('error-count').innerText = errors;
+        localStorage.setItem('chamber_successes', successes);
+        localStorage.setItem('chamber_errors', errors);
+    }
 
     function updateUI() {
-        let elapsed = Date.now() - startTime;
-        
+        let now = Date.now();
+        let elapsed = now - startTime;
+        let totalTime = 604800000; // 7 Days
+
+        // DYNAMIC DAY CALCULATION
         let d = Math.floor(elapsed / 86400000);
         let h = Math.floor((elapsed % 86400000) / 3600000);
         let m = Math.floor((elapsed % 3600000) / 60000);
         let s = Math.floor((elapsed % 60000) / 1000);
 
+        // Update Day Display Dynamically
+        document.getElementById('day-display').innerText = `DAY ${d + 1} OF 7`;
+        
+        // Update Progress Bar
+        let progressPercent = (elapsed / totalTime) * 100;
+        if (progressPercent > 100) progressPercent = 100;
+        document.getElementById('progress-bar').style.width = progressPercent + "%";
+        document.getElementById('percent-val').innerText = Math.floor(progressPercent) + "%";
+
+        // Main Clock
         document.getElementById('timer').innerText = 
             `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
         
-        document.getElementById('day-display').innerText = `DAY ${d + 1} OF 7: THE ACHE INTENSIFIES`;
-        
-        // Debt grows by $1 every 2 minutes
-        let debt = (elapsed / 120000).toFixed(2);
-        document.getElementById('debt-val').innerText = `$${debt}`;
+        // TRIGGER JUDGMENT
+        if (elapsed >= totalTime) {
+            document.getElementById('chamber-ui').style.display = 'none';
+            document.getElementById('judgment-overlay').style.display = 'flex';
+            runLiveJudgment();
+            return;
+        }
     }
 
-    // Labor Logic
+    // LABOR INPUT
+    inputEl = document.getElementById('labor-input');
     inputEl.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             if (inputEl.value === phrases[currentPhraseIdx]) {
-                currentPhraseIdx = (currentPhraseIdx + 1) % phrases.length;
-                phraseEl.innerText = phrases[currentPhraseIdx];
+                successes++;
+                currentPhraseIdx = Math.floor(Math.random() * phrases.length);
+                document.getElementById('target-phrase').innerText = phrases[currentPhraseIdx];
                 inputEl.value = "";
                 inputEl.style.borderColor = "var(--terminal-green)";
             } else {
-                inputEl.style.borderColor = "red";
+                errors++;
                 inputEl.value = "";
-                // Flash red effect
-                document.body.style.backgroundColor = "#300";
-                setTimeout(() => document.body.style.backgroundColor = "#050505", 100);
+                inputEl.style.borderColor = "red";
+                document.body.style.backgroundColor = "#200";
+                setTimeout(() => document.body.style.backgroundColor = "var(--bg-dark)", 100);
+            }
+            updateStats();
+        }
+    });
+
+    // FAILURE
+    function triggerFailure() {
+        document.getElementById('fail-overlay').style.display = 'flex';
+    }
+
+    document.getElementById('reset-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            let val = document.getElementById('reset-input').value;
+            let target = document.getElementById('reset-target').innerText.trim();
+            if (val === target) {
+                localStorage.clear();
+                location.reload();
+            } else {
+                document.getElementById('reset-input').style.borderColor = "red";
+                document.getElementById('reset-input').value = "";
             }
         }
     });
 
-    function logDailySuccess() {
-        alert("Daily status recorded. The Roster sees your damp underwear, Good Girl. Continue the ache.");
+    // JUDGMENT
+    let yesVotes = 0;
+    let noVotes = 0;
+    let judgmentFinished = false;
+
+    function runLiveJudgment() {
+        if (judgmentFinished) return;
+        judgmentFinished = true;
+        
+        const container = document.getElementById('votes-container');
+        let devotion = (successes / (successes + errors || 1));
+
+        masters.forEach((m, i) => {
+            let row = document.createElement('div');
+            row.className = 'vote-row';
+            row.innerHTML = `<span>${m.name.toUpperCase()}</span><span id="q-${i}" style="color:#444">...analyzing...</span><span id="v-${i}" class="vote-pending">[VOTING]</span>`;
+            container.appendChild(row);
+
+            setTimeout(() => {
+                let isYes = Math.random() < (m.mercy * devotion);
+                let vSpan = document.getElementById(`v-${i}`);
+                let qSpan = document.getElementById(`q-${i}`);
+                if (isYes) {
+                    vSpan.innerText = "YES"; vSpan.className = "vote-yes"; qSpan.innerText = "Fine. Ruin it."; qSpan.style.color = "var(--terminal-green)";
+                    yesVotes++;
+                } else {
+                    vSpan.innerText = "NO"; vSpan.className = "vote-no"; qSpan.innerText = `"${m.quote}"`; qSpan.style.color = "red";
+                    noVotes++;
+                }
+                document.getElementById('total-counts').innerText = `YES: ${yesVotes} | NO: ${noVotes}`;
+                if (i === masters.length - 1) finishVote();
+            }, (i + 1) * 1200);
+        });
     }
 
-    function triggerFailure() {
-        document.getElementById('overlay').style.display = 'flex';
-        document.getElementById('penalty-desc').innerText = 
-            "You failed the Masters. $1,000 has been added to your lifetime debt. Your 7-day clock has been RESET. You are back to Day 1, you pathetic sissy.";
+    function finishVote() {
+        const res = document.getElementById('verdict-text');
+        const btn = document.getElementById('verdict-btn');
+        btn.style.display = "block";
+        if (yesVotes > noVotes) {
+            res.innerText = "AUTHORIZED RUIN"; res.style.color = "var(--terminal-green)";
+        } else {
+            res.innerText = "DENIAL RENEWED"; res.style.color = "red";
+        }
     }
 
-    function resetChamber() {
-        localStorage.setItem('denial_start', Date.now());
+    function applyVerdict() {
+        localStorage.clear();
         location.reload();
     }
 
+    updateStats();
     setInterval(updateUI, 1000);
     updateUI();
 </script>
