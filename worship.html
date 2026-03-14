@@ -1,0 +1,443 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Worship Portal // Asset 16-F</title>
+    <style>
+        /* CSS RESET & THEME */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #020202;
+            color: #d4af37;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER SECTION */
+        #top-interface {
+            width: 100%;
+            padding: 25px;
+            background: linear-gradient(180deg, #111 0%, #020202 100%);
+            border-bottom: 1px solid #333;
+            text-align: center;
+            z-index: 100;
+        }
+
+        .portal-title {
+            font-size: 1.8rem;
+            letter-spacing: 8px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: 900;
+            color: #d4af37;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .master-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .selector-btn {
+            background: #111;
+            color: #555;
+            border: 2px solid #222;
+            padding: 12px 25px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            letter-spacing: 2px;
+        }
+
+        .selector-btn.active-ross {
+            border-color: #8be0b3;
+            color: #8be0b3;
+            box-shadow: 0 0 20px rgba(139, 224, 179, 0.3);
+            background: #051a10;
+        }
+
+        .selector-btn.active-sapnap {
+            border-color: #ff4d4d;
+            color: #ff4d4d;
+            box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
+            background: #1a0505;
+        }
+
+        /* MAIN WORSHIP STAGE */
+        #stage {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #pedestal {
+            width: 320px;
+            height: 450px;
+            background: #000;
+            border: 1px solid #333;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,1);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #sole-image {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* Start fully obscured */
+            filter: brightness(0) blur(20px);
+            transition: filter 0.15s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #status-display {
+            margin-top: 25px;
+            text-align: center;
+            min-height: 50px;
+        }
+
+        #instruction-text {
+            font-size: 0.8rem;
+            color: #666;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        #progress-container {
+            width: 320px;
+            height: 6px;
+            background: #111;
+            border: 1px solid #222;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #d4af37;
+            transition: width 0.1s linear;
+        }
+
+        /* PROSTRATION OVERLAY */
+        #blackout-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 85vh; /* Leaves the button accessible at the bottom */
+            background-color: #000;
+            z-index: 500;
+            opacity: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s ease;
+        }
+
+        .prostration-text {
+            color: #1a1a1a;
+            font-size: 0.9rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+
+        /* BOTTOM CONTROL */
+        #control-panel {
+            width: 100%;
+            height: 15vh;
+            background: #0a0a0a;
+            border-top: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 600;
+        }
+
+        #prostrate-trigger {
+            width: 85%;
+            height: 60%;
+            background: #d4af37;
+            color: #000;
+            border: none;
+            font-family: inherit;
+            font-weight: 900;
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        #prostrate-trigger:active {
+            background: #8e7425;
+            transform: translateY(2px);
+        }
+
+        /* PENALTY FLASH */
+        #kick-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="kick-warning">KICKED.</div>
+
+    <div id="blackout-overlay">
+        <div class="prostration-text">Forehead to the floor</div>
+    </div>
+
+    <div id="top-interface">
+        <div class="portal-title">Worship Portal</div>
+        <div class="master-selector">
+            <button id="ross-btn" class="selector-btn" onclick="selectMaster('Ross')">MASTER ROSS</button>
+            <button id="sapnap-btn" class="selector-btn" onclick="selectMaster('Sapnap')">MASTER SAPNAP</button>
+        </div>
+    </div>
+
+    <div id="stage">
+        <div id="pedestal">
+            <div id="sole-image">
+                <span>[ INITIALIZING STATUS ]<br><br>SELECT MASTER</span>
+            </div>
+        </div>
+
+        <div id="status-display">
+            <div id="instruction-text">Awaiting input...</div>
+            <div id="progress-container">
+                <div id="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="control-panel">
+        <button id="prostrate-trigger">PROSTRATE</button>
+    </div>
+
+    <script>
+        /**
+         * ASSET CONFIGURATION
+         * --------------------------------------------------
+         * INPUT YOUR IMAGE URLS BELOW.
+         * Make sure the URLs are inside the 'quotes'.
+         */
+        const ASSET_IMAGES = {
+            Ross: 'ross.jpg',     // Change to your link or local file
+            Sapnap: 'sapnap.jpg'  // Change to your link or local file
+        };
+
+        // --- CORE STATE ---
+        let currentMaster = null;
+        let polishLevel = 0; // 0 to 100
+        let isProstrating = false;
+        let isKicked = false;
+        
+        // Velocity Tracking
+        let lastX = 0;
+        let lastY = 0;
+        let lastTime = Date.now();
+
+        // DOM Elements
+        const soleImage = document.getElementById('sole-image');
+        const instructionText = document.getElementById('instruction-text');
+        const progressFill = document.getElementById('progress-fill');
+        const blackout = document.getElementById('blackout-overlay');
+        const prostrateBtn = document.getElementById('prostrate-trigger');
+        const kickWarning = document.getElementById('kick-warning');
+        
+        const rossBtn = document.getElementById('ross-btn');
+        const sapnapBtn = document.getElementById('sapnap-btn');
+
+        /**
+         * MASTER SELECTION
+         */
+        function selectMaster(name) {
+            if (isKicked) return;
+            
+            currentMaster = name;
+            polishLevel = 0;
+            
+            // UI Reset
+            rossBtn.classList.remove('active-ross');
+            sapnapBtn.classList.remove('active-sapnap');
+            
+            soleImage.innerHTML = ""; // Clear instructions
+            soleImage.style.backgroundImage = `url('${ASSET_IMAGES[name]}')`;
+
+            if (name === 'Ross') {
+                rossBtn.classList.add('active-ross');
+                instructionText.innerText = "Gentle Polish Required (Slow Speed)";
+                progressFill.style.backgroundColor = "#8be0b3";
+            } else {
+                sapnapBtn.classList.add('active-sapnap');
+                instructionText.innerText = "Heavy Friction Required (Max Speed)";
+                progressFill.style.backgroundColor = "#ff4d4d";
+            }
+            
+            renderVisuals();
+        }
+
+        /**
+         * MECHANIC 1: SOLE POLISH (Velocity Tracking)
+         */
+        const handleInteraction = (e) => {
+            if (!currentMaster || isProstrating || isKicked) return;
+
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            const currentTime = Date.now();
+
+            const dist = Math.sqrt(Math.pow(clientX - lastX, 2) + Math.pow(clientY - lastY, 2));
+            const timeDiff = currentTime - lastTime;
+            const velocity = dist / timeDiff; // Pixels per ms
+
+            // Process Polish
+            if (currentMaster === 'Ross') {
+                if (velocity > 1.8) {
+                    triggerKick();
+                } else if (velocity > 0.05) {
+                    polishLevel += 1.2;
+                }
+            } else if (currentMaster === 'Sapnap') {
+                if (velocity > 0.8) {
+                    polishLevel += 2.5; // Reward high speed
+                } else {
+                    polishLevel += 0.2; // Slow is useless for him
+                }
+            }
+
+            // Constraints
+            if (polishLevel > 100) polishLevel = 100;
+
+            lastX = clientX;
+            lastY = clientY;
+            lastTime = currentTime;
+            renderVisuals();
+        };
+
+        // Event Listeners for Polishing
+        soleImage.addEventListener('mousemove', handleInteraction);
+        soleImage.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            handleInteraction(e);
+        }, { passive: false });
+
+        /**
+         * MECHANIC 3: PROSTRATION (Blackout)
+         */
+        const startProstration = (e) => {
+            if (isKicked) return;
+            isProstrating = true;
+            blackout.style.opacity = "1";
+            prostrateBtn.innerText = "SUBMITTING...";
+            instructionText.innerText = "Don't look up.";
+        };
+
+        const stopProstration = () => {
+            isProstrating = false;
+            blackout.style.opacity = "0";
+            prostrateBtn.innerText = "PROSTRATE";
+            if (currentMaster) {
+                instructionText.innerText = currentMaster === 'Ross' ? "Gentle Polish Required" : "Heavy Friction Required";
+            }
+        };
+
+        prostrateBtn.addEventListener('mousedown', startProstration);
+        prostrateBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startProstration();
+        });
+
+        window.addEventListener('mouseup', stopProstration);
+        window.addEventListener('touchend', stopProstration);
+
+        /**
+         * DECAY LOOP (Constant Regression)
+         */
+        setInterval(() => {
+            if (!currentMaster || isProstrating || isKicked) return;
+
+            // Decay is 2x faster for Sapnap
+            const decay = currentMaster === 'Sapnap' ? 0.8 : 0.4;
+            polishLevel -= decay;
+
+            if (polishLevel < 0) polishLevel = 0;
+            renderVisuals();
+        }, 50);
+
+        /**
+         * KICK PENALTY (Master Ross Special)
+         */
+        function triggerKick() {
+            isKicked = true;
+            polishLevel = 0;
+            kickWarning.style.display = 'flex';
+            
+            setTimeout(() => {
+                kickWarning.style.display = 'none';
+                isKicked = false;
+            }, 4000); // 4 Second lockout
+            
+            renderVisuals();
+        }
+
+        /**
+         * RENDER ENGINE
+         */
+        function renderVisuals() {
+            // Brightness: 0 to 1
+            const b = polishLevel / 100;
+            // Blur: 20px down to 0px
+            const blur = 20 - (polishLevel / 100 * 20);
+            
+            soleImage.style.filter = `brightness(${b}) blur(${blur}px)`;
+            progressFill.style.width = `${polishLevel}%`;
+        }
+    </script>
+</body>
+</html>
