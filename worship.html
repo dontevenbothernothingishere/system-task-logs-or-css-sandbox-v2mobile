@@ -262,12 +262,11 @@
         /**
          * ASSET CONFIGURATION
          * --------------------------------------------------
-         * INPUT YOUR IMAGE URLS BELOW.
-         * Make sure the URLs are inside the 'quotes'.
+         * If you have multiple images for one Master, put them in [ 'image1.jpg', 'image2.jpg' ]
          */
         const ASSET_IMAGES = {
-            Ross: 'ross.jpg',     // Change to your link or local file
-            Sapnap: 'sapnapfeet_01.png', 'sapnapfeet_02.png'  // Change to your link or local file
+            Ross: ['ross.jpg'], 
+            Sapnap: ['sapnapfeet_01.png', 'sapnapfeet_02.png'] 
         };
 
         // --- CORE STATE ---
@@ -305,8 +304,12 @@
             rossBtn.classList.remove('active-ross');
             sapnapBtn.classList.remove('active-sapnap');
             
+            // Randomly select one image from the list provided for that Master
+            const options = ASSET_IMAGES[name];
+            const selectedImage = options[Math.floor(Math.random() * options.length)];
+            
             soleImage.innerHTML = ""; // Clear instructions
-            soleImage.style.backgroundImage = `url('${ASSET_IMAGES[name]}')`;
+            soleImage.style.backgroundImage = `url('${selectedImage}')`;
 
             if (name === 'Ross') {
                 rossBtn.classList.add('active-ross');
@@ -327,12 +330,12 @@
         const handleInteraction = (e) => {
             if (!currentMaster || isProstrating || isKicked) return;
 
-            const clientX = e.clientX || e.touches[0].clientX;
-            const clientY = e.clientY || e.touches[0].clientY;
+            const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : lastX);
+            const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : lastY);
             const currentTime = Date.now();
 
             const dist = Math.sqrt(Math.pow(clientX - lastX, 2) + Math.pow(clientY - lastY, 2));
-            const timeDiff = currentTime - lastTime;
+            const timeDiff = currentTime - lastTime || 1;
             const velocity = dist / timeDiff; // Pixels per ms
 
             // Process Polish
