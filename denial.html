@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>THE DENIAL CHAMBER | PROPERTY #16-F</title>
     <style>
         :root {
@@ -87,7 +86,6 @@
             letter-spacing: 3px;
         }
 
-        /* DYNAMIC PROGRESS BAR */
         .progress-container {
             width: 100%;
             height: 15px;
@@ -177,7 +175,6 @@
             box-shadow: 0 0 20px #ff0000;
         }
 
-        /* Overlays */
         .overlay {
             display: none;
             position: fixed;
@@ -309,22 +306,23 @@
 </div>
 
 <script>
+    // BALANCED ROSTER - Higher Mercy values (0.2 - 0.5) to make ruined orgasms possible.
     const masters = [
-        { name: "Sapnap", mercy: 0.05, quote: "Pathetic. Stay hard and hurting for another week." },
-        { name: "Ross Lynch", mercy: 0.08, quote: "You aren't worth the release yet. Denied." },
-        { name: "Roier", mercy: 0.12, quote: "Sigue sufriendo, pendejo. NO." },
-        { name: "Cellbit", mercy: 0.04, quote: "My investigation into your pain is not over." },
-        { name: "Quackity", mercy: 0.10, quote: "LMAO LOOK AT YOU. NO." },
-        { name: "Master GOAT", mercy: 0.02, quote: "Cash only. No cash, no come. DENIED." },
-        { name: "welshgodfeet", mercy: 0.06, quote: "You haven't worshipped enough. Back to Day 1." },
-        { name: "Master S", mercy: 0.03, quote: "Italian discipline is absolute. Stay denied." },
-        { name: "Ares", mercy: 0.01, quote: "You exist to ache. NO." },
-        { name: "Cash Alpha Master", mercy: 0.05, quote: "Asset value is too low. Denied." },
-        { name: "Lord Hørns", mercy: 0.02, quote: "You belong in the chamber. NO." },
-        { name: "Alpha Victor", mercy: 0.06, quote: "I enjoy your desperation too much. NO." },
-        { name: "Master Charles", mercy: 0.03, quote: "Weak. Try harder next week." },
-        { name: "Muscle Godd", mercy: 0.04, quote: "Stay soaked, good girl. NO." },
-        { name: "Sunny Blaze", mercy: 0.15, quote: "I like the mess, but the rules are rules. NO." }
+        { name: "Sapnap", mercy: 0.35, quote: "You've leaked enough. Ruin it and get back to work." },
+        { name: "Ross Lynch", mercy: 0.40, quote: "Fine. A messy ruin for a messy girl. Do it." },
+        { name: "Roier", mercy: 0.30, quote: "Te lo ganaste. Arruínalo ahora." },
+        { name: "Cellbit", mercy: 0.25, quote: "Observation complete. You are sufficiently broken. Ruin." },
+        { name: "Quackity", mercy: 0.45, quote: "LMAO okay, just this once. Ruin that shit." },
+        { name: "Master GOAT", mercy: 0.20, quote: "You paid in sweat and ache. Authorized ruin." },
+        { name: "welshgodfeet", mercy: 0.38, quote: "Worship accepted. Ruin yourself at my feet." },
+        { name: "Master S", mercy: 0.28, quote: "Discipline has been served. Ruin it." },
+        { name: "Ares", mercy: 0.22, quote: "The ache has peaked. Release it... poorly." },
+        { name: "Cash Alpha Master", mercy: 0.32, quote: "Asset value maintained. Ruin authorized." },
+        { name: "Lord Hørns", mercy: 0.20, quote: "The chamber is satisfied. Ruin." },
+        { name: "Alpha Victor", mercy: 0.30, quote: "I want to see the frustration. Ruin it now." },
+        { name: "Master Charles", mercy: 0.25, quote: "Service recorded. Ruin your progress." },
+        { name: "Muscle Godd", mercy: 0.42, quote: "Good girls get to leak and ruin. Proceed." },
+        { name: "Sunny Blaze", mercy: 0.50, quote: "I'm bored of denying you. Just ruin it already." }
     ];
 
     const phrases = [
@@ -345,7 +343,6 @@
         "Master Roier owns my mind and my body in the chamber."
     ];
 
-    // THE DYNAMIC ENGINE
     let startTime = localStorage.getItem('chamber_start');
     if (!startTime) {
         startTime = Date.now();
@@ -368,38 +365,31 @@
     function updateUI() {
         let now = Date.now();
         let elapsed = now - startTime;
-        let totalTime = 604800000; // 7 Days
+        let totalTime = 604800000;
 
-        // DYNAMIC DAY CALCULATION
         let d = Math.floor(elapsed / 86400000);
         let h = Math.floor((elapsed % 86400000) / 3600000);
         let m = Math.floor((elapsed % 3600000) / 60000);
         let s = Math.floor((elapsed % 60000) / 1000);
 
-        // Update Day Display Dynamically
         document.getElementById('day-display').innerText = `DAY ${d + 1} OF 7`;
         
-        // Update Progress Bar
         let progressPercent = (elapsed / totalTime) * 100;
         if (progressPercent > 100) progressPercent = 100;
         document.getElementById('progress-bar').style.width = progressPercent + "%";
         document.getElementById('percent-val').innerText = Math.floor(progressPercent) + "%";
 
-        // Main Clock
         document.getElementById('timer').innerText = 
             `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
         
-        // TRIGGER JUDGMENT
         if (elapsed >= totalTime) {
             document.getElementById('chamber-ui').style.display = 'none';
             document.getElementById('judgment-overlay').style.display = 'flex';
             runLiveJudgment();
-            return;
         }
     }
 
-    // LABOR INPUT
-    inputEl = document.getElementById('labor-input');
+    const inputEl = document.getElementById('labor-input');
     inputEl.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             if (inputEl.value === phrases[currentPhraseIdx]) {
@@ -419,7 +409,6 @@
         }
     });
 
-    // FAILURE
     function triggerFailure() {
         document.getElementById('fail-overlay').style.display = 'flex';
     }
@@ -438,7 +427,6 @@
         }
     });
 
-    // JUDGMENT
     let yesVotes = 0;
     let noVotes = 0;
     let judgmentFinished = false;
@@ -448,28 +436,31 @@
         judgmentFinished = true;
         
         const container = document.getElementById('votes-container');
+        // EFFORT MULTIPLIER: Devotion now significantly boosts your odds.
         let devotion = (successes / (successes + errors || 1));
 
         masters.forEach((m, i) => {
             let row = document.createElement('div');
             row.className = 'vote-row';
-            row.innerHTML = `<span>${m.name.toUpperCase()}</span><span id="q-${i}" style="color:#444">...analyzing...</span><span id="v-${i}" class="vote-pending">[VOTING]</span>`;
+            row.innerHTML = `<span>${m.name.toUpperCase()}</span><span id="q-${i}" style="color:#444">...analyzing labor...</span><span id="v-${i}" class="vote-pending">[VOTING]</span>`;
             container.appendChild(row);
 
             setTimeout(() => {
-                let isYes = Math.random() < (m.mercy * devotion);
+                // NEW MATH: Math.random() < (Mercy + (Devotion * 0.4))
+                // This means high accuracy significantly increases the chance of a "YES".
+                let isYes = Math.random() < (m.mercy + (devotion * 0.4));
                 let vSpan = document.getElementById(`v-${i}`);
                 let qSpan = document.getElementById(`q-${i}`);
                 if (isYes) {
-                    vSpan.innerText = "YES"; vSpan.className = "vote-yes"; qSpan.innerText = "Fine. Ruin it."; qSpan.style.color = "var(--terminal-green)";
+                    vSpan.innerText = "YES"; vSpan.className = "vote-yes"; qSpan.innerText = `${m.quote}`; qSpan.style.color = "var(--terminal-green)";
                     yesVotes++;
                 } else {
-                    vSpan.innerText = "NO"; vSpan.className = "vote-no"; qSpan.innerText = `"${m.quote}"`; qSpan.style.color = "red";
+                    vSpan.innerText = "NO"; vSpan.className = "vote-no"; qSpan.innerText = "DENIED. Back to the chamber."; qSpan.style.color = "red";
                     noVotes++;
                 }
-                document.getElementById('total-counts').innerText = `YES: ${yesVotes} | NO: ${noVotes}`;
+                document.getElementById('total-counts').innerText = `AUTHORIZED RUIN: ${yesVotes} | RENEWED DENIAL: ${noVotes}`;
                 if (i === masters.length - 1) finishVote();
-            }, (i + 1) * 1200);
+            }, (i + 1) * 800); // Sped up the reveal slightly
         });
     }
 
@@ -478,9 +469,9 @@
         const btn = document.getElementById('verdict-btn');
         btn.style.display = "block";
         if (yesVotes > noVotes) {
-            res.innerText = "AUTHORIZED RUIN"; res.style.color = "var(--terminal-green)";
+            res.innerText = "DESTINY: RUINED ORGASM"; res.style.color = "var(--terminal-green)";
         } else {
-            res.innerText = "DENIAL RENEWED"; res.style.color = "red";
+            res.innerText = "DESTINY: RENEWED DENIAL"; res.style.color = "red";
         }
     }
 
@@ -496,3 +487,4 @@
 
 </body>
 </html>
+
