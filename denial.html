@@ -237,10 +237,8 @@
             A good girl like you couldn't stay denied. Your "leaking" at work became an excuse to fail.
         </p>
         <p style="color: red; font-weight: bold; font-size: 1.1rem;">ADMIT YOUR WEAKNESS TO RESTART:</p>
-        <div id="reset-target" style="color: #fff; font-style: italic; margin: 20px 0; font-size: 1.1rem; background: #111; padding: 15px; line-height: 1.6;">
-            I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 7-day progress and return to Day 1.
-        </div>
-        <input type="text" id="reset-input" class="labor-input" placeholder="Type confession..." autocomplete="off">
+        <div id="reset-target" style="color: #fff; font-style: italic; margin: 20px 0; font-size: 1.1rem; background: #111; padding: 15px; line-height: 1.6;">I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 7-day progress and return to Day 1.</div>
+        <input type="text" id="reset-input" class="labor-input" placeholder="Type confession exactly..." autocomplete="off">
     </div>
 </div>
 
@@ -306,7 +304,6 @@
 </div>
 
 <script>
-    // BALANCED ROSTER - Higher Mercy values (0.2 - 0.5) to make ruined orgasms possible.
     const masters = [
         { name: "Sapnap", mercy: 0.35, quote: "You've leaked enough. Ruin it and get back to work." },
         { name: "Ross Lynch", mercy: 0.40, quote: "Fine. A messy ruin for a messy girl. Do it." },
@@ -343,10 +340,15 @@
         "Master Roier owns my mind and my body in the chamber."
     ];
 
-    let startTime = localStorage.getItem('chamber_start');
-    if (!startTime) {
+    // --- SYSTEM CORE ---
+    let startTime;
+    const storedStart = localStorage.getItem('chamber_start');
+    
+    if (storedStart) {
+        startTime = parseInt(storedStart);
+    } else {
         startTime = Date.now();
-        localStorage.setItem('chamber_start', startTime);
+        localStorage.setItem('chamber_start', startTime.toString());
     }
 
     let successes = parseInt(localStorage.getItem('chamber_successes')) || 0;
@@ -365,23 +367,27 @@
     function updateUI() {
         let now = Date.now();
         let elapsed = now - startTime;
-        let totalTime = 604800000;
+        let totalTime = 604800000; // 7 Days in ms
 
         let d = Math.floor(elapsed / 86400000);
         let h = Math.floor((elapsed % 86400000) / 3600000);
         let m = Math.floor((elapsed % 3600000) / 60000);
         let s = Math.floor((elapsed % 60000) / 1000);
 
+        // Day Calculation
         document.getElementById('day-display').innerText = `DAY ${d + 1} OF 7`;
         
+        // Progress Bar
         let progressPercent = (elapsed / totalTime) * 100;
         if (progressPercent > 100) progressPercent = 100;
         document.getElementById('progress-bar').style.width = progressPercent + "%";
         document.getElementById('percent-val').innerText = Math.floor(progressPercent) + "%";
 
+        // Main Timer String
         document.getElementById('timer').innerText = 
             `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
         
+        // Judgment Trigger
         if (elapsed >= totalTime) {
             document.getElementById('chamber-ui').style.display = 'none';
             document.getElementById('judgment-overlay').style.display = 'flex';
@@ -389,19 +395,20 @@
         }
     }
 
-    const inputEl = document.getElementById('labor-input');
-    inputEl.addEventListener('keydown', (e) => {
+    // Labor Logic
+    const laborInput = document.getElementById('labor-input');
+    laborInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            if (inputEl.value === phrases[currentPhraseIdx]) {
+            if (laborInput.value === phrases[currentPhraseIdx]) {
                 successes++;
                 currentPhraseIdx = Math.floor(Math.random() * phrases.length);
                 document.getElementById('target-phrase').innerText = phrases[currentPhraseIdx];
-                inputEl.value = "";
-                inputEl.style.borderColor = "var(--terminal-green)";
+                laborInput.value = "";
+                laborInput.style.borderColor = "var(--terminal-green)";
             } else {
                 errors++;
-                inputEl.value = "";
-                inputEl.style.borderColor = "red";
+                laborInput.value = "";
+                laborInput.style.borderColor = "red";
                 document.body.style.backgroundColor = "#200";
                 setTimeout(() => document.body.style.backgroundColor = "var(--bg-dark)", 100);
             }
@@ -409,24 +416,41 @@
         }
     });
 
+    // FAILURE ENGINE
     function triggerFailure() {
         document.getElementById('fail-overlay').style.display = 'flex';
+        // Optional: you could pause the UI timer here if you wanted, but usually, it's more brutal if it keeps running.
     }
 
-    document.getElementById('reset-input').addEventListener('keydown', (e) => {
+    const resetInput = document.getElementById('reset-input');
+    resetInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            let val = document.getElementById('reset-input').value;
-            let target = document.getElementById('reset-target').innerText.trim();
-            if (val === target) {
-                localStorage.clear();
-                location.reload();
+            const typedValue = resetInput.value.trim();
+            // We use a literal string here to ensure whitespace in HTML doesn't break the check
+            const targetValue = "I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 7-day progress and return to Day 1.";
+            
+            if (typedValue === targetValue) {
+                // HARD RESET
+                localStorage.removeItem('chamber_start');
+                localStorage.removeItem('chamber_successes');
+                localStorage.removeItem('chamber_errors');
+                
+                // Visual confirmation before reload
+                resetInput.style.borderColor = "var(--terminal-green)";
+                setTimeout(() => {
+                    location.reload(); 
+                }, 500);
             } else {
-                document.getElementById('reset-input').style.borderColor = "red";
-                document.getElementById('reset-input').value = "";
+                resetInput.style.borderColor = "red";
+                resetInput.value = "";
+                // Briefly shake the box or flash red
+                document.getElementById('punishment-box').style.borderColor = "white";
+                setTimeout(() => { document.getElementById('punishment-box').style.borderColor = "red"; }, 100);
             }
         }
     });
 
+    // JUDGMENT ENGINE
     let yesVotes = 0;
     let noVotes = 0;
     let judgmentFinished = false;
@@ -436,7 +460,6 @@
         judgmentFinished = true;
         
         const container = document.getElementById('votes-container');
-        // EFFORT MULTIPLIER: Devotion now significantly boosts your odds.
         let devotion = (successes / (successes + errors || 1));
 
         masters.forEach((m, i) => {
@@ -446,8 +469,6 @@
             container.appendChild(row);
 
             setTimeout(() => {
-                // NEW MATH: Math.random() < (Mercy + (Devotion * 0.4))
-                // This means high accuracy significantly increases the chance of a "YES".
                 let isYes = Math.random() < (m.mercy + (devotion * 0.4));
                 let vSpan = document.getElementById(`v-${i}`);
                 let qSpan = document.getElementById(`q-${i}`);
@@ -460,7 +481,7 @@
                 }
                 document.getElementById('total-counts').innerText = `AUTHORIZED RUIN: ${yesVotes} | RENEWED DENIAL: ${noVotes}`;
                 if (i === masters.length - 1) finishVote();
-            }, (i + 1) * 800); // Sped up the reveal slightly
+            }, (i + 1) * 800);
         });
     }
 
@@ -480,6 +501,7 @@
         location.reload();
     }
 
+    // INITIALIZE
     updateStats();
     setInterval(updateUI, 1000);
     updateUI();
@@ -487,4 +509,3 @@
 
 </body>
 </html>
-
