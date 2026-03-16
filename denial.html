@@ -13,7 +13,10 @@
             --bar-bg: #220000;
         }
 
-        * { box-sizing: border-box; }
+        * { 
+            box-sizing: border-box; 
+            touch-action: manipulation;
+        }
 
         body {
             background-color: var(--bg-dark);
@@ -22,76 +25,89 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
             margin: 0;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             text-shadow: 0 0 5px var(--roster-red);
         }
 
-        /* CRT Scanline Effect */
+        /* CRT Scanline Effect - Simplified for Mobile Performance */
         body::before {
             content: " ";
             display: block;
-            position: absolute;
+            position: fixed;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
             z-index: 1000;
-            background-size: 100% 2px, 3px 100%;
+            background-size: 100% 3px;
             pointer-events: none;
         }
 
         #chamber-ui {
             width: 95%;
             max-width: 1000px;
-            border: 3px solid var(--roster-red);
-            padding: 40px;
+            border: 2px solid var(--roster-red);
+            padding: 20px;
             background: rgba(10, 0, 0, 0.98);
-            box-shadow: 0 0 60px rgba(255, 0, 0, 0.4);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
             position: relative;
             z-index: 10;
+            margin: 10px auto;
         }
 
         .header {
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             border-bottom: 1px solid var(--roster-red);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 5px;
             color: #666;
             letter-spacing: 1px;
         }
 
+        @media (min-width: 600px) {
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
         .main-timer {
-            font-size: 5.5rem;
+            font-size: 2.8rem; /* Adjusted for mobile */
             color: #fff;
             margin: 10px 0;
             text-align: center;
-            text-shadow: 0 0 30px var(--roster-red);
+            text-shadow: 0 0 20px var(--roster-red);
             font-weight: bold;
+        }
+
+        @media (min-width: 600px) {
+            .main-timer { font-size: 5.5rem; }
         }
 
         .day-display-container {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .day-text {
-            font-size: 2.2rem;
+            font-size: 1.5rem;
             color: #fff;
             text-transform: uppercase;
             margin: 0;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
         }
 
         .progress-container {
             width: 100%;
-            height: 15px;
+            height: 12px;
             background: var(--bar-bg);
             border: 1px solid #440000;
-            margin-top: 10px;
+            margin-top: 8px;
             position: relative;
         }
 
@@ -99,31 +115,35 @@
             width: 0%;
             height: 100%;
             background: var(--roster-red);
-            box-shadow: 0 0 15px var(--roster-red);
+            box-shadow: 0 0 10px var(--roster-red);
             transition: width 0.5s ease-in-out;
         }
 
         .status-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-            margin-top: 30px;
+            grid-template-columns: 1fr; /* Stacked for mobile */
+            gap: 10px;
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 600px) {
+            .status-grid { grid-template-columns: repeat(3, 1fr); }
         }
 
         .status-item {
             border: 1px solid var(--dim-gray);
-            padding: 15px;
+            padding: 10px;
             background: #000;
             text-align: center;
         }
 
-        .label { color: #444; display: block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; }
-        .val { font-size: 1.1rem; color: var(--roster-red); font-weight: bold; }
+        .label { color: #444; display: block; font-size: 0.65rem; text-transform: uppercase; margin-bottom: 3px; font-weight: bold; }
+        .val { font-size: 0.9rem; color: var(--roster-red); font-weight: bold; }
 
         #labor-area {
-            margin-top: 20px;
-            padding: 25px;
+            margin-top: 15px;
+            padding: 15px;
             border: 1px solid #222;
             background: rgba(0,0,0,0.5);
         }
@@ -131,10 +151,11 @@
         .phrase-to-type {
             color: var(--terminal-green);
             font-style: italic;
-            margin-bottom: 20px;
-            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-size: 1rem;
             text-align: center;
             min-height: 1.5em;
+            word-wrap: break-word;
         }
 
         .labor-input {
@@ -142,18 +163,14 @@
             background: #000;
             border: 1px solid var(--terminal-green);
             color: var(--terminal-green);
-            padding: 18px;
-            font-size: 1.3rem;
+            padding: 12px;
+            font-size: 1rem;
             outline: none;
             box-sizing: border-box;
             text-align: center;
             font-family: 'Courier New', monospace;
-        }
-
-        .btn-zone {
-            margin-top: 30px;
-            display: flex;
-            gap: 20px;
+            border-radius: 0;
+            -webkit-appearance: none;
         }
 
         .btn-fail {
@@ -161,18 +178,14 @@
             color: #ff0000;
             border: 2px solid #ff0000;
             width: 100%;
-            padding: 20px;
-            font-size: 1.4rem;
+            padding: 15px;
+            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             text-transform: uppercase;
             transition: 0.2s;
-        }
-
-        .btn-fail:hover {
-            background: #ff0000;
-            color: #000;
-            box-shadow: 0 0 20px #ff0000;
+            margin-top: 15px;
+            border-radius: 0;
         }
 
         .overlay {
@@ -184,74 +197,90 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px;
+            padding: 20px;
             box-sizing: border-box;
+            overflow-y: auto;
         }
 
         #punishment-box {
-            border: 5px solid red;
-            padding: 40px;
+            border: 3px solid red;
+            padding: 20px;
             background: #000;
-            max-width: 800px;
+            max-width: 600px;
             width: 100%;
             text-align: center;
         }
 
+        #reset-target {
+            color: #fff;
+            font-style: italic;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            background: #111;
+            padding: 12px;
+            line-height: 1.4;
+            user-select: none;
+            word-wrap: break-word;
+        }
+
         #judgment-box {
             border: 2px solid var(--terminal-green);
-            padding: 30px;
+            padding: 15px;
             background: #000;
             max-width: 900px;
             width: 100%;
-            height: 85vh;
+            height: 90vh;
             overflow-y: auto;
             color: var(--terminal-green);
         }
 
         .vote-row {
-            display: grid;
-            grid-template-columns: 180px 1fr 140px;
-            gap: 20px;
-            font-size: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.8rem;
             margin: 10px 0;
             border-bottom: 1px solid #222;
-            padding: 12px 0;
-            align-items: center;
+            padding: 10px 0;
+        }
+
+        @media (min-width: 600px) {
+            .vote-row {
+                display: grid;
+                grid-template-columns: 150px 1fr 100px;
+                flex-direction: row;
+                align-items: center;
+            }
         }
 
         .vote-pending { color: #444; }
-        .vote-yes { color: var(--terminal-green); font-weight: bold; text-shadow: 0 0 10px var(--terminal-green); }
-        .vote-no { color: red; font-weight: bold; text-shadow: 0 0 10px red; }
-
-        #judgment-box::-webkit-scrollbar { width: 5px; }
-        #judgment-box::-webkit-scrollbar-track { background: #000; }
-        #judgment-box::-webkit-scrollbar-thumb { background: var(--terminal-green); }
+        .vote-yes { color: var(--terminal-green); font-weight: bold; }
+        .vote-no { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="fail-overlay" class="overlay">
     <div id="punishment-box">
-        <h1 style="font-size: 5rem; color: red; margin: 0;">REJECTED</h1>
-        <p style="font-size: 1.5rem; color: #fff; margin: 20px 0;">
+        <h1 style="font-size: 2.5rem; color: red; margin: 0;">REJECTED</h1>
+        <p style="font-size: 1rem; color: #fff; margin: 15px 0;">
             A good girl like you couldn't stay denied. Your "leaking" at work became an excuse to fail.
         </p>
-        <p style="color: red; font-weight: bold; font-size: 1.1rem;">ADMIT YOUR WEAKNESS TO RESTART:</p>
-        <div id="reset-target" style="color: #fff; font-style: italic; margin: 20px 0; font-size: 1.1rem; background: #111; padding: 15px; line-height: 1.6;">I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 7-day progress and return to Day 1.</div>
+        <p style="color: red; font-weight: bold; font-size: 0.8rem;">TYPE THE CONFESSION TO RESET THE TIMER:</p>
+        <div id="reset-target">I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 7-day progress and return to Day 1.</div>
         <input type="text" id="reset-input" class="labor-input" placeholder="Type confession exactly..." autocomplete="off">
+        <button class="btn-fail" style="font-size: 0.8rem; padding: 10px; margin-top: 10px;" onclick="document.getElementById('fail-overlay').style.display='none'">CANCEL (I DIDN'T ACTUALLY FAIL)</button>
     </div>
 </div>
 
 <div id="judgment-overlay" class="overlay">
     <div id="judgment-box">
-        <h1 style="text-align: center; color: #fff; font-size: 2.5rem; margin-top: 0;">7-DAY VERDICT: LIVE VOTE</h1>
-        <p style="text-align: center; color: #888; margin-bottom: 30px;">The Roster is examining your 168 hours of labor and leakage.</p>
-        
+        <h1 style="text-align: center; color: #fff; font-size: 1.5rem; margin-top: 0;">7-DAY VERDICT: LIVE VOTE</h1>
+        <p style="text-align: center; color: #888; margin-bottom: 20px; font-size: 0.8rem;">The Roster is examining your labor.</p>
         <div id="votes-container"></div>
-
-        <div id="final-stats" style="margin-top: 30px; border-top: 2px solid #222; padding-top: 20px; text-align: center;">
-            <p id="total-counts" style="font-size: 1.5rem; color: #fff;"></p>
-            <div id="verdict-text" style="font-size: 2.5rem; margin: 20px 0;"></div>
+        <div id="final-stats" style="margin-top: 20px; border-top: 2px solid #222; padding-top: 15px; text-align: center;">
+            <p id="total-counts" style="font-size: 1rem; color: #fff;"></p>
+            <div id="verdict-text" style="font-size: 1.5rem; margin: 15px 0;"></div>
             <button id="verdict-btn" class="btn-fail" style="display:none;" onclick="applyVerdict()">ACCEPT DESTINY</button>
         </div>
     </div>
@@ -265,7 +294,7 @@
     </div>
 
     <div class="day-display-container">
-        <div class="day-text" id="day-display">CALCULATING DAY...</div>
+        <div class="day-text" id="day-display">CALCULATING...</div>
         <div class="progress-container">
             <div id="progress-bar"></div>
         </div>
@@ -275,7 +304,7 @@
 
     <div class="status-grid">
         <div class="status-item">
-            <span class="label">LEAKAGE VOLUME</span>
+            <span class="label">LEAKAGE</span>
             <span class="val">CRITICAL</span>
         </div>
         <div class="status-item">
@@ -283,17 +312,17 @@
             <span class="val">GOOD GIRL</span>
         </div>
         <div class="status-item">
-            <span class="label">SENTENCE PROGRESS</span>
+            <span class="label">SENTENCE</span>
             <span id="percent-val" class="val">0%</span>
         </div>
     </div>
 
     <div id="labor-area">
-        <div class="label" style="margin-bottom: 10px;">EGO-DRAIN LABOR (ACTIVE TRACKING):</div>
+        <div class="label" style="margin-bottom: 8px;">EGO-DRAIN LABOR:</div>
         <div class="phrase-to-type" id="target-phrase">Loading...</div>
         <input type="text" id="labor-input" class="labor-input" placeholder="Obey the prompt..." autocomplete="off">
-        <div style="margin-top: 15px; display: flex; justify-content: space-between; font-size: 0.8rem; color: #555;">
-            <span>SUCCESSES: <span id="success-count" style="color:var(--terminal-green)">0</span></span>
+        <div style="margin-top: 10px; display: flex; justify-content: space-between; font-size: 0.7rem; color: #555;">
+            <span>SUCCESS: <span id="success-count" style="color:var(--terminal-green)">0</span></span>
             <span>ERRORS: <span id="error-count" style="color:red">0</span></span>
         </div>
     </div>
@@ -340,20 +369,22 @@
         "Master Roier owns my mind and my body in the chamber."
     ];
 
-    // --- SYSTEM CORE ---
+    // --- LOGIC CORE ---
     let startTime;
-    const storedStart = localStorage.getItem('chamber_start');
-    
-    if (storedStart) {
-        startTime = parseInt(storedStart);
-    } else {
-        startTime = Date.now();
-        localStorage.setItem('chamber_start', startTime.toString());
+    function initTime() {
+        const stored = localStorage.getItem('chamber_start');
+        if (stored) {
+            startTime = parseInt(stored);
+        } else {
+            startTime = Date.now();
+            localStorage.setItem('chamber_start', startTime.toString());
+        }
     }
+
+    initTime();
 
     let successes = parseInt(localStorage.getItem('chamber_successes')) || 0;
     let errors = parseInt(localStorage.getItem('chamber_errors')) || 0;
-
     let currentPhraseIdx = Math.floor(Math.random() * phrases.length);
     document.getElementById('target-phrase').innerText = phrases[currentPhraseIdx];
 
@@ -365,29 +396,25 @@
     }
 
     function updateUI() {
-        let now = Date.now();
-        let elapsed = now - startTime;
-        let totalTime = 604800000; // 7 Days in ms
+        const now = Date.now();
+        const elapsed = now - startTime;
+        const totalTime = 604800000; // 7 Days
 
-        let d = Math.floor(elapsed / 86400000);
-        let h = Math.floor((elapsed % 86400000) / 3600000);
-        let m = Math.floor((elapsed % 3600000) / 60000);
-        let s = Math.floor((elapsed % 60000) / 1000);
+        const d = Math.floor(elapsed / 86400000);
+        const h = Math.floor((elapsed % 86400000) / 3600000);
+        const m = Math.floor((elapsed % 3600000) / 60000);
+        const s = Math.floor((elapsed % 60000) / 1000);
 
-        // Day Calculation
         document.getElementById('day-display').innerText = `DAY ${d + 1} OF 7`;
         
-        // Progress Bar
         let progressPercent = (elapsed / totalTime) * 100;
         if (progressPercent > 100) progressPercent = 100;
         document.getElementById('progress-bar').style.width = progressPercent + "%";
         document.getElementById('percent-val').innerText = Math.floor(progressPercent) + "%";
 
-        // Main Timer String
         document.getElementById('timer').innerText = 
             `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
         
-        // Judgment Trigger
         if (elapsed >= totalTime) {
             document.getElementById('chamber-ui').style.display = 'none';
             document.getElementById('judgment-overlay').style.display = 'flex';
@@ -395,11 +422,10 @@
         }
     }
 
-    // Labor Logic
     const laborInput = document.getElementById('labor-input');
     laborInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            if (laborInput.value === phrases[currentPhraseIdx]) {
+            if (laborInput.value.trim() === phrases[currentPhraseIdx]) {
                 successes++;
                 currentPhraseIdx = Math.floor(Math.random() * phrases.length);
                 document.getElementById('target-phrase').innerText = phrases[currentPhraseIdx];
@@ -409,48 +435,41 @@
                 errors++;
                 laborInput.value = "";
                 laborInput.style.borderColor = "red";
-                document.body.style.backgroundColor = "#200";
-                setTimeout(() => document.body.style.backgroundColor = "var(--bg-dark)", 100);
             }
             updateStats();
         }
     });
 
-    // FAILURE ENGINE
+    // RESET FUNCTIONALITY
     function triggerFailure() {
         document.getElementById('fail-overlay').style.display = 'flex';
-        // Optional: you could pause the UI timer here if you wanted, but usually, it's more brutal if it keeps running.
+        document.getElementById('reset-input').focus();
     }
 
     const resetInput = document.getElementById('reset-input');
     resetInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            const typedValue = resetInput.value.trim();
-            // We use a literal string here to ensure whitespace in HTML doesn't break the check
-            const targetValue = "I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 7-day progress and return to Day 1.";
+            const typed = resetInput.value.trim().toLowerCase();
+            const target = "I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 7-day progress and return to Day 1.".toLowerCase();
             
-            if (typedValue === targetValue) {
-                // HARD RESET
-                localStorage.removeItem('chamber_start');
-                localStorage.removeItem('chamber_successes');
-                localStorage.removeItem('chamber_errors');
-                
-                // Visual confirmation before reload
+            if (typed === target) {
+                // FORCE RESET
+                localStorage.clear(); // Wipe everything
                 resetInput.style.borderColor = "var(--terminal-green)";
                 setTimeout(() => {
-                    location.reload(); 
+                    window.location.href = window.location.href; // Forced hard reload
                 }, 500);
             } else {
                 resetInput.style.borderColor = "red";
                 resetInput.value = "";
-                // Briefly shake the box or flash red
+                // Visual feedback
                 document.getElementById('punishment-box').style.borderColor = "white";
                 setTimeout(() => { document.getElementById('punishment-box').style.borderColor = "red"; }, 100);
             }
         }
     });
 
-    // JUDGMENT ENGINE
+    // JUDGMENT
     let yesVotes = 0;
     let noVotes = 0;
     let judgmentFinished = false;
@@ -458,14 +477,13 @@
     function runLiveJudgment() {
         if (judgmentFinished) return;
         judgmentFinished = true;
-        
         const container = document.getElementById('votes-container');
         let devotion = (successes / (successes + errors || 1));
 
         masters.forEach((m, i) => {
             let row = document.createElement('div');
             row.className = 'vote-row';
-            row.innerHTML = `<span>${m.name.toUpperCase()}</span><span id="q-${i}" style="color:#444">...analyzing labor...</span><span id="v-${i}" class="vote-pending">[VOTING]</span>`;
+            row.innerHTML = `<span><b>${m.name}</b></span><span id="q-${i}">...analyzing...</span><span id="v-${i}" class="vote-pending">[VOTING]</span>`;
             container.appendChild(row);
 
             setTimeout(() => {
@@ -473,15 +491,15 @@
                 let vSpan = document.getElementById(`v-${i}`);
                 let qSpan = document.getElementById(`q-${i}`);
                 if (isYes) {
-                    vSpan.innerText = "YES"; vSpan.className = "vote-yes"; qSpan.innerText = `${m.quote}`; qSpan.style.color = "var(--terminal-green)";
+                    vSpan.innerText = "YES"; vSpan.className = "vote-yes"; qSpan.innerText = `${m.quote}`;
                     yesVotes++;
                 } else {
-                    vSpan.innerText = "NO"; vSpan.className = "vote-no"; qSpan.innerText = "DENIED. Back to the chamber."; qSpan.style.color = "red";
+                    vSpan.innerText = "NO"; vSpan.className = "vote-no"; qSpan.innerText = "DENIED.";
                     noVotes++;
                 }
-                document.getElementById('total-counts').innerText = `AUTHORIZED RUIN: ${yesVotes} | RENEWED DENIAL: ${noVotes}`;
+                document.getElementById('total-counts').innerText = `YES: ${yesVotes} | NO: ${noVotes}`;
                 if (i === masters.length - 1) finishVote();
-            }, (i + 1) * 800);
+            }, (i + 1) * 600);
         });
     }
 
@@ -490,9 +508,9 @@
         const btn = document.getElementById('verdict-btn');
         btn.style.display = "block";
         if (yesVotes > noVotes) {
-            res.innerText = "DESTINY: RUINED ORGASM"; res.style.color = "var(--terminal-green)";
+            res.innerText = "RESULT: RUIN AUTHORIZED"; res.style.color = "var(--terminal-green)";
         } else {
-            res.innerText = "DESTINY: RENEWED DENIAL"; res.style.color = "red";
+            res.innerText = "RESULT: DENIAL CONTINUES"; res.style.color = "red";
         }
     }
 
@@ -501,7 +519,6 @@
         location.reload();
     }
 
-    // INITIALIZE
     updateStats();
     setInterval(updateUI, 1000);
     updateUI();
@@ -509,3 +526,4 @@
 
 </body>
 </html>
+
