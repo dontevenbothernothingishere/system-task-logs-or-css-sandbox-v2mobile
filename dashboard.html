@@ -83,21 +83,15 @@
         .user-msg { align-self: flex-end; background: #111; color: #888; border: 1px solid #222; }
         .dom-msg { align-self: flex-start; background: #001a2c; border-left: 3px solid var(--blue); color: #e0e0e0; }
         
-/* Force the container to make room at the bottom */
-        /* THE NUCLEAR FIX: PIN TO SCREEN */
+/* THE PROPER FIX: CONTAINED TO TAB */
         .chat-input-area { 
-            position: fixed !important; /* Locks it to the screen, not the tab */
-            bottom: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            height: 120px !important; 
-            padding: 10px !important;
-            background: #0a0a0a !important; 
-            border-top: 2px solid var(--blue) !important;
-            display: flex !important; 
-            flex-direction: column !important; 
-            gap: 10px !important;
-            z-index: 999999 !important; /* Stay above EVERYTHING */
+            background: #0a0a0a; 
+            border-top: 2px solid var(--blue);
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px;
+            padding: 10px;
+            flex-shrink: 0; /* Keeps it locked to the bottom of the chat tab */
         }
 
         /* Prevent chat from hiding behind the pinned bar */
