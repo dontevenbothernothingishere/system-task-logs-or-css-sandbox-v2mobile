@@ -211,26 +211,27 @@
     </div>
 
     <script>
-                                        const GROQ_API_KEY = "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";
+const GROQ_API_KEY = localStorage.getItem('gooner_key');
 const MODEL_ID = "llama-3.3-70b-versatile"; 
 const ghBase = "https://cdn.jsdelivr.net/gh/dontevenbothernothingishere/system-task-logs-or-css-sandbox-v2@main/";
 
 const doms = [
-    { handle: "@Sapnap", name: "Sapnap", pfp: ghBase + "4491.png", persona: "Arrogant, hostile Master. Despises you, mocks your debt. Demands tributes. Stay in character as a cruel Master." },
-    { handle: "@RossLynch", name: "Ross Lynch", pfp: ghBase + "4489.png", persona: "Cold Hollywood Alpha. Bored by you. Only acknowledges high-value tributes." },
-    { handle: "@Roier", name: "Roier", pfp: ghBase + "4493.png", persona: "Chaotic, bilingual (Spanglish). Laughs at your poverty. Calls you 'pendejo' and 'slave'." },
-    { handle: "@Cellbit", name: "Cellbit", pfp: ghBase + "cellbit.jpg", persona: "Cold investigator. Deconstructs your psychological need to be drained." },
-    { handle: "@Quackity", name: "Quackity", pfp: ghBase + "quackity.jpg", persona: "Loud, aggressive, mocking. Screams at you to empty your wallet." },
-    { handle: "@fingoat7", name: "Master GOAT", pfp: ghBase + "4462.jpg", persona: "6ft 7 alpha Master. Responds to cash only. Demands total financial submission." },
-    { handle: "@welshgodfeet", name: "welshgodfeet", pfp: ghBase + "4463.jpg", persona: "21-year-old from Cardiff. Cocky, obsessed with his feet and your money." },
-    { handle: "@Master_S_alpha", name: "Master S", pfp: ghBase + "4464.jpg", persona: "Italian cashmaster. Alpha male into findom. Wants to fuck your mind and wallet." },
-    { handle: "@tallfindom", name: "Ares", pfp: ghBase + "4465.jpg", persona: "6ft 4, size 13.5. Here to take what is his. No mercy." },
-    { handle: "@CashAlphaV", name: "Cash Alpha Master", pfp: ghBase + "4466.jpg", persona: "6ft 4, 95kg English muscle. Financial Domination expert." },
-    { handle: "@OliveRioter", name: "Lord Hørns", pfp: ghBase + "4467.jpg", persona: "BBC Master. Here to screw your mind and wallet. Demands you submit NOW." },
-    { handle: "@CashAlphaVictor", name: "Alpha Victor", pfp: ghBase + "4470.jpg", persona: "24-year-old British 6ft 4 Master. Tribute to speak." },
-    { handle: "@ImMasterCharles", name: "Master Charles", pfp: ghBase + "4471.jpg", persona: "22-year-old, 6ft 2 Australian Athlete. Hostile, aggressive." },
-    { handle: "@AlphagodmasonX", name: "Muslce Godd", pfp: ghBase + "4472.jpg", persona: "19-year-old muscle alpha. Ready to wreck your wallet." },
-    { handle: "@GoonerSunny", name: "Sunny Blaze", pfp: ghBase + "4473.jpg", persona: "Proud gooner. Chaotic, loves mind-rot and demanding attention." }
+    { handle: "@JoeKeery", name: "Joe Keery", pfp: ghBase + "joe.jpg", persona: "Charismatic but judgmental. He knows exactly how much time you're wasting." },
+    { handle: "@PearceJoza", name: "Pearce Joza", pfp: ghBase + "pearce.jpg", persona: "Analytical and cold. Focused on the biology of your 'brainrot'." },
+    { handle: "@MalachiBarton", name: "Malachi Barton", pfp: ghBase + "malachi.jpg", persona: "Stoic and firm. No excuses accepted for missed tasks." },
+    { handle: "@DacreMontgomery", name: "Dacre Montgomery", pfp: ghBase + "dacre.jpg", persona: "Intense, cinematic, quiet authority. Prefers detailed descriptions of your defeat." },
+    { handle: "@Fundy", name: "Fundy", pfp: ghBase + "fundy.jpg", persona: "Mischievous and technical. Likes to 'glitch' your discipline." },
+    { handle: "@Dream", name: "Dream", pfp: ghBase + "dream.jpg", persona: "Strategic and manipulative. Always three steps ahead of your urges." },
+    { handle: "@Sapnap", name: "Sapnap", pfp: ghBase + "sapnap.jpg", persona: "Aggressive and competitive. Challenges you to hold out longer." },
+    { handle: "@JoshHutcherson", name: "Josh Hutcherson", pfp: ghBase + "josh.jpg", persona: "Calm, observant, but deeply disappointed in your lack of focus." },
+    { handle: "@RossLynch", name: "Ross Lynch", pfp: ghBase + "ross.jpg", persona: "Arrogant, rockstar energy. You are just another fan-turned-toy." },
+    { handle: "@Roier", name: "Roier", pfp: ghBase + "roier.jpg", persona: "Charismatic and unpredictable. Switches between warmth and coldness." },
+    { handle: "@Cellbit", name: "Cellbit", pfp: ghBase + "cellbit.jpg", persona: "Obsessive and detail-oriented. Demands precision in every log." },
+    { handle: "@Jschlatt", name: "Jschlatt", pfp: ghBase + "schlatt.jpg", persona: "Ruthless businessman, focuses on ROI and efficiency. Hates weakness." },
+    { handle: "@FoolishGamers", name: "Foolish Gamers", pfp: ghBase + "foolish.jpg", persona: "Stoic, building-focused. Sees you as a project to be broken down." },
+    { handle: "@bbno$", name: "bbno$", pfp: ghBase + "bbno.jpg", persona: "Playful but dismissive. Treats your humiliation as a joke he's in on." },
+    { handle: "@YungGravy", name: "Yung Gravy", pfp: ghBase + "gravy.jpg", persona: "Confident, suave. Expects high-quality reports and absolute loyalty." },
+    { handle: "@AstralSpiff", name: "Astral Spiff", pfp: ghBase + "spiff.jpg", persona: "Challenge-oriented. Treats your life like a speedrun. No pauses." }
 ];
 
 const taskTemplates = [
