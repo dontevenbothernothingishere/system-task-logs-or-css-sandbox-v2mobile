@@ -83,36 +83,15 @@
         .user-msg { align-self: flex-end; background: #111; color: #888; border: 1px solid #222; }
         .dom-msg { align-self: flex-start; background: #001a2c; border-left: 3px solid var(--blue); color: #e0e0e0; }
         
-/* THE PROPER FIX: CONTAINED TO TAB */
         .chat-input-area { 
-            background: #0a0a0a; 
-            border-top: 2px solid var(--blue);
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px;
-            padding: 10px;
-            flex-shrink: 0; /* Keeps it locked to the bottom of the chat tab */
+            padding: 8px; background: #0a0a0a; border-top: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
         }
+        .input-row { display: flex; gap: 5px; height: 40px; }
+        #chat-in { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 0 10px; border-radius: 4px; font-size: 16px; }
+        .tribute-row { display: flex; gap: 5px; align-items: center; }
+        #tribute-amount { width: 70px; background: #000; border: 1px solid #333; color: var(--green); height: 35px; text-align: center; border-radius: 4px; font-size: 14px; }
 
-        /* Prevent chat from hiding behind the pinned bar */
-        #chat-box {
-            padding-bottom: 130px !important;
-        }
-
-        .input-row, .tribute-row { 
-            display: flex !important; 
-            gap: 10px !important;
-            height: 45px !important;
-            width: 100% !important;
-        }
-
-        #tribute-amount { 
-            width: 80px !important; 
-            background: #000 !important; 
-            color: #28a745 !important; 
-            border: 1px solid #333 !important;
-            font-size: 16px !important;
-        }
         /* --- Orders --- */
         .command-panel { padding: 15px; display: flex; flex-direction: column; align-items: center; }
         #task-display { 
@@ -225,7 +204,7 @@ const doms = [
     { handle: "@Sapnap", name: "Sapnap", pfp: ghBase + "sapnap.jpg", persona: "Aggressive and competitive. Challenges you to hold out longer." },
     { handle: "@JoshHutcherson", name: "Josh Hutcherson", pfp: ghBase + "josh.jpg", persona: "Calm, observant, but deeply disappointed in your lack of focus." },
     { handle: "@RossLynch", name: "Ross Lynch", pfp: ghBase + "ross.jpg", persona: "Arrogant, rockstar energy. You are just another fan-turned-toy." },
-    { handle: "@Roier", name: "Roier", pfp: ghBase + "roier.jpg", persona: "Charismatic and unpredictable. Switches between warmth and coldness." },
+    { handle: "@Roier", name: "Roier", pfp: ghBase + "roier.jpg", persona: "Charismatic and unpredictable. Switches between warmth and coldness. Is latino so he speaks english and uses some spanish words." },
     { handle: "@Cellbit", name: "Cellbit", pfp: ghBase + "cellbit.jpg", persona: "Obsessive and detail-oriented. Demands precision in every log." },
     { handle: "@Jschlatt", name: "Jschlatt", pfp: ghBase + "schlatt.jpg", persona: "Ruthless businessman, focuses on ROI and efficiency. Hates weakness." },
     { handle: "@FoolishGamers", name: "Foolish Gamers", pfp: ghBase + "foolish.jpg", persona: "Stoic, building-focused. Sees you as a project to be broken down." },
@@ -233,6 +212,7 @@ const doms = [
     { handle: "@YungGravy", name: "Yung Gravy", pfp: ghBase + "gravy.jpg", persona: "Confident, suave. Expects high-quality reports and absolute loyalty." },
     { handle: "@AstralSpiff", name: "Astral Spiff", pfp: ghBase + "spiff.jpg", persona: "Challenge-oriented. Treats your life like a speedrun. No pauses." }
 ];
+
 
 const taskTemplates = [
     { text: "THE 99% THRESHOLD: Jerk off to the absolute brink. Stop and freeze for 40s. Repeat for ${time}m. If you leak, tribute $50.", reward: 1200 },
@@ -295,28 +275,7 @@ const taskTemplates = [
     { text: "THE SISSY COUNT: List 50 reasons why you are a low-value debt-pig in the chat. Hands off your cock. ${time}m.", reward: 1200 },
     { text: "THE FETAL RESTRAINT: Curl into a tight ball. Grip your own ankles. Stay locked like this for ${time}m. No cock contact.", reward: 1800 },
     { text: "THE HEADBOARD-HANDS: Keep your hands gripped onto the headboard/pillow above you for ${time}m. Stare at your cock.", reward: 1500 },
-    { text: "THE KNEE-LOCK: Lock your ankles together and squeeze your thighs. Hands on your chest. Duration: ${time}m.", reward: 1400 },
-{ text: "THE DUAL-TWIST VICE: Sitting up, use your left hand to twist your right nipple and your right hand to twist your left. Hold at the pain limit for ${time}m. No cock contact.", reward: 2200 },
-{ text: "WHITE-KNUCKLE PINCH: Use your thumb and index fingernails to pinch the very tip of your left nipple. Do not let go for ${time}m while staring at your cock.", reward: 1800 },
-{ text: "THE SISSY'S COMPROMISE: You may only jerk with your left hand if your right hand is pinching your nipple hard enough to leave a mark. ${time}m.", reward: 1900 },
-{ text: "NIPPLE-SLAP GAUNTLET: Every 15 seconds, stop jerking and give each nipple a sharp, stinging slap with your open palm. Duration: ${time}m.", reward: 2100 },
-{ text: "THE INVISIBLE CLAMP: Pinch both nipples and pull them outward as hard as you can. Maintain this stretch for the full ${time}m. Total cock denial.", reward: 2400 },
-{ text: "THE SENSORY SPLIT: Jerk at max speed for 30s, then immediately stop and crush both nipples for 30s. Repeat the cycle for ${time}m.", reward: 2300 },
-{ text: "NAIL-SCRATCH EDGING: Use your fingernails to rake across your nipples every time you stroke up. The sting must balance the pleasure. ${time}m.", reward: 2000 },
-{ text: "THE ISOLATION PINCH: Lean back. Hands behind your head. Now, bring them down only to pinch your nipples for 10s every time you feel a leak. ${time}m.", reward: 1700 },
-{ text: "THE THUMB-PRESS TORTURE: Press your thumbs hard into your nipples while your other fingers pinch the skin around them. Hold for ${time}m.", reward: 1900 },
-{ text: "THE BREATHLESS PINCH: Hold your breath and pinch both nipples hard. You can only release the pinch when you need to breathe. Repeat for ${time}m.", reward: 2500 },
-    // SEATED BED-ONLY NIPPLE TORTURE
-{ text: "THE PINCH-DRAG: Pinch both nipples as hard as you can, then slowly drag your fingers outward until they slip off. Repeat for ${time}m. No cock contact.", reward: 2100 },
-{ text: "NAIL-DIG EDGING: Dig your thumbnails into the center of your nipples. Keep them there while jerking with your non-dominant hand for ${time}m.", reward: 1950 },
-{ text: "THE SISSY'S TWIST: Twist your nipples in opposite directions (left clockwise, right counter) and hold that torque for the full ${time}m.", reward: 2300 },
-{ text: "RHYTHM-SLAP GAUNTLET: Slap your left nipple, then your right, then jerk once. Keep this 1-2-3 rhythm going at high speed for ${time}m.", reward: 2200 },
-{ text: "THE NIPPLE-ANCHOR: Use your right hand to pull your left nipple downward hard. Jerk with your left hand. If the tension drops, you fail. ${time}m.", reward: 2400 },
-{ text: "THE CROSS-ARM CRUSH: Cross your arms and pinch the opposite nipples. Sit perfectly still like this for ${time}m while staring at your cock.", reward: 1800 },
-{ text: "PALM-FRICTION STING: Rub your open palms over your nipples in fast, circular motions until they sting. Do this for 30s every minute for ${time}m.", reward: 2000 },
-{ text: "THE 10-SECOND PINCH: Reach the edge, stop, and pinch both nipples for a slow count of 10 before you're allowed to touch your cock again. ${time}m.", reward: 1700 },
-{ text: "FINGER-CLIP SIMULATION: Squeeze your nipples between your knuckles (index and middle) to mimic a clamp. Hold for the full ${time}m.", reward: 2500 },
-{ text: "THE ISOLATION SCREAM: Pinch your nipples until you're forced to bite your lip to stay silent. Hold that intensity for ${time}m while you edge.", reward: 2600 }
+    { text: "THE KNEE-LOCK: Lock your ankles together and squeeze your thighs. Hands on your chest. Duration: ${time}m.", reward: 1400 }
 ];
 
 const laborPhrases = [
@@ -881,6 +840,3 @@ window.onload = init;
 </script>
 </body>
 </html>
-
-
-
