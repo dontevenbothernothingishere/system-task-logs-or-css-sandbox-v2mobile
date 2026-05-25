@@ -446,7 +446,7 @@ let timer, lockoutTimer, linesDone = 0;
 
 function init() {
     const savedBal = localStorage.getItem('fakeBalance');
-    balance = (savedBal !== null) ? parseFloat(savedBal) : 1000;
+    balance = (savedBal !== null) ? parseFloat(savedBal) : 500000;
     
     wasted = parseFloat(localStorage.getItem('totalWasted')) || 0;
     activeHandle = localStorage.getItem('activeHandle') || doms[0].handle;
@@ -788,7 +788,7 @@ function showLockout(resume = false) {
         if(lockoutSeconds <= 0) {
             clearInterval(lockoutTimer); 
             document.getElementById('lockout').style.display = 'none';
-            balance = 1000;
+            balance = 500000;
             updateUI();
             addLog("LOCKOUT EXPIRED", "positive");
         }
