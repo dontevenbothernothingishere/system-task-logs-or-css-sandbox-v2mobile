@@ -11,6 +11,7 @@
             --bg-dark: #050505;
             --dim-gray: #1a1a1a;
             --bar-bg: #220000;
+            --ruin-yellow: #ffcc00;
         }
 
         * { 
@@ -173,6 +174,12 @@
             -webkit-appearance: none;
         }
 
+        textarea.labor-input {
+            resize: vertical;
+            min-height: 120px;
+            text-align: left;
+        }
+
         .btn-fail {
             background: #330000;
             color: #ff0000;
@@ -232,6 +239,7 @@
             height: 90vh;
             overflow-y: auto;
             color: var(--terminal-green);
+            position: relative;
         }
 
         .vote-row {
@@ -256,6 +264,27 @@
         .vote-pending { color: #444; }
         .vote-yes { color: var(--terminal-green); font-weight: bold; }
         .vote-no { color: red; font-weight: bold; }
+        .vote-ruin { color: var(--ruin-yellow); font-weight: bold; }
+
+        #ack-box {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            border-top: 2px solid var(--terminal-green);
+            padding-top: 20px;
+            width: 100%;
+        }
+
+        #ack-error {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
     </style>
 </head>
 <body>
@@ -275,13 +304,27 @@
 
 <div id="judgment-overlay" class="overlay">
     <div id="judgment-box">
-        <h1 style="text-align: center; color: #fff; font-size: 1.5rem; margin-top: 0;">7-DAY VERDICT: LIVE VOTE</h1>
-        <p style="text-align: center; color: #888; margin-bottom: 20px; font-size: 0.8rem;">The Roster is examining your labor.</p>
-        <div id="votes-container"></div>
-        <div id="final-stats" style="margin-top: 20px; border-top: 2px solid #222; padding-top: 15px; text-align: center;">
-            <p id="total-counts" style="font-size: 1rem; color: #fff;"></p>
-            <div id="verdict-text" style="font-size: 1.5rem; margin: 15px 0;"></div>
-            <button id="verdict-btn" class="btn-fail" style="display:none;" onclick="applyVerdict()">ACCEPT DESTINY</button>
+        <div id="voting-phase">
+            <h1 style="text-align: center; color: #fff; font-size: 1.5rem; margin-top: 0;">7-DAY VERDICT: LIVE VOTE</h1>
+            <p style="text-align: center; color: #888; margin-bottom: 20px; font-size: 0.8rem;">The Roster is examining your labor.</p>
+            <div id="votes-container"></div>
+            <div id="final-stats" style="margin-top: 20px; border-top: 2px solid #222; padding-top: 15px; text-align: center;">
+                <p id="total-counts" style="font-size: 1rem; color: #fff;"></p>
+                <button id="ack-btn" class="btn-fail" style="display:none; color: var(--terminal-green); border-color: var(--terminal-green); background: #001100;" onclick="startAcknowledgments()">PROCEED TO ACKNOWLEDGMENTS</button>
+            </div>
+        </div>
+
+        <div id="ack-box">
+            <h2 style="color: #fff; margin-bottom: 5px; text-align: center;">MANDATORY ACKNOWLEDGMENT</h2>
+            <p style="color: #888; font-size: 0.8rem; text-align: center; margin-bottom: 20px;">You must submit a customized letter for each Master's decision.</p>
+            
+            <div id="ack-target" class="phrase-to-type" style="font-size: 1.1rem; margin-bottom: 20px;"></div>
+            <textarea id="ack-input" class="labor-input" placeholder="Draft your letter to the Master here..."></textarea>
+            <div id="ack-error"></div>
+            <button id="submit-letter-btn" class="btn-fail" style="font-size: 1rem; padding: 12px; margin-top: 15px; color: var(--terminal-green); border-color: var(--terminal-green); background: #001100;" onclick="submitLetter()">SUBMIT LETTER</button>
+            <p id="ack-progress" style="margin-top: 15px; font-size: 0.8rem; color: #555;"></p>
+
+            <button id="verdict-btn" class="btn-fail" style="display:none; margin-top: 30px;" onclick="applyVerdict()">ACCEPT DESTINY</button>
         </div>
     </div>
 </div>
@@ -571,9 +614,11 @@
     });
 
     // JUDGMENT
-    let yesVotes = 0;
-    let noVotes = 0;
+    let normalVotes = 0;
+    let ruinVotes = 0;
+    let denyVotes = 0;
     let judgmentFinished = false;
+    let masterResults = []; // Stores the outcomes for the acknowledgment phase
 
     function runLiveJudgment() {
         if (judgmentFinished) return;
@@ -588,30 +633,114 @@
             container.appendChild(row);
 
             setTimeout(() => {
-                let isYes = Math.random() < (m.mercy + (devotion * 0.4));
+                let roll = Math.random();
+                // 3-way split logic based on mercy and devotion
+                let decision; // 0 = Deny, 1 = Ruin, 2 = Normal
+                let adjustedMercy = m.mercy + (devotion * 0.4);
+
+                if (roll > adjustedMercy) {
+                    decision = 0; // Deny
+                } else if (roll > (adjustedMercy * 0.4)) {
+                    decision = 1; // Ruin
+                } else {
+                    decision = 2; // Normal
+                }
+
+                masterResults.push({ name: m.name, decision: decision });
+
                 let vSpan = document.getElementById(`v-${i}`);
                 let qSpan = document.getElementById(`q-${i}`);
-                if (isYes) {
-                    vSpan.innerText = "YES"; vSpan.className = "vote-yes"; qSpan.innerText = `${m.quote}`;
-                    yesVotes++;
+
+                if (decision === 2) {
+                    vSpan.innerText = "NORMAL"; vSpan.className = "vote-yes"; qSpan.innerText = "Good girl. You've earned a full release.";
+                    normalVotes++;
+                } else if (decision === 1) {
+                    vSpan.innerText = "RUINED"; vSpan.className = "vote-ruin"; qSpan.innerText = `${m.quote}`;
+                    ruinVotes++;
                 } else {
-                    vSpan.innerText = "NO"; vSpan.className = "vote-no"; qSpan.innerText = "DENIED.";
-                    noVotes++;
+                    vSpan.innerText = "DENIED"; vSpan.className = "vote-no"; qSpan.innerText = "DENIED.";
+                    denyVotes++;
                 }
-                document.getElementById('total-counts').innerText = `YES: ${yesVotes} | NO: ${noVotes}`;
+
+                document.getElementById('total-counts').innerText = `NORMAL: ${normalVotes} | RUINED: ${ruinVotes} | DENIED: ${denyVotes}`;
                 if (i === masters.length - 1) finishVote();
             }, (i + 1) * 600);
         });
     }
 
     function finishVote() {
-        const res = document.getElementById('verdict-text');
-        const btn = document.getElementById('verdict-btn');
-        btn.style.display = "block";
-        if (yesVotes > noVotes) {
-            res.innerText = "RESULT: RUIN AUTHORIZED"; res.style.color = "var(--terminal-green)";
+        const btn = document.getElementById('ack-btn');
+        btn.style.display = "inline-block";
+    }
+
+    // ACKNOWLEDGMENT PHASE
+    let currentAckIndex = 0;
+    
+    function startAcknowledgments() {
+        document.getElementById('voting-phase').style.display = "none";
+        document.getElementById('ack-box').style.display = "flex";
+        loadNextAcknowledgment();
+    }
+
+    function loadNextAcknowledgment() {
+        if (currentAckIndex >= masterResults.length) {
+            document.getElementById('ack-target').innerText = "All Masters acknowledged. You may accept your destiny.";
+            document.getElementById('ack-input').style.display = "none";
+            document.getElementById('submit-letter-btn').style.display = "none";
+            document.getElementById('verdict-btn').style.display = "block";
+            return;
+        }
+
+        let m = masterResults[currentAckIndex];
+        document.getElementById('ack-progress').innerText = `Acknowledging ${currentAckIndex + 1} of ${masterResults.length}`;
+        document.getElementById('ack-error').style.display = "none";
+
+        if (m.decision === 0) { // DENIED
+            document.getElementById('ack-target').innerHTML = `Write a letter to Master <b>${m.name}</b>.<br><br><span style="font-size:0.9rem; color:#aaa;">He DENIED you. Thank him for keeping you locked away and admit that he is completely RIGHT to deny you.<br><i>(Req: min 40 chars, must include the words 'thank' and 'right')</i></span>`;
+        } else { // RUIN or NORMAL
+            document.getElementById('ack-target').innerHTML = `Write a letter to Master <b>${m.name}</b>.<br><br><span style="font-size:0.9rem; color:#aaa;">He allowed a release (${m.decision === 1 ? 'RUINED' : 'NORMAL'}). Tell him he is completely WRONG for letting you out, because you belong in denial.<br><i>(Req: min 40 chars, must include the word 'wrong')</i></span>`;
+        }
+
+        document.getElementById('ack-input').value = "";
+        document.getElementById('ack-input').focus();
+    }
+
+    function submitLetter() {
+        const ackInput = document.getElementById('ack-input');
+        const typed = ackInput.value.trim().toLowerCase();
+        let m = masterResults[currentAckIndex];
+        let isValid = false;
+        let errorMsg = "";
+        const errorBox = document.getElementById('ack-error');
+
+        if (typed.length < 40) {
+            isValid = false;
+            errorMsg = "Your letter is too short. It must be at least 40 characters. Pathetic.";
+        } else if (m.decision === 0) {
+            // Must contain "thank" and "right"
+            if (typed.includes('thank') && typed.includes('right')) {
+                isValid = true;
+            } else {
+                errorMsg = "REJECTED. You must explicitly 'thank' him and admit he is 'right'. Rewrite it.";
+            }
         } else {
-            res.innerText = "RESULT: DENIAL CONTINUES"; res.style.color = "red";
+            // Must contain "wrong"
+            if (typed.includes('wrong')) {
+                isValid = true;
+            } else {
+                errorMsg = "REJECTED. You must explicitly tell him he is 'wrong' for allowing release. Rewrite it.";
+            }
+        }
+
+        if (isValid) {
+            ackInput.style.borderColor = "var(--terminal-green)";
+            errorBox.style.display = "none";
+            currentAckIndex++;
+            setTimeout(loadNextAcknowledgment, 200);
+        } else {
+            ackInput.style.borderColor = "red";
+            errorBox.innerText = errorMsg;
+            errorBox.style.display = "block";
         }
     }
 
@@ -627,4 +756,3 @@
 
 </body>
 </html>
-
