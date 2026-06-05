@@ -616,6 +616,15 @@ async function sendChat() {
 
     const d = doms.find(x => x.handle === activeHandle);
     const rankLabel = document.getElementById('sub-rank').innerText;
+
+    // --- NOVO COMPONENTE: DETECTAR TAREFA ATIVADA ---
+    let currentTaskStatus = "NO ACTIVE ORDER. User is currently idle.";
+    if (currentTaskObj) {
+        let remain = Math.floor((currentTaskObj.endTime - Date.now()) / 1000);
+        let mins = Math.floor(remain / 60);
+        let secs = remain % 60;
+        currentTaskStatus = `CURRENT ASSIGNED ORDER: "${currentTaskObj.text}". Time Remaining to complete: ${mins}m ${secs}s.`;
+    }
     
     // Fix: Filter logic ensures we don't crash on non-tribute messages
     let masterTributeTotal = histories[activeHandle]
@@ -639,6 +648,9 @@ async function sendChat() {
         
         [CHASTITY STATUS]
         ${chastityStatus}
+
+        [CURRENT TASK TRACKING]
+        ${currentTaskStatus}
 
         [FINANCIAL DATA]
         User Rank: ${rankLabel}
