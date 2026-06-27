@@ -861,5 +861,11 @@ function getDenialStatus() {
 // Global scope initialization call
 window.onload = init;
 </script>
+    <div style="padding: 10px; width: 100%;">
+    <button onclick="if(confirm('Queres mesmo apagar tudo e recomeçar do zero sem dívidas?')) { localStorage.clear(); location.reload(); }" 
+            style="background: #ff4d4d; color: #fff; border: 1px solid #222; padding: 12px; width: 100%; font-weight: bold; font-family: monospace; border-radius: 5px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;">
+        ⚠️ Reset Total (Recomeçar do Zero)
+    </button>
+</div>
 </body>
 </html>
