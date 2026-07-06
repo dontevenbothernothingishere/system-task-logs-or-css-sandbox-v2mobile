@@ -803,7 +803,7 @@ function triggerTotalRuin() {
 
 function showLockout(resume = false) {
     document.getElementById('lockout').style.display = 'flex';
-    if(!resume) lockoutSeconds = 3600;
+    if(!resume) lockoutSeconds = 7200;
     clearInterval(lockoutTimer);
     lockoutTimer = setInterval(() => {
         lockoutSeconds--; 
@@ -831,7 +831,7 @@ function checkLabor(e) {
             document.getElementById('phrase-to-type').innerText = newPhrase;
             addLog("LABOR PROCESSED", "positive");
         } else {
-            lockoutSeconds += 120;
+            lockoutSeconds += 600;
             addLog("LABOR ERROR: +2m", "negative");
         }
         input.value = ""; 
