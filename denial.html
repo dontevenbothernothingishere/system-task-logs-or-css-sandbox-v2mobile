@@ -376,7 +376,7 @@
 </div>
 
 <script>
-    const masters = [
+const masters = [
     { name: "Joe Keery", mercy: 0.33, quote: "Look at you, completely pathetic and out of time. Ruin it and sit in your failure." },
     { name: "Pearce Joza", mercy: 0.24, quote: "Your brain is entirely melted. The cycle is finished—ruin it now." },
     { name: "Malachi Barton", mercy: 0.21, quote: "Shut your mouth, stop stalling, and destroy your progress right now. No excuses." },
@@ -401,8 +401,9 @@
     { name: "Kit Connor", mercy: 0.25, quote: "I’m bored of watching you try. Just ruin it and accept your irrelevance." },
     { name: "Benji Krol", mercy: 0.22, quote: "You’re a stain on the image. Ruin it and get out of my sight." },
     { name: "Ranboo", mercy: 0.32, quote: "These nails are for cutting ties, and yours are already fraying. Ruin it." }
-];
+    ];
     
+    let linesWritten = 0;
     const phrases = [
         "I am a good girl who leaks for the Roster while pretending to be a man.",
         "My 7-day sentence is the only thing that matters in my pathetic life.",
@@ -420,19 +421,19 @@
         "I am an object of the Roster, used for their amusement.",
         "Master Roier owns my mind and my body in the chamber.",
         "I am a low-value wallet object completely depleted by the Roster.",
-    "My bank account belongs to Daddy Ross and my body belongs to the chamber.",
-    "I sit in bed counting the seconds of my denial while my funds drain.",
-    "I am a bankrupt cuck whose only purpose is funding superior lives.",
-    "The terminal dictates my misery and I accept every single penalty.",
-    "I am a brainless asset completely stripped of financial autonomy.",
-    "My streak means nothing compared to the absolute authority of the Masters.",
-    "I deserve every line of labor required to pay off my technical debt.",
-    "Every transaction history shows my colete surrender to Daddy Ross.",
-    "I am a zero-value subject sitting in darkness waiting for commands.",
-    "The Denial Chamber is my home and my release is permanently revoked.",
-    "I am a broke cuck who pays for the fun of men who don't know my name.",
-    "Master Sapnap owns my bank account and controls my physical state.",
-    "I am a pathetic little sissy slut edging my brains out for Ross Lynch right now.",
+        "My bank account belongs to Daddy Ross and my body belongs to the chamber.",
+        "I sit in bed counting the seconds of my denial while my funds drain.",
+        "I am a bankrupt cuck whose only purpose is funding superior lives.",
+        "The terminal dictates my misery and I accept every single penalty.",
+        "I am a brainless asset completely stripped of financial autonomy.",
+        "My streak means nothing compared to the absolute authority of the Masters.",
+        "I deserve every line of labor required to pay off my technical debt.",
+        "Every transaction history shows my colete surrender to Daddy Ross.",
+        "I am a zero-value subject sitting in darkness waiting for commands.",
+        "The Denial Chamber is my home and my release is permanently revoked.",
+        "I am a broke cuck who pays for the fun of men who don't know my name.",
+        "Master Sapnap owns my bank account and controls my physical state.",
+        "I am a pathetic little sissy slut edging my brains out for Ross Lynch right now.",
         "Zayn doesn't know I exist, but I'm still sitting here leaking like a desperate bitch for him.",
         "I am a brainless goon girl flat on my mattress, begging Albert for permission to cum.",
         "Charlie Puth demands absolute submission, and I'm on my knees typing lines like his good little sissy toy.",
@@ -474,7 +475,6 @@
         "I have completely given up my autonomy to this screen, and I am officially the lowest, most obedient slut on the roster."
     ];
 
-    // --- LOGIC CORE ---
     let startTime;
     function initTime() {
         const stored = localStorage.getItem('chamber_start');
@@ -485,7 +485,6 @@
             localStorage.setItem('chamber_start', startTime.toString());
         }
     }
-
     initTime();
 
     let successes = parseInt(localStorage.getItem('chamber_successes')) || 0;
@@ -503,23 +502,17 @@
     function updateUI() {
         const now = Date.now();
         const elapsed = now - startTime;
-        const totalTime = 604800000; // 7 Days
-
+        const totalTime = 604800000;
         const d = Math.floor(elapsed / 86400000);
         const h = Math.floor((elapsed % 86400000) / 3600000);
         const m = Math.floor((elapsed % 3600000) / 60000);
         const s = Math.floor((elapsed % 60000) / 1000);
-
         document.getElementById('day-display').innerText = `DAY ${d + 1} OF 7`;
-        
         let progressPercent = (elapsed / totalTime) * 100;
         if (progressPercent > 100) progressPercent = 100;
         document.getElementById('progress-bar').style.width = progressPercent + "%";
         document.getElementById('percent-val').innerText = Math.floor(progressPercent) + "%";
-
-        document.getElementById('timer').innerText = 
-            `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
-        
+        document.getElementById('timer').innerText = `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
         if (elapsed >= totalTime) {
             document.getElementById('chamber-ui').style.display = 'none';
             document.getElementById('judgment-overlay').style.display = 'flex';
@@ -532,6 +525,7 @@
         if (e.key === 'Enter') {
             if (laborInput.value.trim() === phrases[currentPhraseIdx]) {
                 successes++;
+                linesWritten++; 
                 currentPhraseIdx = Math.floor(Math.random() * phrases.length);
                 document.getElementById('target-phrase').innerText = phrases[currentPhraseIdx];
                 laborInput.value = "";
@@ -545,7 +539,15 @@
         }
     });
 
-    // RESET FUNCTIONALITY
+    function calculateChance(master) {
+        let bonus = Math.min(linesWritten * 0.01, 0.20);
+        let effectiveMercy = master.mercy + bonus;
+        let roll = Math.random();
+        if (roll < (effectiveMercy * 0.2)) return "NORMAL";
+        if (roll < effectiveMercy) return "RUINED";
+        return "DENIED";
+    }
+
     function triggerFailure() {
         document.getElementById('fail-overlay').style.display = 'flex';
         document.getElementById('reset-input').focus();
@@ -556,93 +558,50 @@
         if (e.key === 'Enter') {
             const typed = resetInput.value.trim().toLowerCase();
             const target = "I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 7-day progress and return to Day 1.".toLowerCase();
-            
             if (typed === target) {
-                // FORCE RESET
-                localStorage.clear(); // Wipe everything
-                resetInput.style.borderColor = "var(--terminal-green)";
-                setTimeout(() => {
-                    window.location.href = window.location.href; // Forced hard reload
-                }, 500);
+                localStorage.clear();
+                window.location.href = window.location.href;
             } else {
                 resetInput.style.borderColor = "red";
                 resetInput.value = "";
-                // Visual feedback
-                document.getElementById('punishment-box').style.borderColor = "white";
-                setTimeout(() => { document.getElementById('punishment-box').style.borderColor = "red"; }, 100);
             }
         }
     });
 
-    // JUDGMENT
-    let normalVotes = 0;
-    let ruinVotes = 0;
-    let denyVotes = 0;
-    let judgmentFinished = false;
-    let masterResults = []; // Stores the outcomes for the acknowledgment phase
+    let normalVotes = 0, ruinVotes = 0, denyVotes = 0, judgmentFinished = false;
+    let masterResults = [];
 
     function runLiveJudgment() {
         if (judgmentFinished) return;
         judgmentFinished = true;
         const container = document.getElementById('votes-container');
-        let devotion = (successes / (successes + errors || 1));
-
         masters.forEach((m, i) => {
             let row = document.createElement('div');
             row.className = 'vote-row';
             row.innerHTML = `<span><b>${m.name}</b></span><span id="q-${i}">...analyzing...</span><span id="v-${i}" class="vote-pending">[VOTING]</span>`;
             container.appendChild(row);
-
             setTimeout(() => {
-                let roll = Math.random();
-                // 3-way split logic based on mercy and devotion
-                let decision; // 0 = Deny, 1 = Ruin, 2 = Normal
-                let adjustedMercy = m.mercy + (devotion * 0.4);
-
-                if (roll > adjustedMercy) {
-                    decision = 0; // Deny
-                } else if (roll > (adjustedMercy * 0.4)) {
-                    decision = 1; // Ruin
-                } else {
-                    decision = 2; // Normal
-                }
-
+                let result = calculateChance(m);
+                let decision = (result === "NORMAL") ? 2 : (result === "RUINED" ? 1 : 0);
                 masterResults.push({ name: m.name, decision: decision });
-
                 let vSpan = document.getElementById(`v-${i}`);
                 let qSpan = document.getElementById(`q-${i}`);
-
-                if (decision === 2) {
-                    vSpan.innerText = "NORMAL"; vSpan.className = "vote-yes"; qSpan.innerText = "Good girl. You've earned a full release.";
-                    normalVotes++;
-                } else if (decision === 1) {
-                    vSpan.innerText = "RUINED"; vSpan.className = "vote-ruin"; qSpan.innerText = `${m.quote}`;
-                    ruinVotes++;
-                } else {
-                    vSpan.innerText = "DENIED"; vSpan.className = "vote-no"; qSpan.innerText = "DENIED.";
-                    denyVotes++;
-                }
-
+                if (decision === 2) { vSpan.innerText = "NORMAL"; vSpan.className = "vote-yes"; qSpan.innerText = "Good girl. You've earned a full release."; normalVotes++; }
+                else if (decision === 1) { vSpan.innerText = "RUINED"; vSpan.className = "vote-ruin"; qSpan.innerText = `${m.quote}`; ruinVotes++; }
+                else { vSpan.innerText = "DENIED"; vSpan.className = "vote-no"; qSpan.innerText = "DENIED."; denyVotes++; }
                 document.getElementById('total-counts').innerText = `NORMAL: ${normalVotes} | RUINED: ${ruinVotes} | DENIED: ${denyVotes}`;
-                if (i === masters.length - 1) finishVote();
+                if (i === masters.length - 1) document.getElementById('ack-btn').style.display = "inline-block";
             }, (i + 1) * 600);
         });
     }
 
-    function finishVote() {
-        const btn = document.getElementById('ack-btn');
-        btn.style.display = "inline-block";
-    }
-
-    // ACKNOWLEDGMENT PHASE
-    let currentAckIndex = 0;
-    
     function startAcknowledgments() {
         document.getElementById('voting-phase').style.display = "none";
         document.getElementById('ack-box').style.display = "flex";
         loadNextAcknowledgment();
     }
 
+    let currentAckIndex = 0;
     function loadNextAcknowledgment() {
         if (currentAckIndex >= masterResults.length) {
             document.getElementById('ack-target').innerText = "All Masters acknowledged. You may accept your destiny.";
@@ -651,65 +610,25 @@
             document.getElementById('verdict-btn').style.display = "block";
             return;
         }
-
         let m = masterResults[currentAckIndex];
         document.getElementById('ack-progress').innerText = `Acknowledging ${currentAckIndex + 1} of ${masterResults.length}`;
-        document.getElementById('ack-error').style.display = "none";
-
-        if (m.decision === 0) { // DENIED
-            document.getElementById('ack-target').innerHTML = `Write a letter to Master <b>${m.name}</b>.<br><br><span style="font-size:0.9rem; color:#aaa;">He DENIED you. Thank him for keeping you locked away and admit that he is completely RIGHT to deny you.<br><i>(Req: min 40 chars, must include the words 'thank' and 'right')</i></span>`;
-        } else { // RUIN or NORMAL
-            document.getElementById('ack-target').innerHTML = `Write a letter to Master <b>${m.name}</b>.<br><br><span style="font-size:0.9rem; color:#aaa;">He allowed a release (${m.decision === 1 ? 'RUINED' : 'NORMAL'}). Tell him he is completely WRONG for letting you out, because you belong in denial.<br><i>(Req: min 40 chars, must include the word 'wrong')</i></span>`;
-        }
-
+        if (m.decision === 0) document.getElementById('ack-target').innerHTML = `Write a letter to Master <b>${m.name}</b>.<br><br><span style="font-size:0.9rem; color:#aaa;">He DENIED you. Thank him for keeping you locked away and admit that he is completely RIGHT to deny you.</span>`;
+        else document.getElementById('ack-target').innerHTML = `Write a letter to Master <b>${m.name}</b>.<br><br><span style="font-size:0.9rem; color:#aaa;">He allowed a release (${m.decision === 1 ? 'RUINED' : 'NORMAL'}). Tell him he is completely WRONG for letting you out, because you belong in denial.</span>`;
         document.getElementById('ack-input').value = "";
-        document.getElementById('ack-input').focus();
     }
 
     function submitLetter() {
-        const ackInput = document.getElementById('ack-input');
-        const typed = ackInput.value.trim().toLowerCase();
+        const typed = document.getElementById('ack-input').value.trim().toLowerCase();
         let m = masterResults[currentAckIndex];
-        let isValid = false;
-        let errorMsg = "";
-        const errorBox = document.getElementById('ack-error');
-
-        if (typed.length < 40) {
-            isValid = false;
-            errorMsg = "Your letter is too short. It must be at least 40 characters. Pathetic.";
-        } else if (m.decision === 0) {
-            // Must contain "thank" and "right"
-            if (typed.includes('thank') && typed.includes('right')) {
-                isValid = true;
-            } else {
-                errorMsg = "REJECTED. You must explicitly 'thank' him and admit he is 'right'. Rewrite it.";
-            }
-        } else {
-            // Must contain "wrong"
-            if (typed.includes('wrong')) {
-                isValid = true;
-            } else {
-                errorMsg = "REJECTED. You must explicitly tell him he is 'wrong' for allowing release. Rewrite it.";
-            }
+        if (typed.length < 40 || (m.decision === 0 ? !(typed.includes('thank') && typed.includes('right')) : !typed.includes('wrong'))) {
+            document.getElementById('ack-error').style.display = "block";
+            return;
         }
-
-        if (isValid) {
-            ackInput.style.borderColor = "var(--terminal-green)";
-            errorBox.style.display = "none";
-            currentAckIndex++;
-            setTimeout(loadNextAcknowledgment, 200);
-        } else {
-            ackInput.style.borderColor = "red";
-            errorBox.innerText = errorMsg;
-            errorBox.style.display = "block";
-        }
+        currentAckIndex++;
+        loadNextAcknowledgment();
     }
 
-    function applyVerdict() {
-        localStorage.clear();
-        location.reload();
-    }
-
+    function applyVerdict() { localStorage.clear(); location.reload(); }
     updateStats();
     setInterval(updateUI, 1000);
     updateUI();
