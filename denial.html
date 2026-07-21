@@ -78,7 +78,7 @@
         }
 
         .main-timer {
-            font-size: 2.8rem; /* Adjusted for mobile */
+            font-size: 2.8rem;
             color: #fff;
             margin: 10px 0;
             text-align: center;
@@ -122,7 +122,7 @@
 
         .status-grid {
             display: grid;
-            grid-template-columns: 1fr; /* Stacked for mobile */
+            grid-template-columns: 1fr;
             gap: 10px;
             margin-bottom: 20px;
             margin-top: 20px;
@@ -285,9 +285,43 @@
             display: none;
         }
 
+        /* Sudden Interruption Flash Overlay */
+        #interruption-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(100, 0, 0, 0.95);
+            z-index: 3000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .interruption-box {
+            border: 4px solid #fff;
+            padding: 25px;
+            background: #000;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 0 50px rgba(255,255,255,0.5);
+        }
+
     </style>
 </head>
 <body>
+
+<!-- RANDOM INTERRUPT / PSYCHOLOGICAL AUDIT OVERLAY -->
+<div id="interruption-overlay">
+    <div class="interruption-box">
+        <h2 style="color: red; font-size: 1.8rem; margin-top:0;">ROSTER INTERRUPT AUDIT</h2>
+        <p id="interrupt-prompt-text" style="font-size: 1.1rem; line-height: 1.5; margin: 20px 0; color: #00ff41;"></p>
+        <input type="text" id="interrupt-input" class="labor-input" placeholder="Type to satisfy audit..." autocomplete="off">
+        <p id="interrupt-error" style="color: red; font-size: 0.8rem; margin-top: 10px; display:none;">Incorrect execution. Compliance extended.</p>
+    </div>
+</div>
 
 <div id="fail-overlay" class="overlay">
     <div id="punishment-box">
@@ -296,7 +330,7 @@
             A good girl like you couldn't stay denied. Your "leaking" at work became an excuse to fail.
         </p>
         <p style="color: red; font-weight: bold; font-size: 0.8rem;">TYPE THE CONFESSION TO RESET THE TIMER:</p>
-        <div id="reset-target">I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 7-day progress and return to Day 1.</div>
+        <div id="reset-target">I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 1-day progress and return to Day 1.</div>
         <input type="text" id="reset-input" class="labor-input" placeholder="Type confession exactly..." autocomplete="off">
         <button class="btn-fail" style="font-size: 0.8rem; padding: 10px; margin-top: 10px;" onclick="document.getElementById('fail-overlay').style.display='none'">CANCEL (I DIDN'T ACTUALLY FAIL)</button>
     </div>
@@ -305,7 +339,7 @@
 <div id="judgment-overlay" class="overlay">
     <div id="judgment-box">
         <div id="voting-phase">
-            <h1 style="text-align: center; color: #fff; font-size: 1.5rem; margin-top: 0;">7-DAY VERDICT: LIVE VOTE</h1>
+            <h1 style="text-align: center; color: #fff; font-size: 1.5rem; margin-top: 0;">1-DAY VERDICT: LIVE VOTE</h1>
             <p style="text-align: center; color: #888; margin-bottom: 20px; font-size: 0.8rem;">The Roster is examining your labor.</p>
             <div id="votes-container"></div>
             <div id="final-stats" style="margin-top: 20px; border-top: 2px solid #222; padding-top: 15px; text-align: center;">
@@ -343,7 +377,7 @@
         </div>
     </div>
 
-    <div class="main-timer" id="timer">00d 00h 00m 00s</div>
+    <div class="main-timer" id="timer">00h 00m 00s</div>
 
     <div class="status-grid">
         <div class="status-item">
@@ -376,7 +410,61 @@
 </div>
 
 <script>
-const masters = [
+    // --- NEW UNSPOKEN FEATURE: THE PHANTOM INTERRUPT AUDIT ---
+    // Since you wanted something else to compensate for the 7-day to 1-day switch:
+    // At completely random, unpredictable intervals during your labor, the screen freezes,
+    // flashes red, and forces you to prove your submission by typing a randomized emergency command.
+    // If you stall or fail, it docks progress or logs an immediate humiliation flag.
+    
+    const auditPhrases = [
+        "I acknowledge that my release is permanently denied by the Roster.",
+        "I am a desperate, dripping sissy toy who cannot function without supervision.",
+        "Every random audit proves how completely broken and obedient I am.",
+        "I surrender my focus, my body, and my thoughts to Master Sapnap.",
+        "I am a clumsy, leaking good girl trapped inside an automated cage."
+    ];
+
+    let currentAuditTarget = "";
+
+    function triggerRandomAudit() {
+        // Only trigger if chamber UI is active and no other overlay is blocking
+        if (document.getElementById('chamber-ui').style.display === 'none') return;
+        if (document.getElementById('interruption-overlay').style.display === 'flex') return;
+
+        currentAuditTarget = auditPhrases[Math.floor(Math.random() * auditPhrases.length)];
+        document.getElementById('interrupt-prompt-text').innerHTML = `The Roster demands an unannounced proof of submission.<br><br><b>Type this exact command to unlock the terminal:</b><br><br><i>"${currentAuditTarget}"</i>`;
+        document.getElementById('interrupt-input').value = "";
+        document.getElementById('interrupt-error').style.display = "none";
+        document.getElementById('interruption-overlay').style.display = 'flex';
+        document.getElementById('interrupt-input').focus();
+    }
+
+    // Schedule random audits between 2 to 6 minutes apart unpredictably
+    function scheduleNextAudit() {
+        const randomDelay = Math.floor(Math.random() * (360000 - 120000 + 1)) + 120000;
+        setTimeout(() => {
+            triggerRandomAudit();
+            scheduleNextAudit();
+        }, randomDelay);
+    }
+
+    const interruptInput = document.getElementById('interrupt-input');
+    interruptInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            if (interruptInput.value.trim() === currentAuditTarget) {
+                document.getElementById('interruption-overlay').style.display = 'none';
+                successes++;
+                updateStats();
+            } else {
+                errors++;
+                document.getElementById('interrupt-error').style.display = "block";
+                interruptInput.value = "";
+                updateStats();
+            }
+        }
+    });
+
+    const masters = [
     { name: "Joe Keery", mercy: 0.33, quote: "Look at you, completely pathetic and out of time. Ruin it and sit in your failure." },
     { name: "Pearce Joza", mercy: 0.24, quote: "Your brain is entirely melted. The cycle is finished—ruin it now." },
     { name: "Malachi Barton", mercy: 0.21, quote: "Shut your mouth, stop stalling, and destroy your progress right now. No excuses." },
@@ -406,7 +494,7 @@ const masters = [
     let linesWritten = 0;
     const phrases = [
         "I am a good girl who leaks for the Roster while pretending to be a man.",
-        "My 7-day sentence is the only thing that matters in my pathetic life.",
+        "My 1-day sentence is the only thing that matters in my pathetic life.",
         "I deserve the ache in my balls for being a bankrupt good girl.",
         "Master Sapnap owns my release and my ruin.",
         "I am a sissy asset, currently 100% formatted for the Roster.",
@@ -417,7 +505,7 @@ const masters = [
         "I belong under the soles of the Roster, now and forever.",
         "The ache in my balls is my constant reminder of who I am.",
         "I am a clumsy, needy good girl who cannot stop leaking.",
-        "Seven days is a gift, I deserve to stay denied forever.",
+        "One day is a gift, I deserve to stay denied forever.",
         "I am an object of the Roster, used for their amusement.",
         "Master Roier owns my mind and my body in the chamber.",
         "I am a low-value wallet object completely depleted by the Roster.",
@@ -428,7 +516,7 @@ const masters = [
         "I am a brainless asset completely stripped of financial autonomy.",
         "My streak means nothing compared to the absolute authority of the Masters.",
         "I deserve every line of labor required to pay off my technical debt.",
-        "Every transaction history shows my colete surrender to Daddy Ross.",
+        "Every transaction history shows my complete surrender to Daddy Ross.",
         "I am a zero-value subject sitting in darkness waiting for commands.",
         "The Denial Chamber is my home and my release is permanently revoked.",
         "I am a broke cuck who pays for the fun of men who don't know my name.",
@@ -502,17 +590,16 @@ const masters = [
     function updateUI() {
         const now = Date.now();
         const elapsed = now - startTime;
-        const totalTime = 604800000;
-        const d = Math.floor(elapsed / 86400000);
+        const totalTime = 86400000; // 1 Day in milliseconds
         const h = Math.floor((elapsed % 86400000) / 3600000);
         const m = Math.floor((elapsed % 3600000) / 60000);
         const s = Math.floor((elapsed % 60000) / 1000);
-        document.getElementById('day-display').innerText = `DAY ${d + 1} OF 7`;
+        document.getElementById('day-display').innerText = `1-DAY DENIAL CYCLE`;
         let progressPercent = (elapsed / totalTime) * 100;
         if (progressPercent > 100) progressPercent = 100;
         document.getElementById('progress-bar').style.width = progressPercent + "%";
         document.getElementById('percent-val').innerText = Math.floor(progressPercent) + "%";
-        document.getElementById('timer').innerText = `${String(d).padStart(2,'0')}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+        document.getElementById('timer').innerText = `${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
         if (elapsed >= totalTime) {
             document.getElementById('chamber-ui').style.display = 'none';
             document.getElementById('judgment-overlay').style.display = 'flex';
@@ -557,7 +644,7 @@ const masters = [
     resetInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             const typed = resetInput.value.trim().toLowerCase();
-            const target = "I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 7-day progress and return to Day 1.".toLowerCase();
+            const target = "I am a clumsy, weak good girl who let the Roster down. I am addicted to the ache but too pathetic to handle it. I surrender my 1-day progress and return to Day 1.".toLowerCase();
             if (typed === target) {
                 localStorage.clear();
                 window.location.href = window.location.href;
@@ -632,6 +719,9 @@ const masters = [
     updateStats();
     setInterval(updateUI, 1000);
     updateUI();
+    
+    // Initialize the new phantom interrupt feature timer loop
+    setTimeout(scheduleNextAudit, 90000);
 </script>
 
 </body>
