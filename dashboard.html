@@ -615,7 +615,7 @@ function parseChastityCommand(responseText) {
 
 async function sendChat() {
     const input = document.getElementById('chat-in'); 
-    if(!input.value) return;
+    if (!input || !input.value) return;
     const text = input.value; 
     
     if (!histories[activeHandle]) histories[activeHandle] = [];
@@ -624,18 +624,18 @@ async function sendChat() {
     input.value = "";
 
     const d = doms.find(x => x.handle === activeHandle);
-    const rankLabel = document.getElementById('sub-rank').innerText;
+    const rankLabel = document.getElementById('sub-rank') ? document.getElementById('sub-rank').innerText : "Sub";
 
-    // --- NOVO COMPONENTE: DETECTAR TAREFA ATIVADA ---
+    // --- TASK STATUS ---
     let currentTaskStatus = "NO ACTIVE ORDER. User is currently idle.";
-    if (currentTaskObj) {
+    if (typeof currentTaskObj !== 'undefined' && currentTaskObj) {
         let remain = Math.floor((currentTaskObj.endTime - Date.now()) / 1000);
         let mins = Math.floor(remain / 60);
         let secs = remain % 60;
         currentTaskStatus = `CURRENT ASSIGNED ORDER: "${currentTaskObj.text}". Time Remaining to complete: ${mins}m ${secs}s.`;
     }
     
-    // Fix: Filter logic ensures we don't crash on non-tribute messages
+    // --- TRIBUTE TOTAL ---
     let masterTributeTotal = histories[activeHandle]
         .filter(m => m.text && m.text.includes("*TRIBUTE:"))
         .reduce((sum, m) => {
